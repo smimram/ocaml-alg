@@ -78,7 +78,7 @@ module Presentation (X : Alphabet.T) = struct
     assert (dim s tgt + 1 = n);
     E.add g (n,src,tgt) s
 
-  module Globular (P : sig val presentation : t end) : T = struct
+  module Make (P : sig val presentation : t end) : T = struct
     type t = X.t
 
     let to_string = X.to_string

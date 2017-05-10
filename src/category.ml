@@ -2,41 +2,39 @@
 
 (** A category. *)
 module type T = sig
-  (** Objects. *)
-  type o
-
-  (** Morphisms. *)
-  type t
-
-  (** Source. *)
-  val src : t -> o
-
-  (** Target. *)
-  val tgt : t -> o
-
-  (** Equality between morphisms. *)
-  val eq : t -> t -> bool
+  include Graph.T
 
   (** Composition of morphisms. *)
-  val comp : t -> t -> t
+  val comp : E.t -> E.t -> E.t
 
   (** Identity morphism. *)
-  val id : o -> t
+  val id : V.t -> E.t
+end
 
-  val to_string : t -> string
-
-  val compare : t -> t -> int
+(** Free category on a graph. *)
+module Free (G : Graph.T) : T = struct
+  module V = G.V
+  module M = Monoid.Free(G.E)
+  module E = Alphabet.Prod3(V)(M)(V)
+  let src (x,f,y) = x
+  let tgt (x,f,y) = y
+  let id x = (x,M.one,x)
+  let comp (x,f,y) (y',g,z) =
+    assert (V.eq y y');
+    x,M.mul f g,z
 end
 
 (** Category of a monoid. *)
 module Monoid (M : Monoid.T) : T = struct
-  type o = unit
-  type t = M.t
+  module V = Alphabet.Unit
+  module E = M
   let src _ = ()
   let tgt _ = ()
-  let eq = M.eq
   let comp = M.mul
   let id () = M.one
-  let to_string = M.to_string
-  let compare = M.compare
+end
+
+(** Underlying graph of a category. *)
+module Graph (C : T) : Graph.T = struct
+  include C
 end

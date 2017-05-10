@@ -177,6 +177,7 @@ module Free (X : Alphabet.T) = struct
   end
 
   (** Oriented presentation of a monoid. *)
+  (* TODO: move this out of free. *)
   module Presentation = struct
     type t =
       {
@@ -243,6 +244,25 @@ module Free (X : Alphabet.T) = struct
         ) !pres.rules
       done;
       !pres
+
+    (** Make a monoid from a convergent presentation. *)
+    module Make (P : sig val presentation : t end) : T = struct
+      let p = P.presentation
+
+      let nf = normalize p
+
+      type t = word
+
+      let mul = mul
+
+      let one = one
+
+      let to_string = to_string
+
+      let compare u v = compare (nf u) (nf v)
+
+      let eq u v = eq (nf u) (nf v)
+    end
   end
 
   (** Anick chains. *)
@@ -352,4 +372,9 @@ module Generate (X : Alphabet.T with type t = int) = struct
         k::(aux (k+1))
     in
     aux 0
+end
+
+(** Underlying alphabet of a monoid. *)
+module Alphabet (M : T) : Alphabet.T = struct
+  include M
 end

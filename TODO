@@ -1,0 +1,3 @@
+- use Alphabet.Map instead of Map.Make
+- move Monoid.Free.Presentation to Monoid.Presentation
+- move Bergman here
