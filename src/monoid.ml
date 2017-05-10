@@ -176,95 +176,6 @@ module Free (X : Alphabet.T) = struct
       else lexicographic leq u v
   end
 
-  (** Oriented presentation of a monoid. *)
-  (* TODO: move this out of free. *)
-  module Presentation = struct
-    type t =
-      {
-        generators : X.t list;
-        rules : (word * word) list;
-      }
-
-    let make generators rules =
-      { generators; rules }
-
-    (** Orient rules according to a partial order. *)
-    let orient leq pres =
-      let rules = List.map (fun (u,v) -> if leq v u then u,v else v,u) pres.rules in
-      { pres with rules }
-
-    (** Normalize a word. *)
-    let rec normalize pres u =
-      try
-        let v,v' = List.find (fun (v,_) -> included v u) pres.rules in
-        let i = unifier u v in
-        let v1 = sub u 0 i in
-        let v2 = sub u (i + length v) (length u - (i + length v)) in
-        normalize pres (mul v1 (mul v v2))
-      with
-      | Not_found -> u
-
-    let add_rule pres (u,v) =
-      { pres with rules = (u,v)::pres.rules }
-
-    (** Reduce a presentation. *)
-    let reduce pres =
-      let rules = List.map (fun (u,v) -> u, normalize pres v) pres.rules in
-      let rec aux h = function
-        | (u,v)::t ->
-           let f l = List.exists (fun (u',v') -> included u' u) l in
-           if f h || f t then aux h t else aux ((u,v)::h) t
-        | [] -> List.rev h
-      in
-      let rules = aux [] rules in
-      { pres with rules }
-
-    (** Knuth-Bendix completion wrt a total order. *)
-    let complete leq pres =
-      let pres = orient leq pres in
-      let pres = reduce pres in
-      let todo = Queue.create () in
-      List.iter (fun r -> Queue.add r todo) pres.rules;
-      let pres = ref pres in
-      (* Add a relation *)
-      let rel (u,v) =
-        (* Printf.printf "rel: %s\n%!" (A.to_string p); *)
-        let u,v = if leq v u then u,v else v,u in
-        pres := add_rule !pres (u,v);
-        Queue.push (u,v) todo
-      in
-      while not (Queue.is_empty todo) do
-        let u,u' = Queue.pop todo in
-        List.iter (fun (v,v') ->
-          List.iter (fun ((u1,u2),(v1,v2)) ->
-            let s1 = mul u1 (mul u' u2) in
-            let s2 = mul v1 (mul v' v2) in
-            rel (s1,s2)
-          ) (unifiers_bicontext u v)
-        ) !pres.rules
-      done;
-      !pres
-
-    (** Make a monoid from a convergent presentation. *)
-    module Make (P : sig val presentation : t end) : T = struct
-      let p = P.presentation
-
-      let nf = normalize p
-
-      type t = word
-
-      let mul = mul
-
-      let one = one
-
-      let to_string = to_string
-
-      let compare u v = compare (nf u) (nf v)
-
-      let eq u v = eq (nf u) (nf v)
-    end
-  end
-
   (** Anick chains. *)
   module Anick = struct
     (** An Anick chain. *)
@@ -362,9 +273,98 @@ module Free (X : Alphabet.T) = struct
 end
 module FreeMonoid (X : Alphabet.T) = (Free(X) : T)
 
+(** Oriented presentation of a monoid. *)
+module Presentation (X : Alphabet.T) = struct
+  module W = Free(X)
+
+  type t =
+    {
+      generators : X.t list;
+      rules : (W.t * W.t) list;
+    }
+
+  let make generators rules =
+    { generators; rules }
+
+  (** Orient rules according to a partial order. *)
+  let orient leq pres =
+    let rules = List.map (fun (u,v) -> if leq v u then u,v else v,u) pres.rules in
+    { pres with rules }
+
+  (** Normalize a word. *)
+  let rec normalize pres u =
+    try
+      let v,v' = List.find (fun (v,_) -> W.included v u) pres.rules in
+      let i = W.unifier u v in
+      let v1 = W.sub u 0 i in
+      let v2 = W.sub u (i + W.length v) (W.length u - (i + W.length v)) in
+      normalize pres (W.mul v1 (W.mul v v2))
+    with
+    | Not_found -> u
+
+  let add_rule pres (u,v) =
+    { pres with rules = (u,v)::pres.rules }
+
+  (** Reduce a presentation. *)
+  let reduce pres =
+    let rules = List.map (fun (u,v) -> u, normalize pres v) pres.rules in
+    let rec aux h = function
+      | (u,v)::t ->
+         let f l = List.exists (fun (u',v') -> W.included u' u) l in
+         if f h || f t then aux h t else aux ((u,v)::h) t
+      | [] -> List.rev h
+    in
+    let rules = aux [] rules in
+    { pres with rules }
+
+  (** Knuth-Bendix completion wrt a total order. *)
+  let complete leq pres =
+    let pres = orient leq pres in
+    let pres = reduce pres in
+    let todo = Queue.create () in
+    List.iter (fun r -> Queue.add r todo) pres.rules;
+    let pres = ref pres in
+    (* Add a relation *)
+    let rel (u,v) =
+      (* Printf.printf "rel: %s\n%!" (A.to_string p); *)
+      let u,v = if leq v u then u,v else v,u in
+      pres := add_rule !pres (u,v);
+      Queue.push (u,v) todo
+    in
+    while not (Queue.is_empty todo) do
+      let u,u' = Queue.pop todo in
+      List.iter (fun (v,v') ->
+          List.iter (fun ((u1,u2),(v1,v2)) ->
+              let s1 = W.mul u1 (W.mul u' u2) in
+              let s2 = W.mul v1 (W.mul v' v2) in
+              rel (s1,s2)
+            ) (W.unifiers_bicontext u v)
+        ) !pres.rules
+    done;
+    !pres
+
+  (** Make a monoid from a convergent presentation. *)
+  module Make (P : sig val presentation : t end) : T = struct
+    let p = P.presentation
+
+    let nf = normalize p
+
+    type t = W.t
+
+    let mul = W.mul
+
+    let one = W.one
+
+    let to_string = W.to_string
+
+    let compare u v = W.compare (nf u) (nf v)
+
+    let eq u v = W.eq (nf u) (nf v)
+  end
+end
+
 module Generate (X : Alphabet.T with type t = int) = struct
-  module M = Free(X)
-  module Presentation = M.Presentation
+  module Presentation = Presentation(X)
 
   let intset n =
     let rec aux k =
