@@ -31,6 +31,15 @@ module Char = struct
 end
 module CharAlphabet : (T with type t = char) = Char
 
+module String : (T with type t = string) = struct
+  type t = string
+  let eq s t = (s:string) = (t:string)
+
+  let to_string s = s
+
+  let compare s  t = compare (s:string) (t:string)
+end
+
 (** The alphabet of integers. *)
 module Int = struct
   type t = int

@@ -26,10 +26,13 @@ module type Abelian = sig
 
   val eq : t -> t -> bool
 
+  (** Addition. *)
   val add : t -> t -> t
 
+  (** Zero. *)
   val zero : t
 
+  (** String representation. *)
   val to_string : t -> string
 end
 
@@ -271,7 +274,7 @@ module Free (X : Alphabet.T) = struct
     let to_string (c:t) = "[" ^ String.concat "|" (List.map to_string (List.rev c)) ^ "]"
   end
 end
-module FreeMonoid (X : Alphabet.T) = (Free(X) : T)
+module FreeMonoid (X : Alphabet.T) : T = Free(X)
 
 (** Oriented presentation of a monoid. *)
 module Presentation (X : Alphabet.T) = struct
