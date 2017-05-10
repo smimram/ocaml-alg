@@ -16,7 +16,7 @@ module type T = sig
 end
 
 (** The alphabet of characters. *)
-module Char : T with type t = char = struct
+module Char = struct
   type t = char
 
   let eq c d = (c:char) = (d:char)
@@ -29,9 +29,10 @@ module Char : T with type t = char = struct
 
   let geq c d = (c:char) >= (d:char)
 end
+module CharAlphabet : (T with type t = char) = Char
 
 (** The alphabet of integers. *)
-module Int : T with type t = int = struct
+module Int = struct
   type t = int
   let eq i j = (i:int) = (j:int)
 
@@ -43,6 +44,7 @@ module Int : T with type t = int = struct
 
   let geq i j = (i:int) >= (j:int)
 end
+module IntAlphabet : (T with type t = int) = Int
 
 (** The alphabet with one element. *)
 module Unit : T with type t = unit = struct
