@@ -4,14 +4,19 @@
 module type T = sig
   type t
 
+  (** Equality. *)
   val eq : t -> t -> bool
 
+  (** Multiplication. *)
   val mul : t -> t -> t
 
+  (** Unit. *)
   val one : t
 
+  (** String representation. *)
   val to_string : t -> string
 
+  (** Comparison. *)
   val compare : t -> t -> int
 end
 

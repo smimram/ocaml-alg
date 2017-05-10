@@ -26,6 +26,7 @@ module type Euclidean = sig
   val div : t -> t -> (t * t)
 end
 
+(** The ring of booleans. *)
 module Bool : (T with type t = bool) = struct
   type t = bool
 
@@ -45,6 +46,7 @@ module Bool : (T with type t = bool) = struct
     if x then "T" else "F"
 end
 
+(** The ring of integers. *)
 module Int : (T with type t = int) = struct
   type t = int
 
@@ -63,6 +65,7 @@ module Int : (T with type t = int) = struct
   let to_string = string_of_int
 end
 
+(** The ring of floats. *)
 module Float : (T with type t = float) = struct
   type t = float
 

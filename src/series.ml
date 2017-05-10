@@ -1,10 +1,12 @@
 (** Formal series. *)
 
+(** Formal series over a given field. *)
 module Make (K : Field.T) = struct
   (** A formal series. *)
   type t = (K.t Weak.t ref * (int -> K.t))
 
-  let eq a b = failwith "Cannot implement this."
+  (** Equality. *)
+  let eq (a:t) (b:t) = failwith "Cannot implement this."
 
   (** Get a coefficient. *)
   let get (a:t) n =
@@ -42,16 +44,21 @@ module Make (K : Field.T) = struct
 
   let make f : t = (ref (Weak.create 0), f)
 
+  (** Zero. *)
   let zero = make (fun _ -> K.zero)
 
+  (** One. *)
   let one = make (fun n -> if n = 0 then K.one else K.zero)
 
   let var = make (fun n -> if n = 1 then K.one else K.zero)
 
+  (** Addition. *)
   let add a b = make (fun n -> K.add (get a n) (get b n))
 
+  (** Subtraction. *)
   let sub a b = make (fun n -> K.add (get a n) (K.mul (K.neg K.one) (get b n)))
 
+  (** Multiplication. *)
   let mul a b =
     let f n =
       let ans = ref K.zero in
@@ -62,16 +69,20 @@ module Make (K : Field.T) = struct
     in
     make f
 
+  (** Integer exponential. *)
   let rec expn a n =
     assert (n >= 0);
     if n = 0 then one
     else if n = 1 then a else
       mul a (expn a (n-1))
 
+  (** Hadamard product. *)
   let hadamard a b = make (fun n -> K.mul (get a n) (get b n))
 
+  (** Multiplication by a constant. *)
   let cmul a b = make (fun n -> K.mul a (get b n))
 
+  (** Negation. *)
   let neg a = make (fun n -> K.neg (get a n))
 
   let star a =
@@ -84,15 +95,18 @@ module Make (K : Field.T) = struct
     in
     make (fun n -> get (aux n) n)
 
+  (** Inverse. *)
   let inv a = star (sub one a)
 
   module Polynomial = Ring.Polynomial(K)
 
+  (** Canonical injection of polynomials. *)
   let polynomial (p : Polynomial.t) =
     make (fun n -> Polynomial.coeff p n)
 
   module RationalFractions = Field.RationalFractions(K)
 
+  (** Canonical injection of rational fractions. *)
   let rational (r : RationalFractions.t) =
     let p, q = r in
     let p = polynomial p in
@@ -100,4 +114,5 @@ module Make (K : Field.T) = struct
     mul p (inv q)
 end
 
+(** The field of series. *)
 module Field (K : Field.T) : Ring.T = Make(K)
