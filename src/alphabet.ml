@@ -89,6 +89,24 @@ module Prod3 (A:T) (B:T) (C:T) : (T with type t = A.t * B.t * C.t) = struct
     "(" ^ A.to_string a ^ "," ^ B.to_string b ^ "," ^ C.to_string c ^ ")"
 end
 
+(** Powerset. *)
+module Pow (A:T) = struct
+  module S = Set.Make(A)
+  type t = S.t
+  let eq (u:t) (v:t) = S.equal u v
+  let compare (u:t) (v:t) = S.compare u v
+  let to_string (u:t) =
+    let s = S.fold (fun x s -> if s = "" then A.to_string x else s ^ "," ^ A.to_string x) u "" in
+    "{" ^ s ^ "}"
+  let empty : t = S.empty
+  let of_list l : t = S.of_list l
+  let add (u:t) (x:A.t) = S.add x u
+  let mem (u:t) (x:A.t) = S.mem x u
+  let iter (f:A.t->unit) (u:t) = S.iter f u
+end
+
+module PowAlphabet (A:T) : T = Pow(A)
+
 (** Functions between alphabets. *)
 module Map (A:T) (B:T) = struct
   module M = Map.Make(A)
@@ -98,4 +116,8 @@ module Map (A:T) (B:T) = struct
   let empty : t = M.empty
 
   let app (f:t) (x:A.t) = M.find x f
+
+  let add f x v = M.add x v f
+
+  let iter = M.iter
 end

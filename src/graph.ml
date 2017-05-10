@@ -23,16 +23,19 @@ module Terminal : T = struct
   let tgt () = ()
 end
 
-(* module Presentation (V : Alphabet.T) = struct *)
-  (* type t = *)
-    (* { *)
-      (* vertices : V.t list; *)
-      (* edges : (E.t * (V.t * V.t)) list; *)
-    (* } *)
+(** Presentation of a graph. *)
+module Presentation (V : Alphabet.T) (E : Alphabet.T) = struct
+  module EM = Alphabet.Map(E)(Alphabet.Prod(V)(V))
 
-  (* let empty = { vertices = []; edges = [] } *)
+  type t =
+    {
+      vertices : V.t list;
+      edges : EM.t;
+    }
 
-  (* let add_vertex p x = { p with vertices = x::p.vertices } *)
+  let empty = { vertices = []; edges = EM.empty }
 
-  (* let add_edge p f (x,y) = { p with edges = (f,(x,y))::p.edges } *)
-(* end *)
+  let add_vertex p x = { p with vertices = x::p.vertices }
+
+  let add_edge p f (x,y) = { p with edges = EM.add p.edges f (x,y) }
+end

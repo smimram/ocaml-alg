@@ -37,6 +37,7 @@ end
 (** By default, by a module, we mean a left module. *)
 module type T = Left
 
+(** Free left module. *)
 module FreeLeft (R : Ring.T) (X : Alphabet.T) = struct
   module Ring = R
 

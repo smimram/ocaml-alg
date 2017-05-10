@@ -82,8 +82,8 @@ end
 module State = Alphabet.Int
 
 module Make (X : Alphabet.T) = struct
-  module T = Map.Make(Alphabet.Prod(State)(X))
-  module States = Set.Make(State)
+  module States = Alphabet.Pow(State)
+  module T = Alphabet.Map(Alphabet.Prod(State)(X))(States)
   module Regexp = Regexp(X)
 
   type t =
@@ -91,21 +91,21 @@ module Make (X : Alphabet.T) = struct
       states : int;
       initial : State.t;
       terminal : States.t;
-      transitions : States.t T.t;
+      transitions : T.t;
     }
 
   let states aut = aut.states
 
   let trans aut a x =
     try
-      T.find (a,x) aut.transitions
+      T.app aut.transitions (a,x)
     with
     | Not_found -> States.empty
 
   let add_transition aut a x (b : State.t) =
     let bb = trans aut a x in
-    let bb = States.add b bb in
-    let transitions = T.add (a,x) bb aut.transitions in
+    let bb = States.add bb b in
+    let transitions = T.add aut.transitions (a,x) bb in
     { aut with transitions }
 
   let create states initial terminal transitions =
@@ -121,7 +121,7 @@ module Make (X : Alphabet.T) = struct
         (fun i j ->
           let r = ref Regexp.empty in
           T.iter (fun (i',a) jj ->
-              if State.eq i i' && States.mem j jj then r := Regexp.union !r (Regexp.letter a)
+              if State.eq i i' && States.mem jj j then r := Regexp.union !r (Regexp.letter a)
             ) aut.transitions;
           if i = j then r := Regexp.union Regexp.empty !r;
           !r
