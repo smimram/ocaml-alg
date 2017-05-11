@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="next" href="Alphabet.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Algebra" rel="Chapter" href="Algebra.html">
+<link title="Alphabet" rel="Chapter" href="Alphabet.html">
+<link title="Automaton" rel="Chapter" href="Automaton.html">
+<link title="Category" rel="Chapter" href="Category.html">
+<link title="Field" rel="Chapter" href="Field.html">
+<link title="Globular" rel="Chapter" href="Globular.html">
+<link title="Graph" rel="Chapter" href="Graph.html">
+<link title="Group" rel="Chapter" href="Group.html">
+<link title="Matrix" rel="Chapter" href="Matrix.html">
+<link title="Module" rel="Chapter" href="Module.html">
+<link title="Monoid" rel="Chapter" href="Monoid.html">
+<link title="Precategory" rel="Chapter" href="Precategory.html">
+<link title="Ring" rel="Chapter" href="Ring.html">
+<link title="Series" rel="Chapter" href="Series.html"><title>Algebra</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Alphabet.html" title="Alphabet">Next</a>
+</div>
+<h1>Module <a href="type_Algebra.html">Algebra</a></h1>
+
+<pre><span class="keyword">module</span> Algebra: <code class="code">sig</code> <a href="Algebra.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Algebras.<br>
+</div>
+<hr width="100%">
+
+<pre><span class="keyword">module type</span> <a href="Algebra.T.html">T</a> = <code class="code">sig</code> <a href="Algebra.T.html">..</a> <code class="code">end</code></pre><div class="info">
+An algebra.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Algebra.Free.html">Free</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="type"><a href="Monoid.T.html">Monoid.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Free.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
+Free algebra of a monoid over a ring.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Algebra.FreeAlgebra.html">FreeAlgebra</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="type"><a href="Monoid.T.html">Monoid.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Algebra.Free.html">Free</a></code><code class="code">(</code><code class="type">K</code><code class="code">)</code><code class="code">(</code><code class="type">M</code><code class="code">)</code></div></div></pre>
+<pre><span class="keyword">module</span> <a href="Algebra.Presentation.html">Presentation</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Presentation.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
+Presentation of an algebra.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Algebra.Generate.html">Generate</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="type">  with type t = int</code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Generate.html">..</a> <code class="code">end</code></div></div></pre></body></html>

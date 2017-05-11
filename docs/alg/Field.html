@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Category.html">
+<link rel="next" href="Globular.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Algebra" rel="Chapter" href="Algebra.html">
+<link title="Alphabet" rel="Chapter" href="Alphabet.html">
+<link title="Automaton" rel="Chapter" href="Automaton.html">
+<link title="Category" rel="Chapter" href="Category.html">
+<link title="Field" rel="Chapter" href="Field.html">
+<link title="Globular" rel="Chapter" href="Globular.html">
+<link title="Graph" rel="Chapter" href="Graph.html">
+<link title="Group" rel="Chapter" href="Group.html">
+<link title="Matrix" rel="Chapter" href="Matrix.html">
+<link title="Module" rel="Chapter" href="Module.html">
+<link title="Monoid" rel="Chapter" href="Monoid.html">
+<link title="Precategory" rel="Chapter" href="Precategory.html">
+<link title="Ring" rel="Chapter" href="Ring.html">
+<link title="Series" rel="Chapter" href="Series.html"><title>Field</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Category.html" title="Category">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Globular.html" title="Globular">Next</a>
+</div>
+<h1>Module <a href="type_Field.html">Field</a></h1>
+
+<pre><span class="keyword">module</span> Field: <code class="code">sig</code> <a href="Field.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Fields.<br>
+</div>
+<hr width="100%">
+
+<pre><span class="keyword">module type</span> <a href="Field.T.html">T</a> = <code class="code">sig</code> <a href="Field.T.html">..</a> <code class="code">end</code></pre><div class="info">
+A field.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Field.Bool.html">Bool</a>: <code class="code">sig</code> <a href="Field.Bool.html">..</a> <code class="code">end</code></pre><div class="info">
+The field with two elements.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Field.Float.html">Float</a>: <code class="code">sig</code> <a href="Field.Float.html">..</a> <code class="code">end</code></pre><div class="info">
+The field of floats.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Field.Int.html">Int</a>: <code class="code">sig</code> <a href="Field.Int.html">..</a> <code class="code">end</code></pre><div class="info">
+The "field" of integers.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Field.Fractions.html">Fractions</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.Euclidean.html">Ring.Euclidean</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Field.Fractions.html">..</a> <code class="code">end</code></div></pre><div class="info">
+Field of fractions over an euclidean domain.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Field.FractionsField.html">FractionsField</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.Euclidean.html">Ring.Euclidean</a></code><code class="code">) -&gt; </code><code class="type"><a href="Field.Fractions.html">Fractions</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code></div></pre>
+<pre><span class="keyword">module</span> <a href="Field.RationalFractions.html">RationalFractions</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">F</code><code class="code"> : </code><code class="type"><a href="Field.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Field.RationalFractions.html">..</a> <code class="code">end</code></div></pre><div class="info">
+Field of rational fractions.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Field.RationalFractionsField.html">RationalFractionsField</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">F</code><code class="code"> : </code><code class="type"><a href="Field.T.html">T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Field.RationalFractions.html">RationalFractions</a></code><code class="code">(</code><code class="type">F</code><code class="code">)</code></div></pre>
+<pre><span class="keyword">module</span> <a href="Field.Ring.html">Ring</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">F</code><code class="code"> : </code><code class="type"><a href="Field.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Field.Ring.html">..</a> <code class="code">end</code></div></pre><div class="info">
+Underlying ring of a field.
+</div>
+</body></html>

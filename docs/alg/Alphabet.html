@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Algebra.html">
+<link rel="next" href="Automaton.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Algebra" rel="Chapter" href="Algebra.html">
+<link title="Alphabet" rel="Chapter" href="Alphabet.html">
+<link title="Automaton" rel="Chapter" href="Automaton.html">
+<link title="Category" rel="Chapter" href="Category.html">
+<link title="Field" rel="Chapter" href="Field.html">
+<link title="Globular" rel="Chapter" href="Globular.html">
+<link title="Graph" rel="Chapter" href="Graph.html">
+<link title="Group" rel="Chapter" href="Group.html">
+<link title="Matrix" rel="Chapter" href="Matrix.html">
+<link title="Module" rel="Chapter" href="Module.html">
+<link title="Monoid" rel="Chapter" href="Monoid.html">
+<link title="Precategory" rel="Chapter" href="Precategory.html">
+<link title="Ring" rel="Chapter" href="Ring.html">
+<link title="Series" rel="Chapter" href="Series.html"><title>Alphabet</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Algebra.html" title="Algebra">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Automaton.html" title="Automaton">Next</a>
+</div>
+<h1>Module <a href="type_Alphabet.html">Alphabet</a></h1>
+
+<pre><span class="keyword">module</span> Alphabet: <code class="code">sig</code> <a href="Alphabet.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Alphabets.<br>
+</div>
+<hr width="100%">
+<br>
+An alphabet is simply another name for a set, but the module <code class="code">Set</code> already
+    exists.<br>
+
+<pre><span class="keyword">module type</span> <a href="Alphabet.T.html">T</a> = <code class="code">sig</code> <a href="Alphabet.T.html">..</a> <code class="code">end</code></pre><div class="info">
+An alphabet.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Alphabet.Char.html">Char</a>: <code class="code">sig</code> <a href="Alphabet.Char.html">..</a> <code class="code">end</code></pre><div class="info">
+The alphabet of characters.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Alphabet.CharAlphabet.html">CharAlphabet</a>: <code class="type"><a href="Alphabet.Char.html">Char</a></code></pre>
+<pre><span class="keyword">module</span> <a href="Alphabet.String.html">String</a>: <code class="code">sig</code> <a href="Alphabet.String.html">..</a> <code class="code">end</code></pre>
+<pre><span class="keyword">module</span> <a href="Alphabet.Int.html">Int</a>: <code class="code">sig</code> <a href="Alphabet.Int.html">..</a> <code class="code">end</code></pre><div class="info">
+The alphabet of integers.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Alphabet.IntAlphabet.html">IntAlphabet</a>: <code class="type"><a href="Alphabet.Int.html">Int</a></code></pre>
+<pre><span class="keyword">module</span> <a href="Alphabet.Unit.html">Unit</a>: <code class="code">sig</code> <a href="Alphabet.Unit.html">..</a> <code class="code">end</code></pre><div class="info">
+The alphabet with one element.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Alphabet.Prod.html">Prod</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">B</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Alphabet.Prod.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
+Product of alphabets.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Alphabet.Prod3.html">Prod3</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">B</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">C</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Alphabet.Prod3.html">..</a> <code class="code">end</code></div></div></div></pre><div class="info">
+Triple product of alphabets.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Alphabet.Pow.html">Pow</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Alphabet.Pow.html">..</a> <code class="code">end</code></div></pre><div class="info">
+Powerset.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Alphabet.PowAlphabet.html">PowAlphabet</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Alphabet.Pow.html">Pow</a></code><code class="code">(</code><code class="type">A</code><code class="code">)</code></div></pre>
+<pre><span class="keyword">module</span> <a href="Alphabet.Map.html">Map</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">B</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Alphabet.Map.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
+Functions between alphabets.
+</div>
+</body></html>

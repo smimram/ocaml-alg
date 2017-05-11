@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Globular.Presentation.html">
+<link rel="Up" href="Globular.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Algebra" rel="Chapter" href="Algebra.html">
+<link title="Alphabet" rel="Chapter" href="Alphabet.html">
+<link title="Automaton" rel="Chapter" href="Automaton.html">
+<link title="Category" rel="Chapter" href="Category.html">
+<link title="Field" rel="Chapter" href="Field.html">
+<link title="Globular" rel="Chapter" href="Globular.html">
+<link title="Graph" rel="Chapter" href="Graph.html">
+<link title="Group" rel="Chapter" href="Group.html">
+<link title="Matrix" rel="Chapter" href="Matrix.html">
+<link title="Module" rel="Chapter" href="Module.html">
+<link title="Monoid" rel="Chapter" href="Monoid.html">
+<link title="Precategory" rel="Chapter" href="Precategory.html">
+<link title="Ring" rel="Chapter" href="Ring.html">
+<link title="Series" rel="Chapter" href="Series.html"><title>Globular.Theory</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Globular.Presentation.html" title="Globular.Presentation">Previous</a>
+&nbsp;<a class="up" href="Globular.html" title="Globular">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Globular.Theory.html">Globular.Theory</a></h1>
+
+<pre><span class="keyword">module</span> Theory: <code class="code">sig</code> <a href="Globular.Theory.html">..</a> <code class="code">end</code></pre><div class="info module top">
+A globular theory, the typical example being weak omega-categories.<br>
+</div>
+<hr width="100%">
+
+<pre><span class="keyword">module</span> <a href="Globular.Theory.Var.html">Var</a>: <code class="code">sig</code> <a href="Globular.Theory.Var.html">..</a> <code class="code">end</code></pre>
+<pre><span class="keyword">module</span> <a href="Globular.Theory.Cons.html">Cons</a>: <code class="code">sig</code> <a href="Globular.Theory.Cons.html">..</a> <code class="code">end</code></pre>
+<pre><code><span id="TYPEterm"><span class="keyword">type</span> <code class="type"></code>term</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTterm.Var"><span class="constructor">Var</span></span> <span class="keyword">of</span> <code class="type"><a href="Globular.Theory.Var.html#TYPEt">Var.t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTterm.Cons"><span class="constructor">Cons</span></span> <span class="keyword">of</span> <code class="type"><a href="Globular.Theory.Cons.html#TYPEt">Cons.t</a> * <a href="Globular.Theory.html#TYPEcontext">context</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+A context contains terms with their source and target.<br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+
+
+<pre><span id="TYPEcontext"><span class="keyword">type</span> <code class="type"></code>context</span> = <code class="type">(<a href="Globular.Theory.html#TYPEterm">term</a> * (<a href="Globular.Theory.html#TYPEterm">term</a> * <a href="Globular.Theory.html#TYPEterm">term</a>)) list</code> </pre>
+
+</body></html>
