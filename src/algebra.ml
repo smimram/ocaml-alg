@@ -414,9 +414,9 @@ module Presentation (K : Field.T) (X : Alphabet.T) = struct
       in
       KMod.Presentation.Complex.make cc d
 
-    let homology ?augmentation pres n =
+    let betti ?augmentation pres n =
       let c = complex ?augmentation pres (n+1) in
-      KMod.Presentation.Complex.homology c
+      KMod.Presentation.Complex.betti c
   end
 end
 

@@ -262,8 +262,8 @@ module FreeLeft (R : Ring.T) (X : Alphabet.T) = struct
         done;
         !ans
 
-      (** Compute the homology of the complex. *)
-      let homology c =
+      (** Compute betti numbers for the complex. *)
+      let betti c =
         Array.init (length c) (fun i ->
           let ker = if i = 0 then dim c.modules.(0) else Map.nullity c.d.(i-1) in
           let im = Map.rank c.d.(i) in

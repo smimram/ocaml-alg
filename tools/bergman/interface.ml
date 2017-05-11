@@ -201,9 +201,9 @@ let run _ =
       let d = P.Anick.resolution ~augmentation pres (maxdeg+1) in
       resolution##innerHTML <- Js.string (replace '\n' "<br/>" (P.Anick.AMod.Presentation.Complex.to_string d));
 
-      status "Computing homology...";
+      status "Computing Betti numbers...";
       let s = ref "" in
-      let h = P.Anick.homology ~augmentation pres maxdeg in
+      let h = P.Anick.betti ~augmentation pres maxdeg in
       Array.iteri (fun i n -> s := !s ^ "H" ^ string_of_int i ^ " = " ^ string_of_int n ^ "<br/>") h;
       betti##innerHTML <- Js.string !s;
 
