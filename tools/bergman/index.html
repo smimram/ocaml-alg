@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bergman 2</title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="bergman.css"/>
+    <script type="text/javascript" src="bergman.js"></script>
+  </head>
+  <body>
+    <h1>Bergman 2</h1>
+    <p>
+      This is a new Gröbner basis calculator inspired
+      of <a href="http://servus.math.su.se/bergman/" target="_blank">bergman</a>
+      (which seems not to work anymore unfortunately). It only
+      handles <em>non-commutative</em> algebras for now.
+    </p>
+
+    <h2>Presentation</h2>
+    <p>
+      Generate:
+      <select id="generate">
+        <option value="ext">exterior</option>
+        <option value="plactic">plactic</option>
+        <option value="pow">pow</option>
+        <option value="sklyanin">Sklyanin</option>
+        <option value="sym">symmetric</option>
+        <option value="symg">symmetric group</option>
+      </select>
+      with n =
+      <input type="number" id="generaten" value="4"/>
+    </p>
+
+    <h3>Variables</h3>
+    <p>
+      Please enter variable names (lowercase letters only) separated by
+      commas.
+    </p>
+    <p>
+      <textarea id="vars">x,y,z</textarea>
+    </p>
+
+    <h3>Relations</h3>
+    <p>
+      Please enter (possibly non-homogeneous) relations separated by commas.
+    </p>
+
+    <p>
+      <textarea id="relations">x^3+y^3+z^3-xyz</textarea>
+    </p>
+
+    <h3>Options</h3>
+    <p>
+      Order:
+      <select id="order">
+        <option value="deglex">Deglex</option>
+        <option value="revdeglex">Revdeglex</option>
+      </select>
+    </p>
+    <p>
+      Augmentation:
+      <select id="augmentation">
+        <option value="algebra">Non-unital / graded algebra</option>
+        <option value="monoid">Monoid</option>
+      </select>
+    </p>
+    <p>
+      Maximum degree: <input type="number" id="maxdeg" value="5"/>
+    </p>
+
+    <p>
+      <input id="go" type="submit" value="GO"/>
+    </p>
+
+    <h2>Computations</h2>
+    <p id="status"></p>
+
+    <h3>Gröbner basis</h3>
+    <p id="grobner">
+    </p>
+
+    <h3>Betti numbers</h3>
+    <p id="betti">
+    </p>
+
+    <h3>Anick chains</h3>
+    <p id="chains">
+    </p>
+
+    <h3>Anick resolution</h3>
+    <p id="resolution">
+    </p>
+  </body>
+</html>
