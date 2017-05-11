@@ -26,7 +26,8 @@
 <link title="Monoid" rel="Chapter" href="Monoid.html">
 <link title="Precategory" rel="Chapter" href="Precategory.html">
 <link title="Ring" rel="Chapter" href="Ring.html">
-<link title="Series" rel="Chapter" href="Series.html"><title>Globular.Presentation</title>
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html"><title>Globular.Presentation</title>
 </head>
 <body>
 <div class="navbar"><a class="pre" href="Globular.Terminal.html" title="Globular.Terminal">Previous</a>
@@ -54,8 +55,9 @@ Presented globular set.<br>
 </table>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Globular.Presentation.E.html">E</a>: <code class="type">Map.Make</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">(int * X.t * X.t) E.t</code> </pre>
+<pre><span class="keyword">module</span> <a href="Globular.Presentation.Cell.html">Cell</a>: <code class="type"><a href="Alphabet.Prod3.html">Alphabet.Prod3</a></code><code class="code">(</code><code class="type"><a href="Alphabet.Int.html">Alphabet.Int</a></code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
+<pre><span class="keyword">module</span> <a href="Globular.Presentation.E.html">E</a>: <code class="type"><a href="Alphabet.Map.html">Alphabet.Map</a></code><code class="code">(</code><code class="type">X</code><code class="code">)</code><code class="code">(</code><code class="type"><a href="Globular.Presentation.Cell.html">Cell</a></code><code class="code">)</code></pre>
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">E.t</code> </pre>
 <div class="info ">
 A globular set.<br>
 </div>
@@ -66,7 +68,7 @@ The empty globular set.<br>
 </div>
 
 <pre><span id="VALmem"><span class="keyword">val</span> mem</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a> -> X.t -> bool</code></pre>
-<pre><span id="VALdim"><span class="keyword">val</span> dim</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a> -> X.t -> int</code></pre><div class="info ">
+<pre><span id="VALdim"><span class="keyword">val</span> dim</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a> -> X.t -> <a href="Alphabet.Int.html#TYPEt">Alphabet.Int.t</a></code></pre><div class="info ">
 Dimension of a generator.<br>
 </div>
 

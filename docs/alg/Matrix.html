@@ -26,7 +26,8 @@
 <link title="Monoid" rel="Chapter" href="Monoid.html">
 <link title="Precategory" rel="Chapter" href="Precategory.html">
 <link title="Ring" rel="Chapter" href="Ring.html">
-<link title="Series" rel="Chapter" href="Series.html"><title>Matrix</title>
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html"><title>Matrix</title>
 </head>
 <body>
 <div class="navbar"><a class="pre" href="Group.html" title="Group">Previous</a>
@@ -40,8 +41,10 @@ Matrices.<br>
 </div>
 <hr width="100%">
 
-<pre><span class="keyword">module type</span> <a href="Matrix.T.html">T</a> = <code class="code">sig</code> <a href="Matrix.T.html">..</a> <code class="code">end</code></pre>
-<pre><span class="keyword">module</span> <a href="Matrix.Make.html">Make</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Matrix.Make.html">..</a> <code class="code">end</code></div></pre>
+<pre><span class="keyword">module</span> <a href="Matrix.Make.html">Make</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Matrix.Make.html">..</a> <code class="code">end</code></div></pre><div class="info">
+Matrices over a ring.
+</div>
+
 <pre><span class="keyword">module</span> <a href="Matrix.Functor.html">Functor</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">R'</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Matrix.Functor.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
 Functors between different rings.
 </div>

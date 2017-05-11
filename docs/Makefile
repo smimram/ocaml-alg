@@ -14,4 +14,7 @@ bergman:
 	cd $(BERGMAN_DIR); cp $(BERGMAN_FILES) $(DOCS_DIR)/bergman
 	cd $(DOCS_DIR)/bergman; git add $(BERGMAN_FILES)
 
+ci: all
+	git ci . -m "Update documentation."
+
 .PHONY: alg bergman

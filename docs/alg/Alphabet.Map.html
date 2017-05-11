@@ -25,7 +25,8 @@
 <link title="Monoid" rel="Chapter" href="Monoid.html">
 <link title="Precategory" rel="Chapter" href="Precategory.html">
 <link title="Ring" rel="Chapter" href="Ring.html">
-<link title="Series" rel="Chapter" href="Series.html"><title>Alphabet.Map</title>
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html"><title>Alphabet.Map</title>
 </head>
 <body>
 <div class="navbar"><a class="pre" href="Alphabet.PowAlphabet.html" title="Alphabet.PowAlphabet">Previous</a>
@@ -63,5 +64,9 @@ Functions between alphabets.<br>
 
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a></code></pre>
 <pre><span id="VALapp"><span class="keyword">val</span> app</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a> -> A.t -> B.t</code></pre>
-<pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type">'a M.t -> M.key -> 'a -> 'a M.t</code></pre>
+<pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a> -> A.t -> B.t -> <a href="Alphabet.Map.html#TYPEt">t</a></code></pre>
+<pre><span id="VALin_dom"><span class="keyword">val</span> in_dom</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a> -> A.t -> bool</code></pre><div class="info ">
+Is an element in the domain?<br>
+</div>
+
 <pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">(M.key -> 'a -> unit) -> 'a M.t -> unit</code></pre></body></html>

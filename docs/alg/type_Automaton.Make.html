@@ -21,7 +21,8 @@
 <link title="Monoid" rel="Chapter" href="Monoid.html">
 <link title="Precategory" rel="Chapter" href="Precategory.html">
 <link title="Ring" rel="Chapter" href="Ring.html">
-<link title="Series" rel="Chapter" href="Series.html"><title>Automaton.Make</title>
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html"><title>Automaton.Make</title>
 </head>
 <body>
 <code class="code"><span class="keyword">functor</span>&nbsp;(<span class="constructor">X</span>&nbsp;:&nbsp;<span class="constructor">Alphabet</span>.<span class="constructor">T</span>)&nbsp;<span class="keywordsign">-&gt;</span><br>
@@ -108,7 +109,8 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t&nbsp;=&nbsp;<span class="constructor">States</span>.t&nbsp;<span class="constructor">M</span>.t<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;empty&nbsp;:&nbsp;t<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;app&nbsp;:&nbsp;t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Alphabet</span>.<span class="constructor">Prod</span>(<span class="constructor">State</span>)(<span class="constructor">X</span>).t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">States</span>.t<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;add&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">M</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">M</span>.key&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">M</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;add&nbsp;:&nbsp;t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Alphabet</span>.<span class="constructor">Prod</span>(<span class="constructor">State</span>)(<span class="constructor">X</span>).t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">States</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;in_dom&nbsp;:&nbsp;t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Alphabet</span>.<span class="constructor">Prod</span>(<span class="constructor">State</span>)(<span class="constructor">X</span>).t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;iter&nbsp;:&nbsp;(<span class="constructor">M</span>.key&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">M</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Regexp</span>&nbsp;:<br>

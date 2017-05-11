@@ -25,7 +25,8 @@
 <link title="Monoid" rel="Chapter" href="Monoid.html">
 <link title="Precategory" rel="Chapter" href="Precategory.html">
 <link title="Ring" rel="Chapter" href="Ring.html">
-<link title="Series" rel="Chapter" href="Series.html"><title>Module.FreeLeft.Presentation.Map.M</title>
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html"><title>Module.FreeLeft.Presentation.Map.M</title>
 </head>
 <body>
 <div class="navbar">&nbsp;<a class="up" href="Module.FreeLeft.Presentation.Map.html" title="Module.FreeLeft.Presentation.Map">Up</a>
@@ -36,17 +37,38 @@
 <pre><span class="keyword">module</span> M: <code class="type"><a href="Matrix.Make.html">Matrix.Make</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code></pre><hr width="100%">
 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">R.t array array</code> </pre>
+<div class="info ">
+A matrix.<br>
+</div>
 
 
 <pre><span id="TYPEmatrix"><span class="keyword">type</span> <code class="type"></code>matrix</span> = <code class="type"><a href="Matrix.Make.html#TYPEt">t</a></code> </pre>
 
 
-<pre><span id="VALzero"><span class="keyword">val</span> zero</span> : <code class="type">int -> int -> <a href="Matrix.Make.html#TYPEt">t</a></code></pre>
-<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">int -> int -> (int -> int -> R.t) -> <a href="Matrix.Make.html#TYPEt">t</a></code></pre>
-<pre><span id="VALrows"><span class="keyword">val</span> rows</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALcols"><span class="keyword">val</span> cols</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int -> int -> R.t</code></pre>
-<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALzero"><span class="keyword">val</span> zero</span> : <code class="type">int -> int -> <a href="Matrix.Make.html#TYPEt">t</a></code></pre><div class="info ">
+Zero matrix.<br>
+</div>
+
+<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">int -> int -> (int -> int -> R.t) -> <a href="Matrix.Make.html#TYPEt">t</a></code></pre><div class="info ">
+Initialize a matrix.<br>
+</div>
+
+<pre><span id="VALrows"><span class="keyword">val</span> rows</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+Number of rows.<br>
+</div>
+
+<pre><span id="VALcols"><span class="keyword">val</span> cols</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+Number of columns.<br>
+</div>
+
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int -> int -> R.t</code></pre><div class="info ">
+Coefficient.<br>
+</div>
+
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+String representation.<br>
+</div>
+
 <pre><span class="keyword">module</span> <a href="Matrix.Make.Row.html">Row</a>: <code class="code">sig</code> <a href="Matrix.Make.Row.html">..</a> <code class="code">end</code></pre><div class="info">
 Operations on rows.
 </div>
