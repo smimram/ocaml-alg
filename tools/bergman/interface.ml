@@ -1,5 +1,3 @@
-(*pp camlp4o -I `ocamlfind query js_of_ocaml` pa_js.cmo *)
-
 module Html = Dom_html
 
 let doc = Html.document

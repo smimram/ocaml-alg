@@ -1,12 +1,11 @@
-SOURCES = interface.ml bergman.ml
+SOURCES = interface.ml
 RESULT = bergman
-INCDIRS = $(ALGDIR) +../js_of_ocaml
-LIBS = alg js_of_ocaml
-ANNOTATE = true
-USE_CAMLP4 = true
+PACKS = js_of_ocaml,js_of_ocaml.syntax
+OCAMLFLAGS = -syntax camlp4o
 ALGDIR = ../../src
 
-all: alg dc
+all: alg
+	ocamlfind ocamlc -annot -I $(ALGDIR) alg.cma -package $(PACKS) -syntax camlp4o -linkpkg -o $(RESULT) $(SOURCES)
 	js_of_ocaml $(RESULT)
 
 test: all test.ml
@@ -15,7 +14,5 @@ test: all test.ml
 
 alg:
 	@$(MAKE) -C $(ALGDIR) dcl INCDIRS=
-
-include OCamlMakefile
 
 .PHONY: alg
