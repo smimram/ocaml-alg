@@ -8,5 +8,5 @@ You can have a look at the [generated documentation for the modules](https://smi
 
 Tools
 -----
-Some tools are implemented using this library :
+Some tools are implemented using this library:
 - [Bergman 2](https://smimram.github.io/ocaml-alg/bergman/) is a new implementation for a Gröbner basis calculator
