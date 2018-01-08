@@ -34,16 +34,20 @@
 </div>
 <h1>Module <a href="type_Module.FreeLeft.Presentation.Map.html">Module.FreeLeft.Presentation.Map</a></h1>
 
-<pre><span class="keyword">module</span> Map: <code class="code">sig</code> <a href="Module.FreeLeft.Presentation.Map.html">..</a> <code class="code">end</code></pre><div class="info module top">
-Linear maps between presentations.<br>
+<pre><span id="MODULEMap"><span class="keyword">module</span> Map</span>: <code class="code">sig</code> <a href="Module.FreeLeft.Presentation.Map.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Linear maps between presentations.</p>
+</div>
 </div>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Module.FreeLeft.Presentation.Map.M.html">M</a>: <code class="type"><a href="Matrix.Make.html">Matrix.Make</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code></pre>
-<pre><span class="keyword">module</span> <a href="Module.FreeLeft.Presentation.Map.L.html">L</a>: <code class="type">M.Labeled</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
+<pre><span id="MODULEM"><span class="keyword">module</span> <a href="Module.FreeLeft.Presentation.Map.M.html">M</a></span>: <code class="type"><a href="Matrix.Make.html">Matrix.Make</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code></pre>
+<pre><span id="MODULEL"><span class="keyword">module</span> <a href="Module.FreeLeft.Presentation.Map.L.html">L</a></span>: <code class="type">M.Labeled</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
 <pre><span id="TYPEmap"><span class="keyword">type</span> <code class="type"></code>map</span> = <code class="type">L.t</code> </pre>
 <div class="info ">
-A linear map (encoded as a matrix).<br>
+<div class="info-desc">
+<p>A linear map (encoded as a matrix).</p>
+</div>
 </div>
 
 
@@ -51,27 +55,39 @@ A linear map (encoded as a matrix).<br>
 
 
 <pre><span id="VALapp"><span class="keyword">val</span> app</span> : <code class="type"><a href="Module.FreeLeft.Presentation.Map.html#TYPEt">t</a> -><br>       <a href="Module.FreeLeft.Presentation.Map.html#TYPEt">t</a> -> <a href="Module.FreeLeft.Presentation.Map.html#TYPEt">t</a></code></pre><div class="info ">
-Apply a morphism to an element.<br>
+<div class="info-desc">
+<p>Apply a morphism to an element.</p>
+</div>
 </div>
 
 <pre><span id="VALzero"><span class="keyword">val</span> zero</span> : <code class="type">X.t array -> X.t array -> <a href="Module.FreeLeft.Presentation.Map.html#TYPEt">t</a></code></pre><div class="info ">
-The zero morphism.<br>
+<div class="info-desc">
+<p>The zero morphism.</p>
+</div>
 </div>
 
 <pre><span id="VALof_map"><span class="keyword">val</span> of_map</span> : <code class="type"><a href="Module.FreeLeft.Map.html#TYPEmap">Module.FreeLeft.Map.map</a> -><br>       X.t array -> X.t array -> <a href="Module.FreeLeft.Presentation.Map.html#TYPEt">t</a></code></pre><div class="info ">
-Create from a map with given source and target.<br>
+<div class="info-desc">
+<p>Create from a map with given source and target.</p>
+</div>
 </div>
 
 <pre><span id="VALto_map"><span class="keyword">val</span> to_map</span> : <code class="type"><a href="Module.FreeLeft.Presentation.Map.html#TYPEt">t</a> -> <a href="Module.FreeLeft.Map.html#TYPEmap">Module.FreeLeft.Map.map</a></code></pre><div class="info ">
-Convert to a map.<br>
+<div class="info-desc">
+<p>Convert to a map.</p>
+</div>
 </div>
 
 <pre><span id="VALrank"><span class="keyword">val</span> rank</span> : <code class="type"><a href="Module.FreeLeft.Presentation.Map.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-Rank of a map.<br>
+<div class="info-desc">
+<p>Rank of a map.</p>
+</div>
 </div>
 
 <pre><span id="VALnullity"><span class="keyword">val</span> nullity</span> : <code class="type"><a href="Module.FreeLeft.Presentation.Map.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-Nullity of a map.<br>
+<div class="info-desc">
+<p>Nullity of a map.</p>
+</div>
 </div>
 
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Module.FreeLeft.Presentation.Map.html#TYPEt">t</a> -> string</code></pre></body></html>

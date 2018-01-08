@@ -34,58 +34,82 @@
 &nbsp;</div>
 <h1>Module <a href="type_Monoid.Free.Anick.html">Monoid.Free.Anick</a></h1>
 
-<pre><span class="keyword">module</span> Anick: <code class="code">sig</code> <a href="Monoid.Free.Anick.html">..</a> <code class="code">end</code></pre><div class="info module top">
-Anick chains.<br>
+<pre><span id="MODULEAnick"><span class="keyword">module</span> Anick</span>: <code class="code">sig</code> <a href="Monoid.Free.Anick.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Anick chains.</p>
+</div>
 </div>
 <hr width="100%">
 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Monoid.Free.html#TYPEword">Monoid.Free.word</a> list</code> </pre>
 <div class="info ">
-An Anick chain.<br>
+<div class="info-desc">
+<p>An Anick chain.</p>
+</div>
 </div>
 
 
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Monoid.Free.Anick.html#TYPEt">t</a></code></pre><div class="info ">
-The empty chain.<br>
+<div class="info-desc">
+<p>The empty chain.</p>
+</div>
 </div>
 
 <pre><span id="VALsingleton"><span class="keyword">val</span> singleton</span> : <code class="type">X.t -> <a href="Monoid.Free.Anick.html#TYPEt">t</a></code></pre><div class="info ">
-The singleton chain.<br>
+<div class="info-desc">
+<p>The singleton chain.</p>
+</div>
 </div>
 
 <pre><span id="VALsingletons"><span class="keyword">val</span> singletons</span> : <code class="type">X.t list -> <a href="Monoid.Free.Anick.html#TYPEt">t</a> list</code></pre><div class="info ">
-Singleton chains.<br>
+<div class="info-desc">
+<p>Singleton chains.</p>
+</div>
 </div>
 
 <pre><span id="VALhd"><span class="keyword">val</span> hd</span> : <code class="type"><a href="Monoid.Free.Anick.html#TYPEt">t</a> -> <a href="Monoid.Free.html#TYPEword">Monoid.Free.word</a></code></pre><div class="info ">
-Head of the chain.<br>
+<div class="info-desc">
+<p>Head of the chain.</p>
+</div>
 </div>
 
 <pre><span id="VALtl"><span class="keyword">val</span> tl</span> : <code class="type"><a href="Monoid.Free.Anick.html#TYPEt">t</a> -> <a href="Monoid.Free.Anick.html#TYPEt">t</a></code></pre><div class="info ">
-Tail of the chain.<br>
+<div class="info-desc">
+<p>Tail of the chain.</p>
+</div>
 </div>
 
 <pre><span id="VALweq"><span class="keyword">val</span> weq</span> : <code class="type"><a href="Monoid.Free.Anick.html#TYPEt">t</a> -> <a href="Monoid.Free.Anick.html#TYPEt">t</a> -> bool</code></pre>
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Monoid.Free.Anick.html#TYPEt">t</a> list -> <a href="Monoid.Free.Anick.html#TYPEt">t</a> list -> bool</code></pre>
 <pre><span id="VALcompare"><span class="keyword">val</span> compare</span> : <code class="type"><a href="Monoid.Free.Anick.html#TYPEt">t</a> list -> <a href="Monoid.Free.Anick.html#TYPEt">t</a> list -> int</code></pre>
 <pre><span id="VALextend"><span class="keyword">val</span> extend</span> : <code class="type"><a href="Monoid.Free.html#TYPEword">Monoid.Free.word</a> list -> <a href="Monoid.Free.Anick.html#TYPEt">t</a> list -> <a href="Monoid.Free.Anick.html#TYPEt">t</a> list</code></pre><div class="info ">
-Compute (n+1)-chains from n-chains. The first argument is the list of
-        minimal reducible words.<br>
+<div class="info-desc">
+<p>Compute (n+1)-chains from n-chains. The first argument is the list of
+        minimal reducible words.</p>
+</div>
 </div>
 
 <pre><span id="VALextend"><span class="keyword">val</span> extend</span> : <code class="type"><a href="Monoid.Free.html#TYPEword">Monoid.Free.word</a> list -> <a href="Monoid.Free.Anick.html#TYPEt">t</a> list -> <a href="Monoid.Free.Anick.html#TYPEt">t</a> list</code></pre><div class="info ">
-Add an element to a chain.<br>
+<div class="info-desc">
+<p>Add an element to a chain.</p>
+</div>
 </div>
 
 <pre><span id="VALeval"><span class="keyword">val</span> eval</span> : <code class="type"><a href="Monoid.Free.Anick.html#TYPEt">t</a> -> <a href="Monoid.Free.Anick.html#TYPEt">t</a></code></pre><div class="info ">
-Concatenation of the elements of the chain.<br>
+<div class="info-desc">
+<p>Concatenation of the elements of the chain.</p>
+</div>
 </div>
 
 <pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Monoid.Free.Anick.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-Dimension of the chain.<br>
+<div class="info-desc">
+<p>Dimension of the chain.</p>
+</div>
 </div>
 
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Monoid.Free.Anick.html#TYPEt">t</a> -> string</code></pre><div class="info ">
-String representation.<br>
+<div class="info-desc">
+<p>String representation.</p>
+</div>
 </div>
 </body></html>

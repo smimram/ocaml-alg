@@ -36,29 +36,36 @@
 </div>
 <h1>Module <a href="type_Category.html">Category</a></h1>
 
-<pre><span class="keyword">module</span> Category: <code class="code">sig</code> <a href="Category.html">..</a> <code class="code">end</code></pre><div class="info module top">
-Categories.<br>
+<pre><span id="MODULECategory"><span class="keyword">module</span> Category</span>: <code class="code">sig</code> <a href="Category.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Categories.</p>
+</div>
 </div>
 <hr width="100%">
 
-<pre><span class="keyword">module type</span> <a href="Category.T.html">T</a> = <code class="code">sig</code> <a href="Category.T.html">..</a> <code class="code">end</code></pre><div class="info">
-A category.
+<pre><span id="MODULETYPET"><span class="keyword">module type</span> <a href="Category.T.html">T</a></span> = <code class="code">sig</code> <a href="Category.T.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>A category.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Category.Free.html">Free</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">G</code><code class="code"> : </code><code class="type"><a href="Graph.T.html">Graph.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Free.html">..</a> <code class="code">end</code></div></pre><div class="info">
-Free category on a graph.
+<pre><span id="MODULEFree"><span class="keyword">module</span> <a href="Category.Free.html">Free</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">G</code><code class="code"> : </code><code class="type"><a href="Graph.T.html">Graph.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Free.html">..</a> <code class="code">end</code></div></pre><div class="info">
+<p>Free category on a graph.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Category.FreeCategory.html">FreeCategory</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">G</code><code class="code"> : </code><code class="type"><a href="Graph.T.html">Graph.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Category.Free.html">Free</a></code><code class="code">(</code><code class="type">G</code><code class="code">)</code></div></pre>
-<pre><span class="keyword">module</span> <a href="Category.Presentation.html">Presentation</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">V</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">E</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Presentation.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
-Presentation of a category.
+<pre><span id="MODULEFreeCategory"><span class="keyword">module</span> <a href="Category.FreeCategory.html">FreeCategory</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">G</code><code class="code"> : </code><code class="type"><a href="Graph.T.html">Graph.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Category.Free.html">Free</a></code><code class="code">(</code><code class="type">G</code><code class="code">)</code></div></pre>
+<pre><span id="MODULEPresentation"><span class="keyword">module</span> <a href="Category.Presentation.html">Presentation</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">V</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">E</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Presentation.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
+<p>Presentation of a category.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Category.Monoid.html">Monoid</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="type"><a href="Monoid.T.html">Monoid.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Monoid.html">..</a> <code class="code">end</code></div></pre><div class="info">
-Category of a monoid.
+<pre><span id="MODULEMonoid"><span class="keyword">module</span> <a href="Category.Monoid.html">Monoid</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="type"><a href="Monoid.T.html">Monoid.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Monoid.html">..</a> <code class="code">end</code></div></pre><div class="info">
+<p>Category of a monoid.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Category.Graph.html">Graph</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">C</code><code class="code"> : </code><code class="type"><a href="Category.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Graph.html">..</a> <code class="code">end</code></div></pre><div class="info">
-Underlying graph of a category.
+<pre><span id="MODULEGraph"><span class="keyword">module</span> <a href="Category.Graph.html">Graph</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">C</code><code class="code"> : </code><code class="type"><a href="Category.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Graph.html">..</a> <code class="code">end</code></div></pre><div class="info">
+<p>Underlying graph of a category.</p>
+
 </div>
 </body></html>

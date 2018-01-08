@@ -36,7 +36,7 @@
 </div>
 <h1>Functor <a href="type_Module.FreeLeftModule.html">Module.FreeLeftModule</a></h1>
 
-<pre><span class="keyword">module</span> FreeLeftModule: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Module.FreeLeft.html">FreeLeft</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></div></div></pre><table border="0" cellpadding="3" width="100%">
+<pre><span id="MODULEFreeLeftModule"><span class="keyword">module</span> FreeLeftModule</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Module.FreeLeft.html">FreeLeft</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></div></div></pre><table border="0" cellpadding="3" width="100%">
 <tr>
 <td align="left" valign="top" width="1%%"><b>Parameters: </b></td>
 <td>
@@ -57,17 +57,21 @@
 </table>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Module.FreeLeft.Ring.html">Ring</a>: <code class="type">R</code></pre>
-<pre><span class="keyword">module</span> <a href="Module.FreeLeft.E.html">E</a>: <code class="code">sig</code> <a href="Module.FreeLeft.E.html">..</a> <code class="code">end</code></pre>
+<pre><span id="MODULERing"><span class="keyword">module</span> <a href="Module.FreeLeft.Ring.html">Ring</a></span>: <code class="type">R</code></pre>
+<pre><span id="MODULEE"><span class="keyword">module</span> <a href="Module.FreeLeft.E.html">E</a></span>: <code class="code">sig</code> <a href="Module.FreeLeft.E.html">..</a> <code class="code">end</code></pre>
 <pre><span id="TYPEr"><span class="keyword">type</span> <code class="type"></code>r</span> = <code class="type">R.t</code> </pre>
 <div class="info ">
-An element of the ring.<br>
+<div class="info-desc">
+<p>An element of the ring.</p>
+</div>
 </div>
 
 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Module.FreeLeft.html#TYPEr">r</a> E.t</code> </pre>
 <div class="info ">
-An element of the module.<br>
+<div class="info-desc">
+<p>An element of the module.</p>
+</div>
 </div>
 
 
@@ -75,7 +79,9 @@ An element of the module.<br>
 <pre><span id="VALcinj"><span class="keyword">val</span> cinj</span> : <code class="type">R.t -> X.t -> <a href="Module.FreeLeft.html#TYPEt">t</a></code></pre>
 <pre><span id="VALinj"><span class="keyword">val</span> inj</span> : <code class="type">X.t -> <a href="Module.FreeLeft.html#TYPEt">t</a></code></pre>
 <pre><span id="VALcoeff"><span class="keyword">val</span> coeff</span> : <code class="type"><a href="Module.FreeLeft.html#TYPEt">t</a> -> X.t -> <a href="Module.FreeLeft.html#TYPEr">r</a></code></pre><div class="info ">
-Coefficient of an element.<br>
+<div class="info-desc">
+<p>Coefficient of an element.</p>
+</div>
 </div>
 
 <pre><span id="VALincluded"><span class="keyword">val</span> included</span> : <code class="type"><a href="Module.FreeLeft.html#TYPEt">t</a> -> <a href="Module.FreeLeft.html#TYPEt">t</a> -> bool</code></pre>
@@ -87,15 +93,19 @@ Coefficient of an element.<br>
 <pre><span id="VALsub"><span class="keyword">val</span> sub</span> : <code class="type"><a href="Module.FreeLeft.html#TYPEt">t</a> -> <a href="Module.FreeLeft.html#TYPEt">t</a> -> <a href="Module.FreeLeft.html#TYPEt">t</a></code></pre>
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Module.FreeLeft.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">(X.t -> <a href="Module.FreeLeft.html#TYPEt">t</a>) -> <a href="Module.FreeLeft.html#TYPEt">t</a> -> <a href="Module.FreeLeft.html#TYPEt">t</a></code></pre><div class="info ">
-Map a linear function.<br>
+<div class="info-desc">
+<p>Map a linear function.</p>
+</div>
 </div>
 
 <pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">(R.t -> X.t -> unit) -> R.t E.t -> unit</code></pre>
-<pre><span class="keyword">module</span> <a href="Module.FreeLeft.Map.html">Map</a>: <code class="code">sig</code> <a href="Module.FreeLeft.Map.html">..</a> <code class="code">end</code></pre><div class="info">
-Morphisms between free modules.
+<pre><span id="MODULEMap"><span class="keyword">module</span> <a href="Module.FreeLeft.Map.html">Map</a></span>: <code class="code">sig</code> <a href="Module.FreeLeft.Map.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Morphisms between free modules.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Module.FreeLeft.Presentation.html">Presentation</a>: <code class="code">sig</code> <a href="Module.FreeLeft.Presentation.html">..</a> <code class="code">end</code></pre><div class="info">
-A presentation of a free module (a basis).
+<pre><span id="MODULEPresentation"><span class="keyword">module</span> <a href="Module.FreeLeft.Presentation.html">Presentation</a></span>: <code class="code">sig</code> <a href="Module.FreeLeft.Presentation.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>A presentation of a free module (a basis).</p>
+
 </div>
 </body></html>

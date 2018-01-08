@@ -36,11 +36,13 @@
 </div>
 <h1>Module <a href="type_Matrix.Functor.M'.html">Matrix.Functor.M'</a></h1>
 
-<pre><span class="keyword">module</span> M': <code class="type"><a href="Matrix.Make.html">Matrix.Make</a></code><code class="code">(</code><code class="type">R'</code><code class="code">)</code></pre><hr width="100%">
+<pre><span id="MODULEM'"><span class="keyword">module</span> M'</span>: <code class="type"><a href="Matrix.Make.html">Matrix.Make</a></code><code class="code">(</code><code class="type">R'</code><code class="code">)</code></pre><hr width="100%">
 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">R.t array array</code> </pre>
 <div class="info ">
-A matrix.<br>
+<div class="info-desc">
+<p>A matrix.</p>
+</div>
 </div>
 
 
@@ -48,46 +50,66 @@ A matrix.<br>
 
 
 <pre><span id="VALzero"><span class="keyword">val</span> zero</span> : <code class="type">int -> int -> <a href="Matrix.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Zero matrix.<br>
+<div class="info-desc">
+<p>Zero matrix.</p>
+</div>
 </div>
 
 <pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">int -> int -> (int -> int -> R.t) -> <a href="Matrix.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Initialize a matrix.<br>
+<div class="info-desc">
+<p>Initialize a matrix.</p>
+</div>
 </div>
 
 <pre><span id="VALrows"><span class="keyword">val</span> rows</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-Number of rows.<br>
+<div class="info-desc">
+<p>Number of rows.</p>
+</div>
 </div>
 
 <pre><span id="VALcols"><span class="keyword">val</span> cols</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-Number of columns.<br>
+<div class="info-desc">
+<p>Number of columns.</p>
+</div>
 </div>
 
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int -> int -> R.t</code></pre><div class="info ">
-Coefficient.<br>
+<div class="info-desc">
+<p>Coefficient.</p>
+</div>
 </div>
 
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> string</code></pre><div class="info ">
-String representation.<br>
+<div class="info-desc">
+<p>String representation.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Matrix.Make.Row.html">Row</a>: <code class="code">sig</code> <a href="Matrix.Make.Row.html">..</a> <code class="code">end</code></pre><div class="info">
-Operations on rows.
+<pre><span id="MODULERow"><span class="keyword">module</span> <a href="Matrix.Make.Row.html">Row</a></span>: <code class="code">sig</code> <a href="Matrix.Make.Row.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Operations on rows.</p>
+
 </div>
 
 <pre><span id="VALrow_echelon"><span class="keyword">val</span> row_echelon</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> <a href="Matrix.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Put a matrix in row echelon form.<br>
+<div class="info-desc">
+<p>Put a matrix in row echelon form.</p>
+</div>
 </div>
 
 <pre><span id="VALrank"><span class="keyword">val</span> rank</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-Dimension of the image.<br>
+<div class="info-desc">
+<p>Dimension of the image.</p>
+</div>
 </div>
 
 <pre><span id="VALnullity"><span class="keyword">val</span> nullity</span> : <code class="type"><a href="Matrix.Make.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-Dimension of the kernel.<br>
+<div class="info-desc">
+<p>Dimension of the kernel.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Matrix.Make.Labeled.html">Labeled</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Matrix.Make.Labeled.html">..</a> <code class="code">end</code></div></pre><div class="info">
-Matrices with labeled basis elements.
+<pre><span id="MODULELabeled"><span class="keyword">module</span> <a href="Matrix.Make.Labeled.html">Labeled</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Matrix.Make.Labeled.html">..</a> <code class="code">end</code></div></pre><div class="info">
+<p>Matrices with labeled basis elements.</p>
+
 </div>
 </body></html>

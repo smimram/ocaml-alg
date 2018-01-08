@@ -36,8 +36,10 @@
 </div>
 <h1>Functor <a href="type_Ring.Polynomial.html">Ring.Polynomial</a></h1>
 
-<pre><span class="keyword">module</span> Polynomial: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Ring.Polynomial.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
-Polynomial ring over a ring.<br>
+<pre><span id="MODULEPolynomial"><span class="keyword">module</span> Polynomial</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Ring.Polynomial.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Polynomial ring over a ring.</p>
+</div>
 </div>
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -57,13 +59,17 @@ Polynomial ring over a ring.<br>
 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">R.t array</code> </pre>
 <div class="info ">
-A polynomial.<br>
+<div class="info-desc">
+<p>A polynomial.</p>
+</div>
 </div>
 
 
 <pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Ring.Polynomial.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALdegree"><span class="keyword">val</span> degree</span> : <code class="type"><a href="Ring.Polynomial.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-Degree of a polynomial.<br>
+<div class="info-desc">
+<p>Degree of a polynomial.</p>
+</div>
 </div>
 
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Ring.Polynomial.html#TYPEt">t</a> -> <a href="Ring.Polynomial.html#TYPEt">t</a> -> bool</code></pre>

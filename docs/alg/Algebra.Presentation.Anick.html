@@ -34,32 +34,41 @@
 &nbsp;</div>
 <h1>Module <a href="type_Algebra.Presentation.Anick.html">Algebra.Presentation.Anick</a></h1>
 
-<pre><span class="keyword">module</span> Anick: <code class="code">sig</code> <a href="Algebra.Presentation.Anick.html">..</a> <code class="code">end</code></pre><div class="info module top">
-Anick resolution.<br>
+<pre><span id="MODULEAnick"><span class="keyword">module</span> Anick</span>: <code class="code">sig</code> <a href="Algebra.Presentation.Anick.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Anick resolution.</p>
+</div>
 </div>
 <hr width="100%">
 
 <pre><span id="TYPEchain"><span class="keyword">type</span> <code class="type"></code>chain</span> = <code class="type">Algebra.Presentation.M.Anick.t</code> </pre>
 
 
-<pre><span class="keyword">module</span> <a href="Algebra.Presentation.Anick.AMod.html">AMod</a>: <code class="code">sig</code> <a href="Algebra.Presentation.Anick.AMod.html">..</a> <code class="code">end</code></pre>
-<pre><span class="keyword">module</span> <a href="Algebra.Presentation.Anick.AKMod.html">AKMod</a>: <code class="code">sig</code> <a href="Algebra.Presentation.Anick.AKMod.html">..</a> <code class="code">end</code></pre><div class="info">
-Underlying <code class="code">K</code>-module of <code class="code">AMod</code>.
+<pre><span id="MODULEAMod"><span class="keyword">module</span> <a href="Algebra.Presentation.Anick.AMod.html">AMod</a></span>: <code class="code">sig</code> <a href="Algebra.Presentation.Anick.AMod.html">..</a> <code class="code">end</code></pre>
+<pre><span id="MODULEAKMod"><span class="keyword">module</span> <a href="Algebra.Presentation.Anick.AKMod.html">AKMod</a></span>: <code class="code">sig</code> <a href="Algebra.Presentation.Anick.AKMod.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Underlying <code class="code">K</code>-module of <code class="code">AMod</code>.</p>
+
 </div>
 
 <pre><span id="VALchains"><span class="keyword">val</span> chains</span> : <code class="type"><a href="Algebra.Presentation.html#TYPEt">Algebra.Presentation.t</a> -> int -> Algebra.Presentation.M.Anick.t list array</code></pre><div class="info ">
-Array of Anick chains up to degree n.<br>
+<div class="info-desc">
+<p>Array of Anick chains up to degree n.</p>
+</div>
 </div>
 
 <pre><span id="VALresolution"><span class="keyword">val</span> resolution</span> : <code class="type">?augmentation:<a href="Algebra.Presentation.Augmentation.html#TYPEt">Algebra.Presentation.Augmentation.t</a> -><br>       <a href="Algebra.Presentation.html#TYPEt">Algebra.Presentation.t</a> -><br>       int -> AMod.Presentation.Complex.t</code></pre><div class="info ">
-Compute the Anick resolution.<br>
+<div class="info-desc">
+<p>Compute the Anick resolution.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Algebra.Presentation.Anick.KMod.html">KMod</a>: <code class="type"><a href="Module.Free.html">Module.Free</a></code><code class="code">(</code><code class="type">K</code><code class="code">)</code><code class="code">(</code><code class="type">Algebra.Presentation.M.Anick</code><code class="code">)</code></pre>
-<pre><span class="keyword">module</span> <a href="Algebra.Presentation.Anick.MF.html">MF</a>: <code class="type"><a href="Matrix.Functor.html">Matrix.Functor</a></code><code class="code">(</code><code class="type"><a href="Algebra.Presentation.A.html">Algebra.Presentation.A</a></code><code class="code">)</code><code class="code">(</code><code class="type">K</code><code class="code">)</code></pre>
-<pre><span class="keyword">module</span> <a href="Algebra.Presentation.Anick.MFL.html">MFL</a>: <code class="type">MF.Labeled</code><code class="code">(</code><code class="type">Algebra.Presentation.M.Anick</code><code class="code">)</code><code class="code">(</code><code class="type">Algebra.Presentation.M.Anick</code><code class="code">)</code></pre>
+<pre><span id="MODULEKMod"><span class="keyword">module</span> <a href="Algebra.Presentation.Anick.KMod.html">KMod</a></span>: <code class="type"><a href="Module.Free.html">Module.Free</a></code><code class="code">(</code><code class="type">K</code><code class="code">)</code><code class="code">(</code><code class="type">Algebra.Presentation.M.Anick</code><code class="code">)</code></pre>
+<pre><span id="MODULEMF"><span class="keyword">module</span> <a href="Algebra.Presentation.Anick.MF.html">MF</a></span>: <code class="type"><a href="Matrix.Functor.html">Matrix.Functor</a></code><code class="code">(</code><code class="type"><a href="Algebra.Presentation.A.html">Algebra.Presentation.A</a></code><code class="code">)</code><code class="code">(</code><code class="type">K</code><code class="code">)</code></pre>
+<pre><span id="MODULEMFL"><span class="keyword">module</span> <a href="Algebra.Presentation.Anick.MFL.html">MFL</a></span>: <code class="type">MF.Labeled</code><code class="code">(</code><code class="type">Algebra.Presentation.M.Anick</code><code class="code">)</code><code class="code">(</code><code class="type">Algebra.Presentation.M.Anick</code><code class="code">)</code></pre>
 <pre><span id="VALcomplex"><span class="keyword">val</span> complex</span> : <code class="type">?augmentation:<a href="Algebra.Presentation.Augmentation.html#TYPEt">Algebra.Presentation.Augmentation.t</a> -><br>       <a href="Algebra.Presentation.html#TYPEt">Algebra.Presentation.t</a> -><br>       int -> KMod.Presentation.Complex.t</code></pre><div class="info ">
-Tor complex, whose homology is the one of the algebra (in right A-modules).<br>
+<div class="info-desc">
+<p>Tor complex, whose homology is the one of the algebra (in right A-modules).</p>
+</div>
 </div>
 
 <pre><span id="VALbetti"><span class="keyword">val</span> betti</span> : <code class="type">?augmentation:<a href="Algebra.Presentation.Augmentation.html#TYPEt">Algebra.Presentation.Augmentation.t</a> -><br>       <a href="Algebra.Presentation.html#TYPEt">Algebra.Presentation.t</a> -> int -> int array</code></pre></body></html>

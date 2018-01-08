@@ -34,7 +34,7 @@
 </div>
 <h1>Module <a href="type_Monoid.Presentation.W.html">Monoid.Presentation.W</a></h1>
 
-<pre><span class="keyword">module</span> W: <code class="type"><a href="Monoid.Free.html">Monoid.Free</a></code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre><hr width="100%">
+<pre><span id="MODULEW"><span class="keyword">module</span> W</span>: <code class="type"><a href="Monoid.Free.html">Monoid.Free</a></code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre><hr width="100%">
 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">X.t array</code> </pre>
 
@@ -50,26 +50,35 @@
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Monoid.Free.html#TYPEt">t</a> -> <a href="Monoid.Free.html#TYPEt">t</a> -> bool</code></pre>
 <pre><span id="VALcompare"><span class="keyword">val</span> compare</span> : <code class="type"><a href="Monoid.Free.html#TYPEt">t</a> -> <a href="Monoid.Free.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALpeq"><span class="keyword">val</span> peq</span> : <code class="type"><a href="Monoid.Free.html#TYPEt">t</a> -> int -> <a href="Monoid.Free.html#TYPEt">t</a> -> int -> int -> bool</code></pre><div class="info ">
-Partial equality (equality on subwords).<br>
+<div class="info-desc">
+<p>Partial equality (equality on subwords).</p>
+</div>
 </div>
 
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Monoid.Free.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALincluded"><span class="keyword">val</span> included</span> : <code class="type"><a href="Monoid.Free.html#TYPEt">t</a> -> <a href="Monoid.Free.html#TYPEt">t</a> -> bool</code></pre>
 <pre><span id="VALunifier"><span class="keyword">val</span> unifier</span> : <code class="type">?i:int -> <a href="Monoid.Free.html#TYPEt">t</a> -> <a href="Monoid.Free.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-The leftmost unifier where <code class="code">u</code> is on the left and <code class="code">v</code> on the right<br>
+<div class="info-desc">
+<p>The leftmost unifier where <code class="code">u</code> is on the left and <code class="code">v</code> on the right</p>
+</div>
 </div>
 
 <pre><span id="VALordered_unifiers"><span class="keyword">val</span> ordered_unifiers</span> : <code class="type"><a href="Monoid.Free.html#TYPEt">t</a> -> <a href="Monoid.Free.html#TYPEt">t</a> -> int list</code></pre><div class="info ">
-All unifiers with first on the left.<br>
+<div class="info-desc">
+<p>All unifiers with first on the left.</p>
+</div>
 </div>
 
 <pre><span id="VALordered_unifiers_bicontext"><span class="keyword">val</span> ordered_unifiers_bicontext</span> : <code class="type"><a href="Monoid.Free.html#TYPEt">t</a> -><br>       <a href="Monoid.Free.html#TYPEt">t</a> -><br>       ((<a href="Monoid.Free.html#TYPEt">t</a> * <a href="Monoid.Free.html#TYPEt">t</a>) * (<a href="Monoid.Free.html#TYPEt">t</a> * <a href="Monoid.Free.html#TYPEt">t</a>)) list</code></pre>
 <pre><span id="VALunifiers_bicontext"><span class="keyword">val</span> unifiers_bicontext</span> : <code class="type"><a href="Monoid.Free.html#TYPEt">t</a> -><br>       <a href="Monoid.Free.html#TYPEt">t</a> -><br>       ((<a href="Monoid.Free.html#TYPEt">t</a> * <a href="Monoid.Free.html#TYPEt">t</a>) * (<a href="Monoid.Free.html#TYPEt">t</a> * <a href="Monoid.Free.html#TYPEt">t</a>)) list</code></pre><div class="info ">
-All unifiers, with contexts on the left and on the right.<br>
+<div class="info-desc">
+<p>All unifiers, with contexts on the left and on the right.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Monoid.Free.Order.html">Order</a>: <code class="code">sig</code> <a href="Monoid.Free.Order.html">..</a> <code class="code">end</code></pre>
-<pre><span class="keyword">module</span> <a href="Monoid.Free.Anick.html">Anick</a>: <code class="code">sig</code> <a href="Monoid.Free.Anick.html">..</a> <code class="code">end</code></pre><div class="info">
-Anick chains.
+<pre><span id="MODULEOrder"><span class="keyword">module</span> <a href="Monoid.Free.Order.html">Order</a></span>: <code class="code">sig</code> <a href="Monoid.Free.Order.html">..</a> <code class="code">end</code></pre>
+<pre><span id="MODULEAnick"><span class="keyword">module</span> <a href="Monoid.Free.Anick.html">Anick</a></span>: <code class="code">sig</code> <a href="Monoid.Free.Anick.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Anick chains.</p>
+
 </div>
 </body></html>

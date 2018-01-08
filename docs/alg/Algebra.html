@@ -34,22 +34,27 @@
 </div>
 <h1>Module <a href="type_Algebra.html">Algebra</a></h1>
 
-<pre><span class="keyword">module</span> Algebra: <code class="code">sig</code> <a href="Algebra.html">..</a> <code class="code">end</code></pre><div class="info module top">
-Algebras.<br>
+<pre><span id="MODULEAlgebra"><span class="keyword">module</span> Algebra</span>: <code class="code">sig</code> <a href="Algebra.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Algebras.</p>
+</div>
 </div>
 <hr width="100%">
 
-<pre><span class="keyword">module type</span> <a href="Algebra.T.html">T</a> = <code class="code">sig</code> <a href="Algebra.T.html">..</a> <code class="code">end</code></pre><div class="info">
-An algebra.
+<pre><span id="MODULETYPET"><span class="keyword">module type</span> <a href="Algebra.T.html">T</a></span> = <code class="code">sig</code> <a href="Algebra.T.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>An algebra.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Algebra.Free.html">Free</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="type"><a href="Monoid.T.html">Monoid.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Free.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
-Free algebra of a monoid over a ring.
+<pre><span id="MODULEFree"><span class="keyword">module</span> <a href="Algebra.Free.html">Free</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="type"><a href="Monoid.T.html">Monoid.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Free.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
+<p>Free algebra of a monoid over a ring.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Algebra.FreeAlgebra.html">FreeAlgebra</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="type"><a href="Monoid.T.html">Monoid.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Algebra.Free.html">Free</a></code><code class="code">(</code><code class="type">K</code><code class="code">)</code><code class="code">(</code><code class="type">M</code><code class="code">)</code></div></div></pre>
-<pre><span class="keyword">module</span> <a href="Algebra.Presentation.html">Presentation</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Presentation.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
-Presentation of an algebra.
+<pre><span id="MODULEFreeAlgebra"><span class="keyword">module</span> <a href="Algebra.FreeAlgebra.html">FreeAlgebra</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="type"><a href="Monoid.T.html">Monoid.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Algebra.Free.html">Free</a></code><code class="code">(</code><code class="type">K</code><code class="code">)</code><code class="code">(</code><code class="type">M</code><code class="code">)</code></div></div></pre>
+<pre><span id="MODULEPresentation"><span class="keyword">module</span> <a href="Algebra.Presentation.html">Presentation</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Presentation.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
+<p>Presentation of an algebra.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Algebra.Generate.html">Generate</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="type">  with type t = int</code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Generate.html">..</a> <code class="code">end</code></div></div></pre></body></html>
+<pre><span id="MODULEGenerate"><span class="keyword">module</span> <a href="Algebra.Generate.html">Generate</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="type">  with type t = int</code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Generate.html">..</a> <code class="code">end</code></div></div></pre></body></html>

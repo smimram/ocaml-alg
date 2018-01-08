@@ -34,8 +34,10 @@
 </div>
 <h1>Functor <a href="type_Category.Free.html">Category.Free</a></h1>
 
-<pre><span class="keyword">module</span> Free: <div class="sig_block"><code class="code">functor (</code><code class="code">G</code><code class="code"> : </code><code class="type"><a href="Graph.T.html">Graph.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Free.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
-Free category on a graph.<br>
+<pre><span id="MODULEFree"><span class="keyword">module</span> Free</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">G</code><code class="code"> : </code><code class="type"><a href="Graph.T.html">Graph.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Free.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Free category on a graph.</p>
+</div>
 </div>
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -53,9 +55,9 @@ Free category on a graph.<br>
 </table>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Category.Free.V.html">V</a>: <code class="type">G.V</code></pre>
-<pre><span class="keyword">module</span> <a href="Category.Free.M.html">M</a>: <code class="type"><a href="Monoid.Free.html">Monoid.Free</a></code><code class="code">(</code><code class="type">G.E</code><code class="code">)</code></pre>
-<pre><span class="keyword">module</span> <a href="Category.Free.E.html">E</a>: <code class="code">sig</code> <a href="Category.Free.E.html">..</a> <code class="code">end</code></pre>
+<pre><span id="MODULEV"><span class="keyword">module</span> <a href="Category.Free.V.html">V</a></span>: <code class="type">G.V</code></pre>
+<pre><span id="MODULEM"><span class="keyword">module</span> <a href="Category.Free.M.html">M</a></span>: <code class="type"><a href="Monoid.Free.html">Monoid.Free</a></code><code class="code">(</code><code class="type">G.E</code><code class="code">)</code></pre>
+<pre><span id="MODULEE"><span class="keyword">module</span> <a href="Category.Free.E.html">E</a></span>: <code class="code">sig</code> <a href="Category.Free.E.html">..</a> <code class="code">end</code></pre>
 <pre><span id="VALsrc"><span class="keyword">val</span> src</span> : <code class="type">E.t -> V.t</code></pre>
 <pre><span id="VALtgt"><span class="keyword">val</span> tgt</span> : <code class="type">E.t -> V.t</code></pre>
 <pre><span id="VALid"><span class="keyword">val</span> id</span> : <code class="type">V.t -> E.t</code></pre>

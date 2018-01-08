@@ -34,8 +34,10 @@
 </div>
 <h1>Functor <a href="type_Automaton.Regexp.html">Automaton.Regexp</a></h1>
 
-<pre><span class="keyword">module</span> Regexp: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Automaton.Regexp.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
-Regular expressions.<br>
+<pre><span id="MODULERegexp"><span class="keyword">module</span> Regexp</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Automaton.Regexp.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Regular expressions.</p>
+</div>
 </div>
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -81,7 +83,9 @@ Regular expressions.<br>
 <td align="left" valign="top" >
 <code><span id="TYPEELTt.Concat"><span class="constructor">Concat</span></span> <span class="keyword">of</span> <code class="type"><a href="Automaton.Regexp.html#TYPEt">t</a> * <a href="Automaton.Regexp.html#TYPEt">t</a></code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
-concatenation<br>
+<div class="info-desc">
+<p>concatenation</p>
+</div>
 </div>
 </td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
@@ -91,7 +95,9 @@ concatenation<br>
 <td align="left" valign="top" >
 <code><span id="TYPEELTt.Singl"><span class="constructor">Singl</span></span></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
-empty word singleton<br>
+<div class="info-desc">
+<p>empty word singleton</p>
+</div>
 </div>
 </td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
@@ -114,9 +120,11 @@ empty word singleton<br>
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Automaton.Regexp.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALsimpl"><span class="keyword">val</span> simpl</span> : <code class="type"><a href="Automaton.Regexp.html#TYPEt">t</a> -> <a href="Automaton.Regexp.html#TYPEt">t</a></code></pre>
 <pre><span id="VALsimpl"><span class="keyword">val</span> simpl</span> : <code class="type"><a href="Automaton.Regexp.html#TYPEt">t</a> -> <a href="Automaton.Regexp.html#TYPEt">t</a></code></pre>
-<pre><span class="keyword">module</span> <a href="Automaton.Regexp.Series.html">Series</a>: <code class="type"><a href="Series.Make.html">Series.Make</a></code><code class="code">(</code><code class="type"><a href="Field.Int.html">Field.Int</a></code><code class="code">)</code></pre>
+<pre><span id="MODULESeries"><span class="keyword">module</span> <a href="Automaton.Regexp.Series.html">Series</a></span>: <code class="type"><a href="Series.Make.html">Series.Make</a></code><code class="code">(</code><code class="type"><a href="Field.Int.html">Field.Int</a></code><code class="code">)</code></pre>
 <pre><span id="VALseries"><span class="keyword">val</span> series</span> : <code class="type"><a href="Automaton.Regexp.html#TYPEt">t</a> -> Series.t</code></pre><div class="info ">
-Generating series of a regular expression. This expression is assumed to
-  be unambiguous.<br>
+<div class="info-desc">
+<p>Generating series of a regular expression. This expression is assumed to
+  be unambiguous.</p>
+</div>
 </div>
 </body></html>

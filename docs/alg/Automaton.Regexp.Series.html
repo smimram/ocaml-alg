@@ -32,74 +32,104 @@
 &nbsp;</div>
 <h1>Module <a href="type_Automaton.Regexp.Series.html">Automaton.Regexp.Series</a></h1>
 
-<pre><span class="keyword">module</span> Series: <code class="type"><a href="Series.Make.html">Series.Make</a></code><code class="code">(</code><code class="type"><a href="Field.Int.html">Field.Int</a></code><code class="code">)</code></pre><hr width="100%">
+<pre><span id="MODULESeries"><span class="keyword">module</span> Series</span>: <code class="type"><a href="Series.Make.html">Series.Make</a></code><code class="code">(</code><code class="type"><a href="Field.Int.html">Field.Int</a></code><code class="code">)</code></pre><hr width="100%">
 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">K.t Weak.t Pervasives.ref * (int -> K.t)</code> </pre>
 <div class="info ">
-A formal series.<br>
+<div class="info-desc">
+<p>A formal series.</p>
+</div>
 </div>
 
 
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a> -> 'a</code></pre><div class="info ">
-Equality.<br>
+<div class="info-desc">
+<p>Equality.</p>
+</div>
 </div>
 
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> int -> K.t</code></pre><div class="info ">
-Get a coefficient.<br>
+<div class="info-desc">
+<p>Get a coefficient.</p>
+</div>
 </div>
 
 <pre><span id="VALcoeff"><span class="keyword">val</span> coeff</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> int -> K.t</code></pre>
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">(int -> K.t) -> <a href="Series.Make.html#TYPEt">t</a></code></pre>
 <pre><span id="VALzero"><span class="keyword">val</span> zero</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Zero.<br>
+<div class="info-desc">
+<p>Zero.</p>
+</div>
 </div>
 
 <pre><span id="VALone"><span class="keyword">val</span> one</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-One.<br>
+<div class="info-desc">
+<p>One.</p>
+</div>
 </div>
 
 <pre><span id="VALvar"><span class="keyword">val</span> var</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a></code></pre>
 <pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Addition.<br>
+<div class="info-desc">
+<p>Addition.</p>
+</div>
 </div>
 
 <pre><span id="VALsub"><span class="keyword">val</span> sub</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Subtraction.<br>
+<div class="info-desc">
+<p>Subtraction.</p>
+</div>
 </div>
 
 <pre><span id="VALmul"><span class="keyword">val</span> mul</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Multiplication.<br>
+<div class="info-desc">
+<p>Multiplication.</p>
+</div>
 </div>
 
 <pre><span id="VALexpn"><span class="keyword">val</span> expn</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> int -> <a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Integer exponential.<br>
+<div class="info-desc">
+<p>Integer exponential.</p>
+</div>
 </div>
 
 <pre><span id="VALhadamard"><span class="keyword">val</span> hadamard</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Hadamard product.<br>
+<div class="info-desc">
+<p>Hadamard product.</p>
+</div>
 </div>
 
 <pre><span id="VALcmul"><span class="keyword">val</span> cmul</span> : <code class="type">K.t -> <a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Multiplication by a constant.<br>
+<div class="info-desc">
+<p>Multiplication by a constant.</p>
+</div>
 </div>
 
 <pre><span id="VALneg"><span class="keyword">val</span> neg</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Negation.<br>
+<div class="info-desc">
+<p>Negation.</p>
+</div>
 </div>
 
 <pre><span id="VALstar"><span class="keyword">val</span> star</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a></code></pre>
 <pre><span id="VALinv"><span class="keyword">val</span> inv</span> : <code class="type"><a href="Series.Make.html#TYPEt">t</a> -> <a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Inverse.<br>
+<div class="info-desc">
+<p>Inverse.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Series.Make.Polynomial.html">Polynomial</a>: <code class="type"><a href="Ring.Polynomial.html">Ring.Polynomial</a></code><code class="code">(</code><code class="type">K</code><code class="code">)</code></pre>
+<pre><span id="MODULEPolynomial"><span class="keyword">module</span> <a href="Series.Make.Polynomial.html">Polynomial</a></span>: <code class="type"><a href="Ring.Polynomial.html">Ring.Polynomial</a></code><code class="code">(</code><code class="type">K</code><code class="code">)</code></pre>
 <pre><span id="VALpolynomial"><span class="keyword">val</span> polynomial</span> : <code class="type">Polynomial.t -> <a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Canonical injection of polynomials.<br>
+<div class="info-desc">
+<p>Canonical injection of polynomials.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Series.Make.RationalFractions.html">RationalFractions</a>: <code class="type"><a href="Field.RationalFractions.html">Field.RationalFractions</a></code><code class="code">(</code><code class="type">K</code><code class="code">)</code></pre>
+<pre><span id="MODULERationalFractions"><span class="keyword">module</span> <a href="Series.Make.RationalFractions.html">RationalFractions</a></span>: <code class="type"><a href="Field.RationalFractions.html">Field.RationalFractions</a></code><code class="code">(</code><code class="type">K</code><code class="code">)</code></pre>
 <pre><span id="VALrational"><span class="keyword">val</span> rational</span> : <code class="type">RationalFractions.t -> <a href="Series.Make.html#TYPEt">t</a></code></pre><div class="info ">
-Canonical injection of rational fractions.<br>
+<div class="info-desc">
+<p>Canonical injection of rational fractions.</p>
+</div>
 </div>
 </body></html>

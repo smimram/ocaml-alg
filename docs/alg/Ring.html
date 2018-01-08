@@ -36,37 +36,46 @@
 </div>
 <h1>Module <a href="type_Ring.html">Ring</a></h1>
 
-<pre><span class="keyword">module</span> Ring: <code class="code">sig</code> <a href="Ring.html">..</a> <code class="code">end</code></pre><div class="info module top">
-Rings.<br>
+<pre><span id="MODULERing"><span class="keyword">module</span> Ring</span>: <code class="code">sig</code> <a href="Ring.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Rings.</p>
+</div>
 </div>
 <hr width="100%">
 
-<pre><span class="keyword">module type</span> <a href="Ring.T.html">T</a> = <code class="code">sig</code> <a href="Ring.T.html">..</a> <code class="code">end</code></pre><div class="info">
-A ring.
+<pre><span id="MODULETYPET"><span class="keyword">module type</span> <a href="Ring.T.html">T</a></span> = <code class="code">sig</code> <a href="Ring.T.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>A ring.</p>
+
 </div>
 
-<pre><span class="keyword">module type</span> <a href="Ring.Euclidean.html">Euclidean</a> = <code class="code">sig</code> <a href="Ring.Euclidean.html">..</a> <code class="code">end</code></pre><div class="info">
-An euclidean domain.
+<pre><span id="MODULETYPEEuclidean"><span class="keyword">module type</span> <a href="Ring.Euclidean.html">Euclidean</a></span> = <code class="code">sig</code> <a href="Ring.Euclidean.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>An euclidean domain.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Ring.Bool.html">Bool</a>: <code class="code">sig</code> <a href="Ring.Bool.html">..</a> <code class="code">end</code></pre><div class="info">
-The ring of booleans.
+<pre><span id="MODULEBool"><span class="keyword">module</span> <a href="Ring.Bool.html">Bool</a></span>: <code class="code">sig</code> <a href="Ring.Bool.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>The ring of booleans.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Ring.Int.html">Int</a>: <code class="code">sig</code> <a href="Ring.Int.html">..</a> <code class="code">end</code></pre><div class="info">
-The ring of integers.
+<pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Ring.Int.html">Int</a></span>: <code class="code">sig</code> <a href="Ring.Int.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>The ring of integers.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Ring.Float.html">Float</a>: <code class="code">sig</code> <a href="Ring.Float.html">..</a> <code class="code">end</code></pre><div class="info">
-The ring of floats.
+<pre><span id="MODULEFloat"><span class="keyword">module</span> <a href="Ring.Float.html">Float</a></span>: <code class="code">sig</code> <a href="Ring.Float.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>The ring of floats.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Ring.Polynomial.html">Polynomial</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Ring.Polynomial.html">..</a> <code class="code">end</code></div></pre><div class="info">
-Polynomial ring over a ring.
+<pre><span id="MODULEPolynomial"><span class="keyword">module</span> <a href="Ring.Polynomial.html">Polynomial</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Ring.Polynomial.html">..</a> <code class="code">end</code></div></pre><div class="info">
+<p>Polynomial ring over a ring.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Ring.PolynomialRing.html">PolynomialRing</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Ring.Polynomial.html">Polynomial</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code></div></pre>
-<pre><span class="keyword">module</span> <a href="Ring.Op.html">Op</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Ring.Op.html">..</a> <code class="code">end</code></div></pre><div class="info">
-Opposite ring.
+<pre><span id="MODULEPolynomialRing"><span class="keyword">module</span> <a href="Ring.PolynomialRing.html">PolynomialRing</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Ring.Polynomial.html">Polynomial</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code></div></pre>
+<pre><span id="MODULEOp"><span class="keyword">module</span> <a href="Ring.Op.html">Op</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Ring.Op.html">..</a> <code class="code">end</code></div></pre><div class="info">
+<p>Opposite ring.</p>
+
 </div>
 </body></html>

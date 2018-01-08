@@ -34,8 +34,10 @@
 &nbsp;</div>
 <h1>Functor <a href="type_Alphabet.Map.html">Alphabet.Map</a></h1>
 
-<pre><span class="keyword">module</span> Map: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">B</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Alphabet.Map.html">..</a> <code class="code">end</code></div></div></pre><div class="info module top">
-Functions between alphabets.<br>
+<pre><span id="MODULEMap"><span class="keyword">module</span> Map</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">B</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Alphabet.Map.html">..</a> <code class="code">end</code></div></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Functions between alphabets.</p>
+</div>
 </div>
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -58,7 +60,7 @@ Functions between alphabets.<br>
 </table>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Alphabet.Map.M.html">M</a>: <code class="type">Map.Make</code><code class="code">(</code><code class="type">A</code><code class="code">)</code></pre>
+<pre><span id="MODULEM"><span class="keyword">module</span> <a href="Alphabet.Map.M.html">M</a></span>: <code class="type">Map.Make</code><code class="code">(</code><code class="type">A</code><code class="code">)</code></pre>
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">B.t M.t</code> </pre>
 
 
@@ -66,7 +68,9 @@ Functions between alphabets.<br>
 <pre><span id="VALapp"><span class="keyword">val</span> app</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a> -> A.t -> B.t</code></pre>
 <pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a> -> A.t -> B.t -> <a href="Alphabet.Map.html#TYPEt">t</a></code></pre>
 <pre><span id="VALin_dom"><span class="keyword">val</span> in_dom</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a> -> A.t -> bool</code></pre><div class="info ">
-Is an element in the domain?<br>
+<div class="info-desc">
+<p>Is an element in the domain?</p>
+</div>
 </div>
 
 <pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">(M.key -> 'a -> unit) -> 'a M.t -> unit</code></pre></body></html>

@@ -32,8 +32,10 @@
 &nbsp;</div>
 <h1>Functor <a href="type_Precategory.Make.html">Precategory.Make</a></h1>
 
-<pre><span class="keyword">module</span> Make: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Precategory.Make.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
-Free precategories.<br>
+<pre><span id="MODULEMake"><span class="keyword">module</span> Make</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Precategory.Make.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Free precategories.</p>
+</div>
 </div>
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -58,7 +60,9 @@ Free precategories.<br>
 <td align="left" valign="top" >
 <code><span id="TYPEELTcell.C"><span class="constructor">C</span></span> <span class="keyword">of</span> <code class="type"><a href="Precategory.Make.html#TYPEwhisker">whisker</a> * <a href="Precategory.Make.html#TYPEcell">cell</a></code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
-a composite<br>
+<div class="info-desc">
+<p>a composite</p>
+</div>
 </div>
 </td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
@@ -68,15 +72,19 @@ a composite<br>
 <td align="left" valign="top" >
 <code><span id="TYPEELTcell.I"><span class="constructor">I</span></span> <span class="keyword">of</span> <code class="type"><a href="Precategory.Make.html#TYPEcell">cell</a></code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
-an identity<br>
+<div class="info-desc">
+<p>an identity</p>
+</div>
 </div>
 </td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr></table>
 
 <div class="info ">
-A cell.
-<p>
-A whiskered generator.<br>
+<div class="info-desc">
+<p>A cell.</p>
+
+<p>A whiskered generator.</p>
+</div>
 </div>
 
 
@@ -87,7 +95,9 @@ A whiskered generator.<br>
 <td align="left" valign="top" >
 <code><span id="TYPEELTwhisker.G"><span class="constructor">G</span></span> <span class="keyword">of</span> <code class="type">X.t</code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
-a generator<br>
+<div class="info-desc">
+<p>a generator</p>
+</div>
 </div>
 </td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
@@ -97,7 +107,9 @@ a generator<br>
 <td align="left" valign="top" >
 <code><span id="TYPEELTwhisker.W"><span class="constructor">W</span></span> <span class="keyword">of</span> <code class="type"><a href="Precategory.Make.html#TYPEcell">cell</a> * <a href="Precategory.Make.html#TYPEwhisker">whisker</a> * <a href="Precategory.Make.html#TYPEcell">cell</a></code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
-a whisker context<br>
+<div class="info-desc">
+<p>a whisker context</p>
+</div>
 </div>
 </td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr></table>
@@ -108,18 +120,25 @@ a whisker context<br>
 
 
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Precategory.Make.html#TYPEcell">cell</a> -> string</code></pre><div class="info ">
-String representation of a cell.<br>
+<div class="info-desc">
+<p>String representation of a cell.</p>
+</div>
 </div>
 
 <pre><span id="VALdim"><span class="keyword">val</span> dim</span> : <code class="type"><a href="Precategory.Make.html#TYPEcell">cell</a> -> int</code></pre><div class="info ">
-Dimension of a cell.<br>
+<div class="info-desc">
+<p>Dimension of a cell.</p>
+</div>
 </div>
 
 <pre><span id="VALcompose"><span class="keyword">val</span> compose</span> : <code class="type"><a href="Precategory.Make.html#TYPEcell">cell</a> -> <a href="Precategory.Make.html#TYPEcell">cell</a> -> <a href="Precategory.Make.html#TYPEcell">cell</a></code></pre><div class="info ">
-Composition of two cells on the boundary of maximal dimension.<br>
+<div class="info-desc">
+<p>Composition of two cells on the boundary of maximal dimension.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Precategory.Make.Presentation.html">Presentation</a>: <code class="code">sig</code> <a href="Precategory.Make.Presentation.html">..</a> <code class="code">end</code></pre><div class="info">
-Presentation of a precategory: a "pre-polygraph".
+<pre><span id="MODULEPresentation"><span class="keyword">module</span> <a href="Precategory.Make.Presentation.html">Presentation</a></span>: <code class="code">sig</code> <a href="Precategory.Make.Presentation.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Presentation of a precategory: a "pre-polygraph".</p>
+
 </div>
 </body></html>

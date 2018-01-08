@@ -34,8 +34,10 @@
 &nbsp;</div>
 <h1>Functor <a href="type_Matrix.Make.Labeled.html">Matrix.Make.Labeled</a></h1>
 
-<pre><span class="keyword">module</span> Labeled: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Matrix.Make.Labeled.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
-Matrices with labeled basis elements.<br>
+<pre><span id="MODULELabeled"><span class="keyword">module</span> Labeled</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Matrix.Make.Labeled.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Matrices with labeled basis elements.</p>
+</div>
 </div>
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -53,43 +55,59 @@ Matrices with labeled basis elements.<br>
 </table>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Matrix.Make.Labeled.L.html">L</a>: <code class="code">sig</code> <a href="Matrix.Make.Labeled.L.html">..</a> <code class="code">end</code></pre>
+<pre><span id="MODULEL"><span class="keyword">module</span> <a href="Matrix.Make.Labeled.L.html">L</a></span>: <code class="code">sig</code> <a href="Matrix.Make.Labeled.L.html">..</a> <code class="code">end</code></pre>
 <pre><span id="TYPEmap"><span class="keyword">type</span> <code class="type"></code>map</span> = <code class="type">int L.t</code> </pre>
 
 
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Matrix.Make.Labeled.html#TYPEmap">map</a> * <a href="Matrix.Make.Labeled.html#TYPEmap">map</a> * <a href="Matrix.Make.html#TYPEmatrix">Matrix.Make.matrix</a></code> </pre>
 <div class="info ">
-A matrix with labeled basis elements.<br>
+<div class="info-desc">
+<p>A matrix with labeled basis elements.</p>
+</div>
 </div>
 
 
 <pre><span id="VALmatrix"><span class="keyword">val</span> matrix</span> : <code class="type"><a href="Matrix.Make.Labeled.html#TYPEt">t</a> -> <a href="Matrix.Make.html#TYPEmatrix">Matrix.Make.matrix</a></code></pre><div class="info ">
-Underlying (non-labeled) matrix.<br>
+<div class="info-desc">
+<p>Underlying (non-labeled) matrix.</p>
+</div>
 </div>
 
 <pre><span id="VALzero"><span class="keyword">val</span> zero</span> : <code class="type">X.t array -> X.t array -> <a href="Matrix.Make.Labeled.html#TYPEt">t</a></code></pre>
 <pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type"><a href="Matrix.Make.Labeled.html#TYPEt">t</a> -> X.t -> X.t -> R.t -> unit</code></pre><div class="info ">
-Set coefficient.<br>
+<div class="info-desc">
+<p>Set coefficient.</p>
+</div>
 </div>
 
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Matrix.Make.Labeled.html#TYPEt">t</a> -> X.t -> X.t -> R.t</code></pre><div class="info ">
-Coefficient.<br>
+<div class="info-desc">
+<p>Coefficient.</p>
+</div>
 </div>
 
 <pre><span id="VALrank"><span class="keyword">val</span> rank</span> : <code class="type"><a href="Matrix.Make.Labeled.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-Rank.<br>
+<div class="info-desc">
+<p>Rank.</p>
+</div>
 </div>
 
 <pre><span id="VALnullity"><span class="keyword">val</span> nullity</span> : <code class="type"><a href="Matrix.Make.Labeled.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALiter_src"><span class="keyword">val</span> iter_src</span> : <code class="type">(X.t -> unit) -> <a href="Matrix.Make.Labeled.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
-Iterate over source basis.<br>
+<div class="info-desc">
+<p>Iterate over source basis.</p>
+</div>
 </div>
 
 <pre><span id="VALiter_tgt"><span class="keyword">val</span> iter_tgt</span> : <code class="type">(X.t -> unit) -> <a href="Matrix.Make.Labeled.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
-Iterate over target basis.<br>
+<div class="info-desc">
+<p>Iterate over target basis.</p>
+</div>
 </div>
 
 <pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">(X.t -> X.t -> unit) -> <a href="Matrix.Make.Labeled.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
-Iterate over source and target basis.<br>
+<div class="info-desc">
+<p>Iterate over source and target basis.</p>
+</div>
 </div>
 </body></html>

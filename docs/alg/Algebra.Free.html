@@ -34,8 +34,10 @@
 </div>
 <h1>Functor <a href="type_Algebra.Free.html">Algebra.Free</a></h1>
 
-<pre><span class="keyword">module</span> Free: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="type"><a href="Monoid.T.html">Monoid.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Free.html">..</a> <code class="code">end</code></div></div></pre><div class="info module top">
-Free algebra of a monoid over a ring.<br>
+<pre><span id="MODULEFree"><span class="keyword">module</span> Free</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="type"><a href="Monoid.T.html">Monoid.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Free.html">..</a> <code class="code">end</code></div></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Free algebra of a monoid over a ring.</p>
+</div>
 </div>
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -60,7 +62,7 @@ Free algebra of a monoid over a ring.<br>
 
 <pre><span class="keyword">include</span> struct ... end</pre>
 
-<pre><span class="keyword">module</span> <a href="Algebra.Free.Field.html">Field</a>: <code class="type">K</code></pre>
+<pre><span id="MODULEField"><span class="keyword">module</span> <a href="Algebra.Free.Field.html">Field</a></span>: <code class="type">K</code></pre>
 <pre><span id="VALone"><span class="keyword">val</span> one</span> : <code class="type">t</code></pre>
 <pre><span id="VALmul_monomial"><span class="keyword">val</span> mul_monomial</span> : <code class="type">t -> M.t -> t</code></pre>
 <pre><span id="VALmul"><span class="keyword">val</span> mul</span> : <code class="type">t -> t -> t</code></pre>

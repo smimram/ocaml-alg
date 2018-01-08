@@ -32,33 +32,44 @@
 &nbsp;</div>
 <h1>Module <a href="type_Precategory.Make.Presentation.html">Precategory.Make.Presentation</a></h1>
 
-<pre><span class="keyword">module</span> Presentation: <code class="code">sig</code> <a href="Precategory.Make.Presentation.html">..</a> <code class="code">end</code></pre><div class="info module top">
-Presentation of a precategory: a "pre-polygraph".<br>
+<pre><span id="MODULEPresentation"><span class="keyword">module</span> Presentation</span>: <code class="code">sig</code> <a href="Precategory.Make.Presentation.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Presentation of a precategory: a "pre-polygraph".</p>
+</div>
 </div>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Precategory.Make.Presentation.E.html">E</a>: <code class="type">Map.Make</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
+<pre><span id="MODULEE"><span class="keyword">module</span> <a href="Precategory.Make.Presentation.E.html">E</a></span>: <code class="type">Map.Make</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">(<a href="Precategory.Make.html#TYPEcell">Precategory.Make.cell</a> * <a href="Precategory.Make.html#TYPEcell">Precategory.Make.cell</a>)<br>       E.t</code> </pre>
 
 
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">'a E.t</code></pre><div class="info ">
-Empty signature.<br>
+<div class="info-desc">
+<p>Empty signature.</p>
+</div>
 </div>
 
 <pre><span id="VALmem"><span class="keyword">val</span> mem</span> : <code class="type">'a E.t -><br>       E.key -> bool</code></pre><div class="info ">
-Does a generator belong the signature?<br>
+<div class="info-desc">
+<p>Does a generator belong the signature?</p>
+</div>
 </div>
 
 <pre><span id="VALboundary"><span class="keyword">val</span> boundary</span> : <code class="type">(E.key * E.key)<br>       E.t -><br>       E.key -><br>       E.key * E.key</code></pre>
 <pre><span id="VALsource"><span class="keyword">val</span> source</span> : <code class="type">(E.key * E.key)<br>       E.t -><br>       E.key -> E.key</code></pre><div class="info ">
-Source of a generator.<br>
+<div class="info-desc">
+<p>Source of a generator.</p>
+</div>
 </div>
 
 <pre><span id="VALtarget"><span class="keyword">val</span> target</span> : <code class="type">(E.key * E.key)<br>       E.t -><br>       E.key -> E.key</code></pre><div class="info ">
-Target of a generator.<br>
+<div class="info-desc">
+<p>Target of a generator.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Precategory.Make.Presentation.Cell.html">Cell</a>: <code class="code">sig</code> <a href="Precategory.Make.Presentation.Cell.html">..</a> <code class="code">end</code></pre><div class="info">
-Operations on cells in a presentation.
+<pre><span id="MODULECell"><span class="keyword">module</span> <a href="Precategory.Make.Presentation.Cell.html">Cell</a></span>: <code class="code">sig</code> <a href="Precategory.Make.Presentation.Cell.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Operations on cells in a presentation.</p>
+
 </div>
 </body></html>

@@ -34,14 +34,18 @@
 &nbsp;</div>
 <h1>Module <a href="type_Module.FreeLeft.Presentation.html">Module.FreeLeft.Presentation</a></h1>
 
-<pre><span class="keyword">module</span> Presentation: <code class="code">sig</code> <a href="Module.FreeLeft.Presentation.html">..</a> <code class="code">end</code></pre><div class="info module top">
-A presentation of a free module (a basis).<br>
+<pre><span id="MODULEPresentation"><span class="keyword">module</span> Presentation</span>: <code class="code">sig</code> <a href="Module.FreeLeft.Presentation.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>A presentation of a free module (a basis).</p>
+</div>
 </div>
 <hr width="100%">
 
 <pre><span id="TYPEpres"><span class="keyword">type</span> <code class="type"></code>pres</span> = <code class="type">X.t array</code> </pre>
 <div class="info ">
-A presentation.<br>
+<div class="info-desc">
+<p>A presentation.</p>
+</div>
 </div>
 
 
@@ -49,27 +53,37 @@ A presentation.<br>
 
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type"><a href="Module.FreeLeft.Presentation.html#TYPEt">t</a> -> <a href="Module.FreeLeft.Presentation.html#TYPEt">t</a></code></pre><div class="info ">
-Create a presentation.<br>
+<div class="info-desc">
+<p>Create a presentation.</p>
+</div>
 </div>
 
 <pre><span id="VALdim"><span class="keyword">val</span> dim</span> : <code class="type"><a href="Module.FreeLeft.Presentation.html#TYPEt">t</a> -> int</code></pre><div class="info ">
-Dimension of a presentation.<br>
+<div class="info-desc">
+<p>Dimension of a presentation.</p>
+</div>
 </div>
 
 <pre><span id="VALpresentation_to_string"><span class="keyword">val</span> presentation_to_string</span> : <code class="type">X.t array -> string</code></pre>
-<pre><span class="keyword">module</span> <a href="Module.FreeLeft.Presentation.Map.html">Map</a>: <code class="code">sig</code> <a href="Module.FreeLeft.Presentation.Map.html">..</a> <code class="code">end</code></pre><div class="info">
-Linear maps between presentations.
+<pre><span id="MODULEMap"><span class="keyword">module</span> <a href="Module.FreeLeft.Presentation.Map.html">Map</a></span>: <code class="code">sig</code> <a href="Module.FreeLeft.Presentation.Map.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Linear maps between presentations.</p>
+
 </div>
 
 <pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">(X.t -> unit) -> <a href="Module.FreeLeft.Presentation.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
-Iterate a function on the generators of a module.<br>
+<div class="info-desc">
+<p>Iterate a function on the generators of a module.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Module.FreeLeft.Presentation.Complex.html">Complex</a>: <code class="code">sig</code> <a href="Module.FreeLeft.Presentation.Complex.html">..</a> <code class="code">end</code></pre><div class="info">
-Chain complexes between free modules.
+<pre><span id="MODULEComplex"><span class="keyword">module</span> <a href="Module.FreeLeft.Presentation.Complex.html">Complex</a></span>: <code class="code">sig</code> <a href="Module.FreeLeft.Presentation.Complex.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Chain complexes between free modules.</p>
+
 </div>
 
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">X.t array -> string</code></pre><div class="info ">
-String representation.<br>
+<div class="info-desc">
+<p>String representation.</p>
+</div>
 </div>
 </body></html>

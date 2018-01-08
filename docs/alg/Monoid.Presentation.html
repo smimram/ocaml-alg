@@ -36,8 +36,10 @@
 </div>
 <h1>Functor <a href="type_Monoid.Presentation.html">Monoid.Presentation</a></h1>
 
-<pre><span class="keyword">module</span> Presentation: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Monoid.Presentation.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
-Oriented presentation of a monoid.<br>
+<pre><span id="MODULEPresentation"><span class="keyword">module</span> Presentation</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Monoid.Presentation.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Oriented presentation of a monoid.</p>
+</div>
 </div>
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -55,7 +57,7 @@ Oriented presentation of a monoid.<br>
 </table>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Monoid.Presentation.W.html">W</a>: <code class="type"><a href="Monoid.Free.html">Monoid.Free</a></code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
+<pre><span id="MODULEW"><span class="keyword">module</span> <a href="Monoid.Presentation.W.html">W</a></span>: <code class="type"><a href="Monoid.Free.html">Monoid.Free</a></code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
 <pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = {</code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
@@ -77,24 +79,33 @@ Oriented presentation of a monoid.<br>
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">X.t list -><br>       (W.t * W.t) list -><br>       <a href="Monoid.Presentation.html#TYPEt">t</a></code></pre>
 <pre><span id="VALorient"><span class="keyword">val</span> orient</span> : <code class="type">(W.t -> W.t -> bool) -><br>       <a href="Monoid.Presentation.html#TYPEt">t</a> -> <a href="Monoid.Presentation.html#TYPEt">t</a></code></pre><div class="info ">
-Orient rules according to a partial order.<br>
+<div class="info-desc">
+<p>Orient rules according to a partial order.</p>
+</div>
 </div>
 
 <pre><span id="VALnormalize"><span class="keyword">val</span> normalize</span> : <code class="type"><a href="Monoid.Presentation.html#TYPEt">t</a> -> W.t -> W.t</code></pre><div class="info ">
-Normalize a word.<br>
+<div class="info-desc">
+<p>Normalize a word.</p>
+</div>
 </div>
 
 <pre><span id="VALadd_rule"><span class="keyword">val</span> add_rule</span> : <code class="type"><a href="Monoid.Presentation.html#TYPEt">t</a> -><br>       W.t * W.t -> <a href="Monoid.Presentation.html#TYPEt">t</a></code></pre>
 <pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type"><a href="Monoid.Presentation.html#TYPEt">t</a> -> <a href="Monoid.Presentation.html#TYPEt">t</a></code></pre><div class="info ">
-Reduce a presentation.<br>
+<div class="info-desc">
+<p>Reduce a presentation.</p>
+</div>
 </div>
 
 <pre><span id="VALcomplete"><span class="keyword">val</span> complete</span> : <code class="type">(W.t -> W.t -> bool) -><br>       <a href="Monoid.Presentation.html#TYPEt">t</a> -> <a href="Monoid.Presentation.html#TYPEt">t</a></code></pre><div class="info ">
-Knuth-Bendix completion wrt a total order.<br>
+<div class="info-desc">
+<p>Knuth-Bendix completion wrt a total order.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Monoid.Presentation.Make.html">Make</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">P</code><code class="code"> : </code><code class="code">sig</code><div class="sig_block">
-<pre><span id="VALpresentation"><span class="keyword">val</span> presentation</span> : <code class="type"><a href="Monoid.Presentation.html#TYPEt">t</a></code></pre></div><code class="code">end</code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Monoid.Presentation.Make.html">..</a> <code class="code">end</code></div></pre><div class="info">
-Make a monoid from a convergent presentation.
+<pre><span id="MODULEMake"><span class="keyword">module</span> <a href="Monoid.Presentation.Make.html">Make</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">P</code><code class="code"> : </code><code class="code">sig</code></pre><div class="sig_block">
+<pre><span id="VALpresentation"><span class="keyword">val</span> presentation</span> : <code class="type"><a href="Monoid.Presentation.html#TYPEt">t</a></code></pre></div><pre><code class="code">end</code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Monoid.Presentation.Make.html">..</a> <code class="code">end</code></div></pre><div class="info">
+<p>Make a monoid from a convergent presentation.</p>
+
 </div>
 </body></html>

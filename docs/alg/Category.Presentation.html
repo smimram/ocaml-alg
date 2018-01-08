@@ -36,8 +36,10 @@
 </div>
 <h1>Functor <a href="type_Category.Presentation.html">Category.Presentation</a></h1>
 
-<pre><span class="keyword">module</span> Presentation: <div class="sig_block"><code class="code">functor (</code><code class="code">V</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">E</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Presentation.html">..</a> <code class="code">end</code></div></div></pre><div class="info module top">
-Presentation of a category.<br>
+<pre><span id="MODULEPresentation"><span class="keyword">module</span> Presentation</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">V</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">E</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Category.Presentation.html">..</a> <code class="code">end</code></div></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Presentation of a category.</p>
+</div>
 </div>
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -60,8 +62,8 @@ Presentation of a category.<br>
 </table>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Category.Presentation.GP.html">GP</a>: <code class="type"><a href="Graph.Presentation.html">Graph.Presentation</a></code><code class="code">(</code><code class="type">V</code><code class="code">)</code><code class="code">(</code><code class="type">E</code><code class="code">)</code></pre>
-<pre><span class="keyword">module</span> <a href="Category.Presentation.Free.html">Free</a>: <code class="type"><a href="Category.Free.html">Category.Free</a></code><code class="code">(</code><code class="type">GP.Graph</code><code class="code">)</code></pre>
+<pre><span id="MODULEGP"><span class="keyword">module</span> <a href="Category.Presentation.GP.html">GP</a></span>: <code class="type"><a href="Graph.Presentation.html">Graph.Presentation</a></code><code class="code">(</code><code class="type">V</code><code class="code">)</code><code class="code">(</code><code class="type">E</code><code class="code">)</code></pre>
+<pre><span id="MODULEFree"><span class="keyword">module</span> <a href="Category.Presentation.Free.html">Free</a></span>: <code class="type"><a href="Category.Free.html">Category.Free</a></code><code class="code">(</code><code class="type">GP.Graph</code><code class="code">)</code></pre>
 <pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = {</code></pre><table class="typetable">
 <tr>
 <td align="left" valign="top" >
@@ -80,18 +82,24 @@ Presentation of a category.<br>
 }
 
 <div class="info ">
-A presentation.<br>
+<div class="info-desc">
+<p>A presentation.</p>
+</div>
 </div>
 
 
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Category.Presentation.html#TYPEt">t</a></code></pre><div class="info ">
-Empty presentation.<br>
+<div class="info-desc">
+<p>Empty presentation.</p>
+</div>
 </div>
 
 <pre><span id="VALadd_object"><span class="keyword">val</span> add_object</span> : <code class="type"><a href="Category.Presentation.html#TYPEt">t</a> -> V.t -> <a href="Category.Presentation.html#TYPEt">t</a></code></pre>
 <pre><span id="VALadd_morphism"><span class="keyword">val</span> add_morphism</span> : <code class="type"><a href="Category.Presentation.html#TYPEt">t</a> -> E.t -> V.t -> V.t -> <a href="Category.Presentation.html#TYPEt">t</a></code></pre>
 <pre><span id="VALmorphism"><span class="keyword">val</span> morphism</span> : <code class="type"><a href="Category.Presentation.html#TYPEt">t</a> -> E.t -> Free.E.t</code></pre><div class="info ">
-Morphism corresponding to a generator.<br>
+<div class="info-desc">
+<p>Morphism corresponding to a generator.</p>
+</div>
 </div>
 
 <pre><span id="VALadd_relation"><span class="keyword">val</span> add_relation</span> : <code class="type"><a href="Category.Presentation.html#TYPEt">t</a> -><br>       Free.E.t -><br>       Free.E.t -> <a href="Category.Presentation.html#TYPEt">t</a></code></pre>

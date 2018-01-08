@@ -36,28 +36,34 @@
 </div>
 <h1>Module <a href="type_Module.html">Module</a></h1>
 
-<pre><span class="keyword">module</span> Module: <code class="code">sig</code> <a href="Module.html">..</a> <code class="code">end</code></pre><div class="info module top">
-Modules.<br>
+<pre><span id="MODULEModule"><span class="keyword">module</span> Module</span>: <code class="code">sig</code> <a href="Module.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Modules.</p>
+</div>
 </div>
 <hr width="100%">
 
-<pre><span class="keyword">module type</span> <a href="Module.Left.html">Left</a> = <code class="code">sig</code> <a href="Module.Left.html">..</a> <code class="code">end</code></pre><div class="info">
-A left module.
+<pre><span id="MODULETYPELeft"><span class="keyword">module type</span> <a href="Module.Left.html">Left</a></span> = <code class="code">sig</code> <a href="Module.Left.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>A left module.</p>
+
 </div>
 
-<pre><span class="keyword">module type</span> <a href="Module.Right.html">Right</a> = <code class="code">sig</code> <a href="Module.Right.html">..</a> <code class="code">end</code></pre><div class="info">
-A right module.
+<pre><span id="MODULETYPERight"><span class="keyword">module type</span> <a href="Module.Right.html">Right</a></span> = <code class="code">sig</code> <a href="Module.Right.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>A right module.</p>
+
 </div>
 
-<pre><span class="keyword">module type</span> <a href="Module.T.html">T</a> = <code class="type"><a href="Module.Left.html">Left</a></code></pre><div class="info">
-By default, by a module, we mean a left module.
+<pre><span id="MODULETYPET"><span class="keyword">module type</span> <a href="Module.T.html">T</a></span> = <code class="type"><a href="Module.Left.html">Left</a></code></pre><div class="info">
+<p>By default, by a module, we mean a left module.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Module.FreeLeft.html">FreeLeft</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Module.FreeLeft.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
-Free left module.
+<pre><span id="MODULEFreeLeft"><span class="keyword">module</span> <a href="Module.FreeLeft.html">FreeLeft</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Module.FreeLeft.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
+<p>Free left module.</p>
+
 </div>
 
-<pre><span class="keyword">module</span> <a href="Module.FreeLeftModule.html">FreeLeftModule</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Module.FreeLeft.html">FreeLeft</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></div></div></pre>
-<pre><span class="keyword">module</span> <a href="Module.Free.html">Free</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Module.FreeLeft.html">FreeLeft</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></div></div></pre>
-<pre><span class="keyword">module</span> <a href="Module.FreeRight.html">FreeRight</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Module.FreeRight.html">..</a> <code class="code">end</code></div></div></pre>
-<pre><span class="keyword">module</span> <a href="Module.FreeRightModule.html">FreeRightModule</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Module.FreeRight.html">FreeRight</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></div></div></pre></body></html>
+<pre><span id="MODULEFreeLeftModule"><span class="keyword">module</span> <a href="Module.FreeLeftModule.html">FreeLeftModule</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Module.FreeLeft.html">FreeLeft</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></div></div></pre>
+<pre><span id="MODULEFree"><span class="keyword">module</span> <a href="Module.Free.html">Free</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Module.FreeLeft.html">FreeLeft</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></div></div></pre>
+<pre><span id="MODULEFreeRight"><span class="keyword">module</span> <a href="Module.FreeRight.html">FreeRight</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Module.FreeRight.html">..</a> <code class="code">end</code></div></div></pre>
+<pre><span id="MODULEFreeRightModule"><span class="keyword">module</span> <a href="Module.FreeRightModule.html">FreeRightModule</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">R</code><code class="code"> : </code><code class="type"><a href="Ring.T.html">Ring.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Module.FreeRight.html">FreeRight</a></code><code class="code">(</code><code class="type">R</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></div></div></pre></body></html>

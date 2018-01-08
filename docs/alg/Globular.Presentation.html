@@ -36,8 +36,10 @@
 </div>
 <h1>Functor <a href="type_Globular.Presentation.html">Globular.Presentation</a></h1>
 
-<pre><span class="keyword">module</span> Presentation: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Globular.Presentation.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
-Presented globular set.<br>
+<pre><span id="MODULEPresentation"><span class="keyword">module</span> Presentation</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Globular.Presentation.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Presented globular set.</p>
+</div>
 </div>
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -55,38 +57,52 @@ Presented globular set.<br>
 </table>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Globular.Presentation.Cell.html">Cell</a>: <code class="type"><a href="Alphabet.Prod3.html">Alphabet.Prod3</a></code><code class="code">(</code><code class="type"><a href="Alphabet.Int.html">Alphabet.Int</a></code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
-<pre><span class="keyword">module</span> <a href="Globular.Presentation.E.html">E</a>: <code class="type"><a href="Alphabet.Map.html">Alphabet.Map</a></code><code class="code">(</code><code class="type">X</code><code class="code">)</code><code class="code">(</code><code class="type"><a href="Globular.Presentation.Cell.html">Cell</a></code><code class="code">)</code></pre>
+<pre><span id="MODULECell"><span class="keyword">module</span> <a href="Globular.Presentation.Cell.html">Cell</a></span>: <code class="type"><a href="Alphabet.Prod3.html">Alphabet.Prod3</a></code><code class="code">(</code><code class="type"><a href="Alphabet.Int.html">Alphabet.Int</a></code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
+<pre><span id="MODULEE"><span class="keyword">module</span> <a href="Globular.Presentation.E.html">E</a></span>: <code class="type"><a href="Alphabet.Map.html">Alphabet.Map</a></code><code class="code">(</code><code class="type">X</code><code class="code">)</code><code class="code">(</code><code class="type"><a href="Globular.Presentation.Cell.html">Cell</a></code><code class="code">)</code></pre>
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">E.t</code> </pre>
 <div class="info ">
-A globular set.<br>
+<div class="info-desc">
+<p>A globular set.</p>
+</div>
 </div>
 
 
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a></code></pre><div class="info ">
-The empty globular set.<br>
+<div class="info-desc">
+<p>The empty globular set.</p>
+</div>
 </div>
 
 <pre><span id="VALmem"><span class="keyword">val</span> mem</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a> -> X.t -> bool</code></pre>
 <pre><span id="VALdim"><span class="keyword">val</span> dim</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a> -> X.t -> <a href="Alphabet.Int.html#TYPEt">Alphabet.Int.t</a></code></pre><div class="info ">
-Dimension of a generator.<br>
+<div class="info-desc">
+<p>Dimension of a generator.</p>
+</div>
 </div>
 
 <pre><span id="VALsrc"><span class="keyword">val</span> src</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a> -> X.t -> X.t</code></pre><div class="info ">
-Source of a cell.<br>
+<div class="info-desc">
+<p>Source of a cell.</p>
+</div>
 </div>
 
 <pre><span id="VALtgt"><span class="keyword">val</span> tgt</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a> -> X.t -> X.t</code></pre><div class="info ">
-Target of a cell.<br>
+<div class="info-desc">
+<p>Target of a cell.</p>
+</div>
 </div>
 
 <pre><span id="VALadd0"><span class="keyword">val</span> add0</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a> -> X.t -> <a href="Globular.Presentation.html#TYPEt">t</a></code></pre><div class="info ">
-Add a 0-cell.<br>
+<div class="info-desc">
+<p>Add a 0-cell.</p>
+</div>
 </div>
 
 <pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a> -> X.t -> X.t -> X.t -> <a href="Globular.Presentation.html#TYPEt">t</a></code></pre><div class="info ">
-Add an n-cell.<br>
+<div class="info-desc">
+<p>Add an n-cell.</p>
+</div>
 </div>
 
-<pre><span class="keyword">module</span> <a href="Globular.Presentation.Make.html">Make</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">P</code><code class="code"> : </code><code class="code">sig</code><div class="sig_block">
-<pre><span id="VALpresentation"><span class="keyword">val</span> presentation</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a></code></pre></div><code class="code">end</code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Globular.Presentation.Make.html">..</a> <code class="code">end</code></div></pre></body></html>
+<pre><span id="MODULEMake"><span class="keyword">module</span> <a href="Globular.Presentation.Make.html">Make</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">P</code><code class="code"> : </code><code class="code">sig</code></pre><div class="sig_block">
+<pre><span id="VALpresentation"><span class="keyword">val</span> presentation</span> : <code class="type"><a href="Globular.Presentation.html#TYPEt">t</a></code></pre></div><pre><code class="code">end</code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Globular.Presentation.Make.html">..</a> <code class="code">end</code></div></pre></body></html>
