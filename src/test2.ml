@@ -5,7 +5,7 @@ module M = struct
     Array.init (String.length s) (fun i -> s.[i])
 end
 module K = Field.Int
-module P = Algebra.Presentation(K)(Alphabet.Char)
+module P = Algebra.Pres(K)(Alphabet.Char)
 module A = P.A
 
 let () =
@@ -39,10 +39,10 @@ let () =
   Printf.printf "%s\n\n%!" (P.to_string pres);
   let n = 10 in
   let d = P.Anick.resolution ~augmentation pres (n+1) in
-  Printf.printf "%s\n%!" (P.Anick.AMod.Presentation.Complex.to_string d);
+  Printf.printf "%s\n%!" (P.Anick.AMod.Pres.Complex.to_string d);
   let d = P.Anick.complex ~augmentation pres (n+1) in
-  Printf.printf "%s\n%!" (P.Anick.KMod.Presentation.Complex.to_string d);
-  assert (P.Anick.KMod.Presentation.Complex.valid d);
+  Printf.printf "%s\n%!" (P.Anick.KMod.Pres.Complex.to_string d);
+  assert (P.Anick.KMod.Pres.Complex.valid d);
   let h = P.Anick.homology ~augmentation pres n in
   Array.iteri (fun i n -> Printf.printf "H%d = %d\n" i n) h;
   ()

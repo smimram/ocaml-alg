@@ -31,8 +31,8 @@ end
 module FreeCategory (G : Graph.T) : T = Free(G)
 
 (** Presentation of a category. *)
-module Presentation (V : Alphabet.T) (E : Alphabet.T) = struct
-  module GP = Graph.Presentation(V)(E)
+module Pres (V : Alphabet.T) (E : Alphabet.T) = struct
+  module GP = Graph.Pres(V)(E)
   module Free = Free(GP.Graph)
 
   (** A presentation. *)

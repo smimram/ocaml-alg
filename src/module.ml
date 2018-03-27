@@ -140,7 +140,7 @@ module FreeLeft (R : Ring.T) (X : Alphabet.T) = struct
   end
 
   (** A presentation of a free module (a basis). *)
-  module Presentation = struct
+  module Pres = struct
     (** A presentation. *)
     type pres = X.t array
 

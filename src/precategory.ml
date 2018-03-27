@@ -79,7 +79,7 @@ module Make (X : Alphabet.T) = struct
       failwith "TODO"
 
   (** Presentation of a precategory: a "pre-polygraph". *)
-  module Presentation = struct
+  module Pres = struct
     module E = Map.Make(X)
 
     (* By convention, a zero cell has (physically) itself as source and target. *)

@@ -277,7 +277,7 @@ end
 module FreeMonoid (X : Alphabet.T) : T = Free(X)
 
 (** Oriented presentation of a monoid. *)
-module Presentation (X : Alphabet.T) = struct
+module Pres (X : Alphabet.T) = struct
   module W = Free(X)
 
   type t =
@@ -367,7 +367,7 @@ module Presentation (X : Alphabet.T) = struct
 end
 
 module Generate (X : Alphabet.T with type t = int) = struct
-  module Presentation = Presentation(X)
+  module Pres = Pres(X)
 
   let intset n =
     let rec aux k =

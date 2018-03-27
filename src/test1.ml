@@ -5,7 +5,7 @@ module M = struct
     Array.init (String.length s) (fun i -> s.[i])
 end
 module K = Field.Int
-module P = Algebra.Presentation(K)(Alphabet.Char)
+module P = Algebra.Pres(K)(Alphabet.Char)
 module A = P.A
 
 (*
@@ -37,7 +37,7 @@ let () =
   Printf.printf "%s\n\n%!" (P.to_string pres);
   let n = 2 in
   let d = P.Anick.resolution pres n in
-  Printf.printf "%s\n%!" (P.Anick.AMod.Presentation.Complex.to_string d);
+  Printf.printf "%s\n%!" (P.Anick.AMod.Pres.Complex.to_string d);
   let h = P.Anick.homology pres n in
   Array.iteri (fun i n -> Printf.printf "H%d = %d\n" i n) h;
   ()
@@ -73,11 +73,11 @@ let () =
   Printf.printf "Resolving...\n%!";
   let n = 5 in
   let d = P.Anick.resolution pres n in
-  Printf.printf "%s\n%!" (P.Anick.AMod.Presentation.Complex.to_string d);
+  Printf.printf "%s\n%!" (P.Anick.AMod.Pres.Complex.to_string d);
   Printf.printf "Building complex...\n%!";
   let d = P.Anick.complex pres n in
-  assert (P.Anick.KMod.Presentation.Complex.valid d);
-  Printf.printf "%s\n%!" (P.Anick.KMod.Presentation.Complex.to_string d);
+  assert (P.Anick.KMod.Pres.Complex.valid d);
+  Printf.printf "%s\n%!" (P.Anick.KMod.Pres.Complex.to_string d);
   Printf.printf "Computing homology...\n%!";
   let h = P.Anick.homology pres n in
   Array.iteri (fun i n -> Printf.printf "H%d = %d\n" i n) h

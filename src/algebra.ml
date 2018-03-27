@@ -40,7 +40,7 @@ end
 module FreeAlgebra (K : Field.T) (M : Monoid.T) = (Free(K)(M) : T)
 
 (** Presentation of an algebra. *)
-module Presentation (K : Field.T) (X : Alphabet.T) = struct
+module Pres (K : Field.T) (X : Alphabet.T) = struct
   module M = Monoid.Free(X)
   module A = Free(K)(M)
 
@@ -384,9 +384,9 @@ module Presentation (K : Field.T) (X : Alphabet.T) = struct
           d.(i) <- AMod.Map.set d.(i) c p
         ) cc.(i+1)
       done;
-      let cc = Array.map (fun l -> AMod.Presentation.make (Array.of_list l)) cc in
-      let d = Array.mapi (fun i d -> AMod.Presentation.Map.of_map d cc.(i+1) cc.(i)) d in
-      AMod.Presentation.Complex.make cc d
+      let cc = Array.map (fun l -> AMod.Pres.make (Array.of_list l)) cc in
+      let d = Array.mapi (fun i d -> AMod.Pres.Map.of_map d cc.(i+1) cc.(i)) d in
+      AMod.Pres.Complex.make cc d
 
     module KMod = Module.Free(K)(M.Anick)
     module MF = Matrix.Functor(A)(K)
@@ -396,8 +396,8 @@ module Presentation (K : Field.T) (X : Alphabet.T) = struct
     let complex ?augmentation pres n =
       let augmentation = match augmentation with Some augmentation -> augmentation | None -> Augmentation.graded pres in
       let r = resolution ~augmentation pres n in
-      let cc = AMod.Presentation.Complex.modules r in
-      let d = AMod.Presentation.Complex.maps r in
+      let cc = AMod.Pres.Complex.modules r in
+      let d = AMod.Pres.Complex.maps r in
       (* Tensor morphisms by the algebra. *)
       let d =
         let id x = x in
@@ -412,19 +412,19 @@ module Presentation (K : Field.T) (X : Alphabet.T) = struct
           ) d
         ) d
       in
-      KMod.Presentation.Complex.make cc d
+      KMod.Pres.Complex.make cc d
 
     let betti ?augmentation pres n =
       let c = complex ?augmentation pres (n+1) in
-      KMod.Presentation.Complex.betti c
+      KMod.Pres.Complex.betti c
   end
 end
 
 module Generate (K : Field.T) (X : Alphabet.T with type t = int) = struct
-  module Presentation = Presentation(K)(X)
-  open Presentation
-  module M = Presentation.M
-  module A = Presentation.A
+  module Pres = Pres(K)(X)
+  open Pres
+  module M = Pres.M
+  module A = Pres.A
 
   let intset n =
     let rec aux k =

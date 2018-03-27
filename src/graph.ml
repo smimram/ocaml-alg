@@ -24,7 +24,7 @@ module Terminal : T = struct
 end
 
 (** Presentation of a graph. *)
-module Presentation (V : Alphabet.T) (E : Alphabet.T) = struct
+module Pres (V : Alphabet.T) (E : Alphabet.T) = struct
   module Graph = struct
     module V = V
     module E = struct

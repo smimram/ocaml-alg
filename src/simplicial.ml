@@ -14,5 +14,5 @@ module type T = sig
   val face : t -> int -> int
 end
 
-module Presentation (X : Alphabet.T) = struct
+module Pres (X : Alphabet.T) = struct
 end

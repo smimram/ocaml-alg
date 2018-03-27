@@ -36,7 +36,7 @@ module Terminal :  T = struct
 end
 
 (** Presented globular set. *)
-module Presentation (X : Alphabet.T) = struct
+module Pres (X : Alphabet.T) = struct
   (* Cells coded as element, (source,target), the source and target being the
      element for 0-cells *)
   module Cell = Alphabet.Prod3(Alphabet.Int)(X)(X)

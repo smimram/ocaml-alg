@@ -5,7 +5,7 @@ module M = struct
     Array.init (String.length s) (fun i -> s.[i])
 end
 module K = Field.Int
-module P = Algebra.Presentation(K)(Alphabet.Char)
+module P = Algebra.Pres(K)(Alphabet.Char)
 module A = P.A
 
 let () =
