@@ -1,25 +1,29 @@
 (** Matrices. *)
 
-module type T = sig
-  type t
-end
-
+(** Matrices over a ring. *)
 module Make (R:Ring.T) = struct
+  (** A matrix. *)
   type t = R.t array array
 
   type matrix = t
 
+  (** Zero matrix. *)
   let zero r c : t = Array.init r (fun _ -> Array.make c R.zero)
 
-  let init r c f : t=
+  (** Initialize a matrix. *)
+  let init r c f : t =
     Array.init r (fun i -> Array.init c (fun j -> f i j))
-    
+
+  (** Number of rows. *)
   let rows (m : t) = Array.length m
-    
+
+  (** Number of columns. *)
   let cols (m : t) = Array.length m.(0)
 
+  (** Coefficient. *)
   let get (m:t) i j = m.(i).(j)
 
+  (** String representation. *)
   let to_string m =
     let ans = ref "" in
     for i = 0 to rows m - 1 do
@@ -145,16 +149,19 @@ module Make (R:Ring.T) = struct
       let m = zero (Array.length rows) (Array.length cols) in
       L.of_array rows, L.of_array cols, m
 
+    (** Set coefficient. *)
     let set ((r,c,m):t) i j x =
       let i = L.find i r in
       let j = L.find j c in
       m.(i).(j) <- x
 
+    (** Coefficient. *)
     let get ((r,c,m):t) i j =
       let i = L.find i r in
       let j = L.find j c in
       m.(i).(j)
 
+    (** Rank. *)
     let rank ((r,c,m):t) = rank m
 
     let nullity ((r,c,m):t) = nullity m

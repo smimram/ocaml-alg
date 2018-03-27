@@ -5,6 +5,7 @@ module type T = sig
   (** A cell. *)
   type t
 
+  (** String representation of a cell. *)
   val to_string : t -> string
 
   (** Dimension. *)
@@ -36,39 +37,40 @@ end
 
 (** Presented globular set. *)
 module Presentation (X : Alphabet.T) = struct
-  module E = Map.Make(X)
+  (* Cells coded as element, (source,target), the source and target being the
+     element for 0-cells *)
+  module Cell = Alphabet.Prod3(Alphabet.Int)(X)(X)
+  module E = Alphabet.Map(X)(Cell)
 
   (** A globular set. *)
-  (* coded as element, (source,target), the source and target being the
-     element for 0-cells *)
-  type t = (int * X.t * X.t) E.t
+  type t = E.t
 
   (** The empty globular set. *)
   let empty : t = E.empty
 
-  let mem (s:t) (g:X.t) = E.mem g s
+  let mem (s:t) (g:X.t) = E.mem s g
 
   (** Dimension of a generator. *)
   let dim (s:t) (g:X.t) =
-    let n,_,_ = E.find g s in
+    let n,_,_ = E.app s g in
     n
 
   (** Source of a cell. *)
   let src (s:t) (g:X.t) =
     assert (dim s g > 0);
-    let n,src,_ = E.find g s in
+    let n,src,_ = E.app s g in
     assert (n > 0);
     src
 
   (** Target of a cell. *)
   let tgt (s:t) (g:X.t) =
-    let n,_,tgt = E.find g s in
+    let n,_,tgt = E.app s g in
     assert (n > 0);
     tgt
 
   (** Add a 0-cell. *)
   let add0 (s:t) (g:X.t) : t =
-    E.add g (0,g,g) s
+    E.add s g (0,g,g)
 
   (** Add an n-cell. *)
   let add s (g:X.t) src tgt : t =
@@ -76,7 +78,7 @@ module Presentation (X : Alphabet.T) = struct
     assert (mem s tgt);
     let n = dim s src + 1 in
     assert (dim s tgt + 1 = n);
-    E.add g (n,src,tgt) s
+    E.add s g (n,src,tgt)
 
   module Make (P : sig val presentation : t end) : T = struct
     type t = X.t

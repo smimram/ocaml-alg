@@ -128,7 +128,10 @@ module Map (A:T) (B:T) = struct
 
   let app (f:t) (x:A.t) = M.find x f
 
-  let add f x v = M.add x v f
+  let add (f:t) (x:A.t) v : t = M.add x v f
+
+  (** Is an element in the domain? *)
+  let mem (f:t) (x:A.t) = M.mem x f
 
   let iter = M.iter
 end
