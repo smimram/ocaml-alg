@@ -23,17 +23,22 @@ module Terminal : T = struct
   let tgt () = ()
 end
 
+module Full (V : Alphabet.T) (E : Alphabet.T) = struct
+  module V = V
+
+  module E = struct
+    include Alphabet.Prod(E)(Alphabet.Prod(V)(V))
+    let to_string (f,(x,y)) = E.to_string f
+  end
+
+  let src (f,(x,y)) = x
+
+  let tgt (f,(x,y)) = y
+end
+
 (** Presentation of a graph. *)
 module Pres (V : Alphabet.T) (E : Alphabet.T) = struct
-  module Graph = struct
-    module V = V
-    module E = struct
-      include Alphabet.Prod(E)(Alphabet.Prod(V)(V))
-      let to_string (f,(x,y)) = E.to_string f
-    end
-    let src (f,(x,y)) = x
-    let tgt (f,(x,y)) = y
-  end
+  module Graph = Full(V)(E)
 
   type t =
     {

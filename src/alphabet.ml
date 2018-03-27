@@ -31,6 +31,9 @@ module Char = struct
 end
 module CharAlphabet : (T with type t = char) = Char
 
+(* Backup since we need it afterward. *)
+module Str = String
+
 module String : (T with type t = string) = struct
   type t = string
   let eq s t = (s:string) = (t:string)
@@ -115,8 +118,31 @@ module Pow (A:T) = struct
   let mem (u:t) (x:A.t) = S.mem x u
   let iter (f:A.t->unit) (u:t) = S.iter f u
 end
-
 module PowAlphabet (A:T) : T = Pow(A)
+
+(** Free monoid monad. *)
+module List (A:T) = struct
+  type t = A.t list
+
+  let eq u v =
+    try
+      List.for_all2 (fun x y -> A.eq x y) u v
+    with
+    | Invalid_argument _ -> false
+
+  let to_string u =
+    Str.concat "" (List.map A.to_string u)
+
+  let rec compare u v =
+    match u,v with
+    | x::u, y::v ->
+       let c = A.compare x y in
+       if c <> 0 then c else compare u v
+    | [], [] -> 0
+    | [], _ -> -1
+    | _, [] -> 1
+end
+module ListAlphabet (A:T) : T = List(A)
 
 (** Functions between alphabets. *)
 module Map (A:T) (B:T) = struct

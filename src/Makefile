@@ -1,5 +1,5 @@
 SOURCES = alphabet.ml monoid.ml group.ml ring.ml field.ml matrix.ml module.ml algebra.ml series.ml \
-	graph.ml globular.ml simplicial.ml category.ml precategory.ml \
+	hypergraph.ml graph.ml globular.ml simplicial.ml category.ml precategory.ml \
 	automaton.ml
 RESULT = alg
 INCDIRS =
