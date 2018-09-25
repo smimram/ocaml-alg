@@ -1,6 +1,6 @@
 SOURCES = alphabet.ml monoid.ml group.ml ring.ml field.ml matrix.ml module.ml algebra.ml series.ml \
 	hypergraph.ml graph.ml globular.ml simplicial.ml category.ml precategory.ml \
-	automaton.ml
+	automaton.ml term.ml
 RESULT = alg
 INCDIRS =
 LIBS =
@@ -15,7 +15,7 @@ OCAMLDOCFLAGS = -sort
 all: dncl
 
 test: all
-	$(OCAMLOPT) -annot -I .. alg.cmxa test4.ml -o test
+	$(OCAMLOPT) -annot -I .. alg.cmxa test5.ml -o test
 	OCAMLRUNPARAM=b ./test
 
 include OCamlMakefile
