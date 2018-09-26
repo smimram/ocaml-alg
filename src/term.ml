@@ -241,14 +241,17 @@ let matches t1 t2 =
  *)
 
 (** Whether two terms are alpha-equivalent *)
-let equivalent t1 t2 =
+let equivalent ?(s=Subst.empty) t1 t2 =
   let rec aux q s =
     match q with
     | [] -> s
     | p::q ->
        match p with
        | Var x, Var y ->
-          Subst.add s x (Var y)
+          if Subst.in_dom s x then (if eq (Subst.app s (Var x)) (Var y) then aux q s else raise Not_unifiable)
+          else
+            let s = Subst.add s x (Var y) in
+            aux q s
        | _, Var _ | Var _, _ -> raise Not_unifiable
        | App (f1,a1), App (f2,a2) ->
           if not (Op.eq f1 f2) then raise Not_unifiable;
@@ -258,7 +261,7 @@ let equivalent t1 t2 =
           done;
           aux !q s
   in
-  aux [t1,t2] Subst.empty
+  aux [t1,t2] s
 
 (** Positions in terms. *)
 module Pos = struct
@@ -302,16 +305,17 @@ module RS = struct
 
     let target ((r,s,t):t) = t
 
+    let to_string r =
+      name r ^ " : " ^ to_string (source r) ^ " -> " ^ to_string (target r)
+
     let eq (r1:t) (r2:t) =
+      (* Printf.printf "EQ %s WITH %s\n%!" (to_string r1) (to_string r2); *)
       if name r1 <> name r2 then false else
         try
           let s = equivalent (source r1) (source r2) in
           eq (Subst.app s (target r1)) (target r2)
         with
         | Not_unifiable -> false
-
-    let to_string r =
-      name r ^ " : " ^ to_string (source r) ^ " -> " ^ to_string (target r)
 
     let refresh ((r,s,t):t) =
       let ss = ref Subst.empty in
@@ -363,14 +367,19 @@ module RS = struct
 
     let subst ((t,p,r,s):t) = s
 
-    let eq (s1:t) (s2:t) =
-      eq (source s1) (source s2)
-      && Pos.eq (pos s1) (pos s2)
-      && Rule.eq (rule s1) (rule s2)
-      && Subst.eq (subst s1) (subst s2)
-
     let to_string s =
       to_string (source s) ^ " -" ^ rule_name s ^ "@" ^ Pos.to_string (pos s) ^ "-> " ^ string_of_term (target s)
+
+    let eq (s1:t) (s2:t) =
+      (* Printf.printf "EQ %s WITH %s\n%!" (to_string s1) (to_string s2); *)
+      try
+        let _ = equivalent (source s1) (source s2) in
+        (* TODO: is it ok not to propagate the substitution to the rules? *)
+        Pos.eq (pos s1) (pos s2)
+        && Rule.eq (rule s1) (rule s2)
+        && Subst.eq (subst s1) (subst s2)
+      with
+      | Not_unifiable -> false
   end
 
   type step = Step.t
@@ -421,6 +430,12 @@ module RS = struct
     let rec to_string = function
       | Empty t -> string_of_term t
       | Step (p,s) -> to_string p ^ " -" ^ Step.rule_name s ^ "-> " ^ string_of_term (Step.target s)
+
+    let rec append p = function
+      | Step (q, s) -> Step (append p q, s)
+      | Empty t ->
+         assert (eq (target p) t);
+         p
   end
 
   (** Normalize a term. *)
@@ -469,4 +484,15 @@ module RS = struct
       | [] -> []
     in
     sym steps
+
+  (** Squier completion. *)
+  let squier rs =
+    List.map
+      (fun (s1,s2) ->
+        let p1 = Path.append (Path.step (Path.empty (Step.source s1)) s1) (normalize rs (Step.target s1)) in
+        let p2 = Path.append (Path.step (Path.empty (Step.source s2)) s2) (normalize rs (Step.target s2)) in
+        assert (eq (Path.target p1) (Path.target p2));
+        p1, p2
+      )
+      (critical rs)
 end
