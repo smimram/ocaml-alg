@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Term.Pos.html">
+<link rel="Up" href="Term.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Algebra" rel="Chapter" href="Algebra.html">
+<link title="Alphabet" rel="Chapter" href="Alphabet.html">
+<link title="Automaton" rel="Chapter" href="Automaton.html">
+<link title="Category" rel="Chapter" href="Category.html">
+<link title="Field" rel="Chapter" href="Field.html">
+<link title="Globular" rel="Chapter" href="Globular.html">
+<link title="Graph" rel="Chapter" href="Graph.html">
+<link title="Group" rel="Chapter" href="Group.html">
+<link title="Hypergraph" rel="Chapter" href="Hypergraph.html">
+<link title="Matrix" rel="Chapter" href="Matrix.html">
+<link title="Module" rel="Chapter" href="Module.html">
+<link title="Monoid" rel="Chapter" href="Monoid.html">
+<link title="Precategory" rel="Chapter" href="Precategory.html">
+<link title="Ring" rel="Chapter" href="Ring.html">
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html">
+<link title="Term" rel="Chapter" href="Term.html"><title>Term.RS</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Term.Pos.html" title="Term.Pos">Previous</a>
+&nbsp;<a class="up" href="Term.html" title="Term">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Term.RS.html">Term.RS</a></h1>
+
+<pre><span id="MODULERS"><span class="keyword">module</span> RS</span>: <code class="code">sig</code> <a href="Term.RS.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Rewriting systems.</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="MODULERule"><span class="keyword">module</span> <a href="Term.RS.Rule.html">Rule</a></span>: <code class="code">sig</code> <a href="Term.RS.Rule.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Rewriting rules.</p>
+
+</div>
+
+<pre><span id="TYPErule"><span class="keyword">type</span> <code class="type"></code>rule</span> = <code class="type"><a href="Term.RS.Rule.html#TYPEt">Rule.t</a></code> </pre>
+
+
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Term.RS.html#TYPErule">rule</a> list</code> </pre>
+<div class="info ">
+<div class="info-desc">
+<p>A rewriting system.</p>
+</div>
+</div>
+
+
+<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Empty rewriting system.</p>
+</div>
+</div>
+
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Rule.t</a> list -> string</code></pre>
+<pre><span id="MODULEStep"><span class="keyword">module</span> <a href="Term.RS.Step.html">Step</a></span>: <code class="code">sig</code> <a href="Term.RS.Step.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Rewriting steps.</p>
+
+</div>
+
+<pre><span id="TYPEstep"><span class="keyword">type</span> <code class="type"></code>step</span> = <code class="type"><a href="Term.RS.Step.html#TYPEt">Step.t</a></code> </pre>
+
+
+<pre><span id="VALsteps"><span class="keyword">val</span> steps</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.RS.html#TYPEstep">step</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p>All possible rewriting steps.</p>
+</div>
+</div>
+
+<pre><span id="MODULEPath"><span class="keyword">module</span> <a href="Term.RS.Path.html">Path</a></span>: <code class="code">sig</code> <a href="Term.RS.Path.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Rewriting paths.</p>
+
+</div>
+
+<pre><span id="VALnormalize"><span class="keyword">val</span> normalize</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.RS.Path.html#TYPEt">Path.t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Normalize a term.</p>
+</div>
+</div>
+
+<pre><span id="VALcritical"><span class="keyword">val</span> critical</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> (<a href="Term.RS.Step.html#TYPEt">Step.t</a> * <a href="Term.RS.Step.html#TYPEt">Step.t</a>) list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Critical branchings.</p>
+</div>
+</div>
+
+<pre><span id="VALsquier"><span class="keyword">val</span> squier</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> (<a href="Term.RS.Path.html#TYPEt">Path.t</a> * <a href="Term.RS.Path.html#TYPEt">Path.t</a>) list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Squier completion.</p>
+</div>
+</div>
+</body></html>

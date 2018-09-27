@@ -21,13 +21,15 @@
 <link title="Globular" rel="Chapter" href="Globular.html">
 <link title="Graph" rel="Chapter" href="Graph.html">
 <link title="Group" rel="Chapter" href="Group.html">
+<link title="Hypergraph" rel="Chapter" href="Hypergraph.html">
 <link title="Matrix" rel="Chapter" href="Matrix.html">
 <link title="Module" rel="Chapter" href="Module.html">
 <link title="Monoid" rel="Chapter" href="Monoid.html">
 <link title="Precategory" rel="Chapter" href="Precategory.html">
 <link title="Ring" rel="Chapter" href="Ring.html">
 <link title="Series" rel="Chapter" href="Series.html">
-<link title="Simplicial" rel="Chapter" href="Simplicial.html"><title>Alphabet</title>
+<link title="Simplicial" rel="Chapter" href="Simplicial.html">
+<link title="Term" rel="Chapter" href="Term.html"><title>Alphabet</title>
 </head>
 <body>
 <div class="navbar"><a class="pre" href="Algebra.html" title="Algebra">Previous</a>
@@ -56,6 +58,7 @@
 </div>
 
 <pre><span id="MODULECharAlphabet"><span class="keyword">module</span> <a href="Alphabet.CharAlphabet.html">CharAlphabet</a></span>: <code class="type"><a href="Alphabet.Char.html">Char</a></code></pre>
+<pre><span id="MODULEStr"><span class="keyword">module</span> <a href="Alphabet.Str.html">Str</a></span>: <code class="type">Stdlib.String</code></pre>
 <pre><span id="MODULEString"><span class="keyword">module</span> <a href="Alphabet.String.html">String</a></span>: <code class="code">sig</code> <a href="Alphabet.String.html">..</a> <code class="code">end</code></pre>
 <pre><span id="MODULEInt"><span class="keyword">module</span> <a href="Alphabet.Int.html">Int</a></span>: <code class="code">sig</code> <a href="Alphabet.Int.html">..</a> <code class="code">end</code></pre><div class="info">
 <p>The alphabet of integers.</p>
@@ -84,6 +87,12 @@
 </div>
 
 <pre><span id="MODULEPowAlphabet"><span class="keyword">module</span> <a href="Alphabet.PowAlphabet.html">PowAlphabet</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Alphabet.Pow.html">Pow</a></code><code class="code">(</code><code class="type">A</code><code class="code">)</code></div></pre>
+<pre><span id="MODULEList"><span class="keyword">module</span> <a href="Alphabet.List.html">List</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Alphabet.List.html">..</a> <code class="code">end</code></div></pre><div class="info">
+<p>Free monoid monad.</p>
+
+</div>
+
+<pre><span id="MODULEListAlphabet"><span class="keyword">module</span> <a href="Alphabet.ListAlphabet.html">ListAlphabet</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="type"><a href="Alphabet.List.html">List</a></code><code class="code">(</code><code class="type">A</code><code class="code">)</code></div></pre>
 <pre><span id="MODULEMap"><span class="keyword">module</span> <a href="Alphabet.Map.html">Map</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">A</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">B</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Alphabet.Map.html">..</a> <code class="code">end</code></div></div></pre><div class="info">
 <p>Functions between alphabets.</p>
 

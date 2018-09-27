@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Algebra.Pres.Algebra.html">
+<link rel="next" href="Algebra.Pres.Anick.html">
+<link rel="Up" href="Algebra.Pres.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Algebra" rel="Chapter" href="Algebra.html">
+<link title="Alphabet" rel="Chapter" href="Alphabet.html">
+<link title="Automaton" rel="Chapter" href="Automaton.html">
+<link title="Category" rel="Chapter" href="Category.html">
+<link title="Field" rel="Chapter" href="Field.html">
+<link title="Globular" rel="Chapter" href="Globular.html">
+<link title="Graph" rel="Chapter" href="Graph.html">
+<link title="Group" rel="Chapter" href="Group.html">
+<link title="Hypergraph" rel="Chapter" href="Hypergraph.html">
+<link title="Matrix" rel="Chapter" href="Matrix.html">
+<link title="Module" rel="Chapter" href="Module.html">
+<link title="Monoid" rel="Chapter" href="Monoid.html">
+<link title="Precategory" rel="Chapter" href="Precategory.html">
+<link title="Ring" rel="Chapter" href="Ring.html">
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html">
+<link title="Term" rel="Chapter" href="Term.html"><title>Algebra.Pres.Augmentation</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Algebra.Pres.Algebra.html" title="Algebra.Pres.Algebra">Previous</a>
+&nbsp;<a class="up" href="Algebra.Pres.html" title="Algebra.Pres">Up</a>
+&nbsp;<a class="post" href="Algebra.Pres.Anick.html" title="Algebra.Pres.Anick">Next</a>
+</div>
+<h1>Module <a href="type_Algebra.Pres.Augmentation.html">Algebra.Pres.Augmentation</a></h1>
+
+<pre><span id="MODULEAugmentation"><span class="keyword">module</span> Augmentation</span>: <code class="code">sig</code> <a href="Algebra.Pres.Augmentation.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Augmentations for presented algebras.</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">Algebra.Pres.A.t -> K.t</code> </pre>
+<div class="info ">
+<div class="info-desc">
+<p>An augmentation.</p>
+</div>
+</div>
+
+
+<pre><span id="EXCEPTIONInvalid"><span class="keyword">exception</span> Invalid</span></pre>
+<div class="info ">
+<div class="info-desc">
+<p>Invalid augmentation.</p>
+</div>
+</div>
+
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type"><a href="Algebra.Pres.Augmentation.html#TYPEt">t</a> -><br>       (Algebra.Pres.M.t -> K.t) -> <a href="Algebra.Pres.Augmentation.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Construct an augmentation by defining it on generators.</p>
+</div>
+</div>
+
+<pre><span id="VALgraded"><span class="keyword">val</span> graded</span> : <code class="type"><a href="Algebra.Pres.Augmentation.html#TYPEt">t</a> -> <a href="Algebra.Pres.Augmentation.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Traditional augmentation for graded algebras.</p>
+</div>
+</div>
+
+<pre><span id="VALmonoid"><span class="keyword">val</span> monoid</span> : <code class="type"><a href="Algebra.Pres.Augmentation.html#TYPEt">t</a> -> <a href="Algebra.Pres.Augmentation.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Traditional augmentation for monoids / groups.</p>
+</div>
+</div>
+</body></html>

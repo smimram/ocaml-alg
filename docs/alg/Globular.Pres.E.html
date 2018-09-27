@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Globular.Pres.Cell.html">
+<link rel="next" href="Globular.Pres.Make.html">
+<link rel="Up" href="Globular.Pres.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Algebra" rel="Chapter" href="Algebra.html">
+<link title="Alphabet" rel="Chapter" href="Alphabet.html">
+<link title="Automaton" rel="Chapter" href="Automaton.html">
+<link title="Category" rel="Chapter" href="Category.html">
+<link title="Field" rel="Chapter" href="Field.html">
+<link title="Globular" rel="Chapter" href="Globular.html">
+<link title="Graph" rel="Chapter" href="Graph.html">
+<link title="Group" rel="Chapter" href="Group.html">
+<link title="Hypergraph" rel="Chapter" href="Hypergraph.html">
+<link title="Matrix" rel="Chapter" href="Matrix.html">
+<link title="Module" rel="Chapter" href="Module.html">
+<link title="Monoid" rel="Chapter" href="Monoid.html">
+<link title="Precategory" rel="Chapter" href="Precategory.html">
+<link title="Ring" rel="Chapter" href="Ring.html">
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html">
+<link title="Term" rel="Chapter" href="Term.html"><title>Globular.Pres.E</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Globular.Pres.Cell.html" title="Globular.Pres.Cell">Previous</a>
+&nbsp;<a class="up" href="Globular.Pres.html" title="Globular.Pres">Up</a>
+&nbsp;<a class="post" href="Globular.Pres.Make.html" title="Globular.Pres.Make">Next</a>
+</div>
+<h1>Module <a href="type_Globular.Pres.E.html">Globular.Pres.E</a></h1>
+
+<pre><span id="MODULEE"><span class="keyword">module</span> E</span>: <code class="type"><a href="Alphabet.Map.html">Alphabet.Map</a></code><code class="code">(</code><code class="type">X</code><code class="code">)</code><code class="code">(</code><code class="type"><a href="Globular.Pres.Cell.html">Cell</a></code><code class="code">)</code></pre><hr width="100%">
+
+<pre><span id="MODULEM"><span class="keyword">module</span> <a href="Alphabet.Map.M.html">M</a></span>: <code class="type">Stdlib.Map.Make</code><code class="code">(</code><code class="type">A</code><code class="code">)</code></pre>
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">B.t M.t</code> </pre>
+
+
+<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a></code></pre>
+<pre><span id="VALapp"><span class="keyword">val</span> app</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a> -> A.t -> B.t</code></pre>
+<pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a> -> A.t -> B.t -> <a href="Alphabet.Map.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmem"><span class="keyword">val</span> mem</span> : <code class="type"><a href="Alphabet.Map.html#TYPEt">t</a> -> A.t -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Is an element in the domain?</p>
+</div>
+</div>
+
+<pre><span id="VALiter"><span class="keyword">val</span> iter</span> : <code class="type">(M.key -> 'a -> unit) -> 'a M.t -> unit</code></pre></body></html>

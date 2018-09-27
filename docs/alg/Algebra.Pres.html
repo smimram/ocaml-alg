@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Algebra.FreeAlgebra.html">
+<link rel="next" href="Algebra.Generate.html">
+<link rel="Up" href="Algebra.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Algebra" rel="Chapter" href="Algebra.html">
+<link title="Alphabet" rel="Chapter" href="Alphabet.html">
+<link title="Automaton" rel="Chapter" href="Automaton.html">
+<link title="Category" rel="Chapter" href="Category.html">
+<link title="Field" rel="Chapter" href="Field.html">
+<link title="Globular" rel="Chapter" href="Globular.html">
+<link title="Graph" rel="Chapter" href="Graph.html">
+<link title="Group" rel="Chapter" href="Group.html">
+<link title="Hypergraph" rel="Chapter" href="Hypergraph.html">
+<link title="Matrix" rel="Chapter" href="Matrix.html">
+<link title="Module" rel="Chapter" href="Module.html">
+<link title="Monoid" rel="Chapter" href="Monoid.html">
+<link title="Precategory" rel="Chapter" href="Precategory.html">
+<link title="Ring" rel="Chapter" href="Ring.html">
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html">
+<link title="Term" rel="Chapter" href="Term.html"><title>Algebra.Pres</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Algebra.FreeAlgebra.html" title="Algebra.FreeAlgebra">Previous</a>
+&nbsp;<a class="up" href="Algebra.html" title="Algebra">Up</a>
+&nbsp;<a class="post" href="Algebra.Generate.html" title="Algebra.Generate">Next</a>
+</div>
+<h1>Functor <a href="type_Algebra.Pres.html">Algebra.Pres</a></h1>
+
+<pre><span id="MODULEPres"><span class="keyword">module</span> Pres</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">K</code><code class="code"> : </code><code class="type"><a href="Field.T.html">Field.T</a></code><code class="code">) -&gt; </code><div class="sig_block"><code class="code">functor (</code><code class="code">X</code><code class="code"> : </code><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Pres.html">..</a> <code class="code">end</code></div></div></pre><div class="info module top">
+<div class="info-desc">
+<p>Presentation of an algebra.</p>
+</div>
+</div>
+<table border="0" cellpadding="3" width="100%">
+<tr>
+<td align="left" valign="top" width="1%%"><b>Parameters: </b></td>
+<td>
+<table class="paramstable">
+<tr>
+<td align="center" valign="top" width="15%">
+<code>K</code></td>
+<td align="center" valign="top">:</td>
+<td><code class="type"><a href="Field.T.html">Field.T</a></code>
+<tr>
+<td align="center" valign="top" width="15%">
+<code>X</code></td>
+<td align="center" valign="top">:</td>
+<td><code class="type"><a href="Alphabet.T.html">Alphabet.T</a></code>
+</table>
+</td>
+</tr>
+</table>
+<hr width="100%">
+
+<pre><span id="MODULEM"><span class="keyword">module</span> <a href="Algebra.Pres.M.html">M</a></span>: <code class="type"><a href="Monoid.Free.html">Monoid.Free</a></code><code class="code">(</code><code class="type">X</code><code class="code">)</code></pre>
+<pre><span id="MODULEA"><span class="keyword">module</span> <a href="Algebra.Pres.A.html">A</a></span>: <code class="type"><a href="Algebra.Free.html">Algebra.Free</a></code><code class="code">(</code><code class="type">K</code><code class="code">)</code><code class="code">(</code><code class="type"><a href="Algebra.Pres.M.html">M</a></code><code class="code">)</code></pre>
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.leq">leq</span>&nbsp;: <code class="type">M.t -> M.t -> bool</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.generators">generators</span>&nbsp;: <code class="type">X.t list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.rules">rules</span>&nbsp;: <code class="type">(M.t * A.t) list</code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><span id="VALfree"><span class="keyword">val</span> free</span> : <code class="type">(M.t -> M.t -> bool) -> X.t list -> <a href="Algebra.Pres.html#TYPEt">t</a></code></pre>
+<pre><span id="VALorient"><span class="keyword">val</span> orient</span> : <code class="type"><a href="Algebra.Pres.html#TYPEt">t</a> -> A.t -> M.t * A.t</code></pre><div class="info ">
+<div class="info-desc">
+<p>Orient a polynomial as a rule.</p>
+</div>
+</div>
+
+<pre><span id="VALadd_rule"><span class="keyword">val</span> add_rule</span> : <code class="type"><a href="Algebra.Pres.html#TYPEt">t</a> -> M.t * A.t -> <a href="Algebra.Pres.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Add a rule to a presentation.</p>
+</div>
+</div>
+
+<pre><span id="VALadd_relation"><span class="keyword">val</span> add_relation</span> : <code class="type"><a href="Algebra.Pres.html#TYPEt">t</a> -> A.t -> <a href="Algebra.Pres.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Add a relation to a presentation.</p>
+</div>
+</div>
+
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">(M.t -> M.t -> bool) -><br>       X.t list -> A.t list -> <a href="Algebra.Pres.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Create a presentation from an alphabet and a list of monomials.</p>
+</div>
+</div>
+
+<pre><span id="VALheads"><span class="keyword">val</span> heads</span> : <code class="type"><a href="Algebra.Pres.html#TYPEt">t</a> -> M.t list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Minimal reducible words.</p>
+</div>
+</div>
+
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Algebra.Pres.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALnormalize"><span class="keyword">val</span> normalize</span> : <code class="type"><a href="Algebra.Pres.html#TYPEt">t</a> -> A.t -> A.t</code></pre><div class="info ">
+<div class="info-desc">
+<p>Normalize words.</p>
+</div>
+</div>
+
+<pre><span id="VALbuchberger"><span class="keyword">val</span> buchberger</span> : <code class="type"><a href="Algebra.Pres.html#TYPEt">t</a> -> <a href="Algebra.Pres.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Buchberger's completion algorithm.</p>
+</div>
+</div>
+
+<pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type"><a href="Algebra.Pres.html#TYPEt">t</a> -> <a href="Algebra.Pres.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Reduce a presentation.</p>
+</div>
+</div>
+
+<pre><span id="MODULEAlgebra"><span class="keyword">module</span> <a href="Algebra.Pres.Algebra.html">Algebra</a></span>: <div class="sig_block"><code class="code">functor (</code><code class="code">P</code><code class="code"> : </code><code class="code">sig</code></pre><div class="sig_block">
+<pre><span id="VALpresentation"><span class="keyword">val</span> presentation</span> : <code class="type"><a href="Algebra.Pres.html#TYPEt">t</a></code></pre></div><pre><code class="code">end</code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Algebra.Pres.Algebra.html">..</a> <code class="code">end</code></div></pre><div class="info">
+<p>Algebra given by a convergent presentation.</p>
+
+</div>
+
+<pre><span id="MODULEAugmentation"><span class="keyword">module</span> <a href="Algebra.Pres.Augmentation.html">Augmentation</a></span>: <code class="code">sig</code> <a href="Algebra.Pres.Augmentation.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Augmentations for presented algebras.</p>
+
+</div>
+
+<pre><span id="MODULEAnick"><span class="keyword">module</span> <a href="Algebra.Pres.Anick.html">Anick</a></span>: <code class="code">sig</code> <a href="Algebra.Pres.Anick.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Anick resolution.</p>
+
+</div>
+</body></html>
