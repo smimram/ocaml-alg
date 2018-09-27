@@ -332,6 +332,9 @@ module RS = struct
   (** Empty rewriting system. *)
   let empty : t = []
 
+  let to_string rs =
+    String.concat "\n" (List.map Rule.to_string rs)
+
   (** Rewriting steps. *)
   module Step = struct
     (** A rewriting step. *)
@@ -363,12 +366,14 @@ module RS = struct
 
     let rule ((t,p,r,s):t) = r
 
-    let rule_name s = Rule.name (rule s)
-
     let subst ((t,p,r,s):t) = s
 
+    let label s =
+      Pos.to_string (pos s) ^ Rule.name (rule s)
+      (* ^ Subst.to_string (subst s) *)
+
     let to_string s =
-      to_string (source s) ^ " -" ^ rule_name s ^ "@" ^ Pos.to_string (pos s) ^ "-> " ^ string_of_term (target s)
+      string_of_term (source s) ^ " -" ^ label s ^ "-> " ^ string_of_term (target s)
 
     let eq (s1:t) (s2:t) =
       (* Printf.printf "EQ %s WITH %s\n%!" (to_string s1) (to_string s2); *)
@@ -429,7 +434,7 @@ module RS = struct
 
     let rec to_string = function
       | Empty t -> string_of_term t
-      | Step (p,s) -> to_string p ^ " -" ^ Step.rule_name s ^ "-> " ^ string_of_term (Step.target s)
+      | Step (p,s) -> to_string p ^ " -" ^ Step.label s ^ "-> " ^ string_of_term (Step.target s)
 
     let rec append p = function
       | Step (q, s) -> Step (append p q, s)

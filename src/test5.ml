@@ -39,6 +39,9 @@ let groups = [
     RS.Rule.make "r20" (i (m x y)) (m (i y) (i x))
   ]
 
+let () =
+  Printf.printf "%s\n\n%!" (RS.to_string groups)
+
 (* let () = *)
   (* let r = RS.Rule.make "r1" (m e x) x in *)
   (* let r' = RS.Rule.refresh r in *)
