@@ -3,19 +3,19 @@
 (** Operations. *)
 module Op = struct
   (** An operation. *)
-  type t = string * int
+  type t = int * string * int
 
   (** Create an operation with given name and arity. *)
-  let make name arity : t =
-    (name, arity)
+  let make ?(weight=0) name arity : t =
+    (weight, name, arity)
 
   (** Compare two operations for equality. *)
   (* TODO: it would be even better to use physical equality *)
   let eq (g1:t) (g2:t) = (g1 = g2)
 
-  let to_string (g:t) = fst g
+  let to_string (_,name,_:t) = name
 
-  let arity (g:t) = snd g
+  let arity (_,_,n:t) = n
 end
 
 (** Variables. *)
@@ -105,9 +105,9 @@ let rec occurs x = function
 (** Lexicographic path order on terms. *)
 module LPO = struct
   let rec gt ge_op t u =
-    Printf.printf "%s > %s ?\n%!" (to_string t) (to_string u);
+    (* Printf.printf "%s > %s ?\n%!" (to_string t) (to_string u); *)
     match t, u with
-    | _, Var _ when not (eq t u) -> true
+    | t, Var x -> not (eq t u) && occurs x t
     | App (f,a), App (g, b) ->
       if Array.exists (fun t -> ge ge_op t u) a then true else
       if Op.eq f g then
@@ -124,7 +124,7 @@ module LPO = struct
       else false
     | _ -> false
   and ge ge_op t u =
-    eq t u || ge ge_op t u
+    eq t u || gt ge_op t u
 end
 
 (** Substitutions. *)
@@ -565,7 +565,6 @@ module RS = struct
       (fun ((_,t,u) as r) ->
          if not (gt t u) then Printf.printf "bad orientation for rule: %s\n%!" (Rule.to_string r)
       ) rs;
-    Printf.printf "checked\n%!";
     (* Name for new rules. *)
     let name =
       let n = ref (-1) in
@@ -578,9 +577,19 @@ module RS = struct
     let add (r:Rule.t) =
       Printf.printf "add %s\n%!" (Rule.to_string r);
       rs := r :: !rs;
+      (* Normalize the rules *)
+      rs :=
+        List.map
+          (fun ((n,s,t) as r) ->
+             (* TODO: proper recursive function instead of this filter *)
+             let rs = List.filter (fun r' -> not (Rule.eq r r')) !rs in
+             n, Path.target (normalize rs s), Path.target (normalize rs t)
+          ) !rs;
+      rs := List.filter (fun (n,s,t) -> not (eq s t)) !rs;
       queue := !queue@[r]
+      (* queue := r :: !queue *)
     in
-    while !rs <> [] do
+    while !queue <> [] do
       let r = List.hd !queue in
       queue := List.tl !queue;
       let cp = List.flatten (List.map (fun s -> (critical_rules r s)@(critical_rules s r)) !rs) in
@@ -593,7 +602,7 @@ module RS = struct
            if not (eq t1 t2) then
              (* TODO: refine this *)
              if gt t1 t2 then add (name (),t1,t2)
-             else add (name (),t1,t2)
+             else add (name (),t2,t1)
         ) cp
     done;
     !rs
