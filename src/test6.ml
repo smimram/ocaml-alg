@@ -5,7 +5,7 @@ open Term
 let m = Op.make "m" 2
 let e = Op.make "e" 0
 let e = app e [||]
-let i = Op.make "i" 1
+let i = Op.make ~weight:1 "i" 1
 let x = var ()
 let y = var ()
 let z = var ()
