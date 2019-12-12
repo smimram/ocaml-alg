@@ -5,9 +5,11 @@ module Op = struct
   (** An operation. *)
   type t = string * int
 
+  (** Create an operation with given name and arity. *)
   let make name arity : t =
     (name, arity)
 
+  (** Compare two operations for equality. *)
   (* TODO: it would be even better to use physical equality *)
   let eq (g1:t) (g2:t) = (g1 = g2)
 
@@ -99,6 +101,31 @@ let get_var = function
 let rec occurs x = function
   | App (_, a) -> Array.exists (occurs x) a
   | Var y -> Var.eq x y
+
+(** Lexicographic path order on terms. *)
+module LPO = struct
+  let rec gt ge_op t u =
+    Printf.printf "%s > %s ?\n%!" (to_string t) (to_string u);
+    match t, u with
+    | _, Var _ when not (eq t u) -> true
+    | App (f,a), App (g, b) ->
+      if Array.exists (fun t -> ge ge_op t u) a then true else
+      if Op.eq f g then
+        (* lexicographic > *)
+        let rec lex l1 l2 =
+          match l1, l2 with
+          | x1::l1, x2::l2 when eq x1 x2 -> lex l1 l2
+          | x1::l1, x2::l2 when gt ge_op x1 x2 -> true
+          | _, _ -> false
+        in
+        Array.for_all (fun u -> gt ge_op t u) b &&
+        lex (Array.to_list a) (Array.to_list b)
+      else if ge_op f g then Array.for_all (fun u -> gt ge_op t u) b
+      else false
+    | _ -> false
+  and ge ge_op t u =
+    eq t u || ge ge_op t u
+end
 
 (** Substitutions. *)
 module Substitution = struct
@@ -490,35 +517,36 @@ module RS = struct
     in
     aux (Path.empty t)
 
+  (** Unify the source of [r2] with a subterm of the source of [r1]. *)
+  let critical_rules r1 r2 =
+    let r2 = Rule.refresh r2 in
+    (* p is the position in the left member of r1 and t is the corresponding
+       term *)
+    let rec aux p t =
+      match t with
+      | Var x -> []
+      | App (f,a) ->
+        let s =
+          try
+            let s = unify (Rule.source r2) t in
+            let t = Subst.app s (Rule.source r1) in
+            let step1 = Step.make t Pos.empty r1 s in
+            let step2 = Step.make t p r2 s in
+            if Pos.is_empty p && Rule.eq r1 r2 then [] else [step1,step2]
+          with
+          | Not_unifiable -> []
+        in
+        let s = ref s in
+        for i = 0 to Array.length a - 1 do
+          let p = Pos.append p i in
+          s := !s @ (aux p a.(i))
+        done;
+        !s
+    in
+    aux Pos.empty (Rule.source r1)
+
   (** Critical branchings. *)
   let critical (rs:t) =
-    (* Unify r2 with a subterm of r1, p is the position in the left member of r1
-       and t is the corresponding term. *)
-    let critical_rules r1 r2 =
-      let r2 = Rule.refresh r2 in
-      let rec aux p t =
-        match t with
-        | Var x -> []
-        | App (f,a) ->
-           let s =
-             try
-               let s = unify (Rule.source r2) t in
-               let t = Subst.app s (Rule.source r1) in
-               let step1 = Step.make t Pos.empty r1 s in
-               let step2 = Step.make t p r2 s in
-               if Pos.is_empty p && Rule.eq r1 r2 then [] else [step1,step2]
-             with
-             | Not_unifiable -> []
-           in
-           let s = ref s in
-           for i = 0 to Array.length a - 1 do
-             let p = Pos.append p i in
-             s := !s @ (aux p a.(i))
-           done;
-           !s
-      in
-      aux Pos.empty (Rule.source r1)
-    in
     let steps = List.flatten (List.flatten (List.map (fun r1 -> List.map (fun r2 -> critical_rules r1 r2) rs) rs)) in
     (* Remove symmetric pairs. *)
     let rec sym = function
@@ -529,6 +557,48 @@ module RS = struct
     in
     sym steps
 
+  (** Knuth-Bendix completion. *)
+  let knuth_bendix (rs:t) =
+    let gt = LPO.gt (>=) in
+    (* Check that all rules are correctly oriented. *)
+    List.iter
+      (fun ((_,t,u) as r) ->
+         if not (gt t u) then Printf.printf "bad orientation for rule: %s\n%!" (Rule.to_string r)
+      ) rs;
+    Printf.printf "checked\n%!";
+    (* Name for new rules. *)
+    let name =
+      let n = ref (-1) in
+      fun () -> incr n; "kb"^string_of_int !n
+    in
+    (* Rules to handle. *)
+    let queue = ref rs in
+    (* Produced rewriting system. *)
+    let rs = ref rs in
+    let add (r:Rule.t) =
+      Printf.printf "add %s\n%!" (Rule.to_string r);
+      rs := r :: !rs;
+      queue := !queue@[r]
+    in
+    while !rs <> [] do
+      let r = List.hd !queue in
+      queue := List.tl !queue;
+      let cp = List.flatten (List.map (fun s -> (critical_rules r s)@(critical_rules s r)) !rs) in
+      List.iter
+        (fun (s1, s2) ->
+           let p1 = Path.append (Path.step (Path.empty (Step.source s1)) s1) (normalize !rs (Step.target s1)) in
+           let p2 = Path.append (Path.step (Path.empty (Step.source s2)) s2) (normalize !rs (Step.target s2)) in
+           let t1 = Path.target p1 in
+           let t2 = Path.target p2 in
+           if not (eq t1 t2) then
+             (* TODO: refine this *)
+             if gt t1 t2 then add (name (),t1,t2)
+             else add (name (),t1,t2)
+        ) cp
+    done;
+    !rs
+
+  (** Raised when the system is not confluent. *)
   exception Not_confluent
 
   (** Squier completion. *)

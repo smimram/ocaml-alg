@@ -1,3 +1,5 @@
+(* Testing Squier completion *)
+
 open Term
 
 let m = Op.make "m" 2
