@@ -575,7 +575,7 @@ module RS = struct
     (* Produced rewriting system. *)
     let rs = ref rs in
     let add (r:Rule.t) =
-      Printf.printf "add %s\n%!" (Rule.to_string r);
+      (* Printf.printf "add %s\n%!" (Rule.to_string r); *)
       rs := r :: !rs;
       (* Normalize the rules *)
       rs :=
@@ -600,9 +600,10 @@ module RS = struct
            let t1 = Path.target p1 in
            let t2 = Path.target p2 in
            if not (eq t1 t2) then
-             (* TODO: refine this *)
-             if gt t1 t2 then add (name (),t1,t2)
-             else add (name (),t2,t1)
+             let t1, t2 = if gt t1 t2 then t1, t2 else t2, t1 in
+             let r = (name (), t1, t2) in
+             Printf.printf "add %s\n%s\n%s\n\n%!" (Rule.to_string r) (Path.to_string p1) (Path.to_string p2);
+             add r
         ) cp
     done;
     !rs
