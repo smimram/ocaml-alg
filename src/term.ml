@@ -91,6 +91,10 @@ let is_var = function
   | Var _ -> true
   | _ -> false
 
+let get_var = function
+  | Var x -> x
+  | _ -> raise Not_found
+
 (** Whether a variable occurs in a term. *)
 let rec occurs x = function
   | App (_, a) -> Array.exists (occurs x) a
@@ -142,6 +146,18 @@ module Substitution = struct
   (** Is a substitution a renaming of variables? *)
   let is_renaming (s:t) =
     List.for_all (fun (x,t) -> is_var t) s
+
+  let is_injective_renaming (s:t) =
+    let rec aux vars = function
+      | [] -> true
+      | (_,t)::s ->
+        if is_var t then
+          let x = get_var t in
+          if List.exists (Var.eq x) vars then false
+          else aux (x::vars) s
+        else false
+    in
+    aux [] s
 
   (** Inverse of a renaming. *)
   let inverse (s:t) =
@@ -368,9 +384,11 @@ module RS = struct
 
     let subst ((t,p,r,s):t) = s
 
+    let has_context s =
+      not (Pos.is_empty (pos s) && Subst.is_injective_renaming (subst s))
+
     let label s =
-      Pos.to_string (pos s) ^ Rule.name (rule s)
-      (* ^ Subst.to_string (subst s) *)
+      Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string (subst s)
 
     let to_string s =
       string_of_term (source s) ^ " -" ^ label s ^ "-> " ^ string_of_term (target s)
@@ -441,6 +459,27 @@ module RS = struct
       | Empty t ->
          assert (eq (target p) t);
          p
+
+    (** Rules which are used without context. *)
+    let rec toplevel_rules = function
+      | Empty t -> []
+      | Step (p,s) -> (toplevel_rules p)@(if Step.has_context s then [] else [Step.rule s])
+
+    let term_eq = eq
+    let rec eq p p' =
+      match p,p' with
+      | Step (p,s), Step (p',s') -> eq p p' && Step.eq s s'
+      | Empty t, Empty t' -> term_eq t t'
+      | _ -> false
+
+    (** Rules occurring in a step. *)
+    let rec rules = function
+      | Step (p,s) ->
+        let r = Step.rule s in
+        let rr = rules p in
+        if List.exists (Rule.eq r) rr then rr
+        else r::rr
+      | Empty _ -> []
   end
 
   (** Normalize a term. *)
@@ -490,13 +529,15 @@ module RS = struct
     in
     sym steps
 
+  exception Not_confluent
+
   (** Squier completion. *)
   let squier rs =
     List.map
       (fun (s1,s2) ->
         let p1 = Path.append (Path.step (Path.empty (Step.source s1)) s1) (normalize rs (Step.target s1)) in
         let p2 = Path.append (Path.step (Path.empty (Step.source s2)) s2) (normalize rs (Step.target s2)) in
-        assert (eq (Path.target p1) (Path.target p2));
+        if not (eq (Path.target p1) (Path.target p2)) then raise Not_confluent;
         p1, p2
       )
       (critical rs)

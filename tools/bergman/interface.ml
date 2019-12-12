@@ -94,7 +94,7 @@ module M = struct
     Array.init (String.length s) (fun i -> s.[i])
 end
 module K = Field.Int
-module P = Algebra.Presentation(K)(Alphabet.Char)
+module P = Algebra.Pres(K)(Alphabet.Char)
 module A = P.A
 
 let eval_pol p =
@@ -197,7 +197,7 @@ let run _ =
       status "Computing resolution...";
       let maxdeg = int_of_string (Js.to_string maxdeg##value) in
       let d = P.Anick.resolution ~augmentation pres (maxdeg+1) in
-      resolution##innerHTML <- Js.string (replace '\n' "<br/>" (P.Anick.AMod.Presentation.Complex.to_string d));
+      resolution##innerHTML <- Js.string (replace '\n' "<br/>" (P.Anick.AMod.Pres.Complex.to_string d));
 
       status "Computing Betti numbers...";
       let s = ref "" in
