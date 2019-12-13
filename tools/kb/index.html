@@ -51,15 +51,15 @@
         <h3>Symbols</h3>
         <p>
           Please enter function names (lowercase letters only) with arities separated by
-          commas.
+          commas. First symbols have higher weight.
         </p>
-        <p><textarea id="symbols" style="width:80%;">m:2,e:0</textarea></p>
+        <p><textarea id="symbols" style="width:80%;">i:1, m:2, e:0</textarea></p>
 
         <h3>Rules</h3>
         <p>Please enter the rules.</p>
-        <p><textarea id="rules" style="width:80%;" rows="5">m(m(x,y),z)=m(x,m(y,z))
-m(e,x)=x
-m(x,e)=x</textarea></p>
+        <p><textarea id="rules" style="width:80%;" rows="5">m(m(x,y),z) = m(x,m(y,z))
+m(i(x),x) = e
+m(e,x) = x</textarea></p>
 
         <p>
           <input id="go" type="submit" value="GO"/>
@@ -67,7 +67,10 @@ m(x,e)=x</textarea></p>
 
 
         <h2 id="resulta">Results</h2>
-        <p id="status" class="output">...</p>
+        <p id="status" class="output"></p>
+
+        <h3>Knuth-Bendix completion</h3>
+        <p id="completion" class="output"></p>
 
         <div class="footer"></div>
       </div>
