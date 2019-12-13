@@ -1,11 +1,13 @@
+open Js_of_ocaml
+
 module Html = Dom_html
 
 let doc = Html.document
 let button txt action =
   let button_type = Js.string "button" in
   let b = Html.createInput ~_type:button_type doc in
-  b##value <- Js.string txt;
-  b##onclick <- Dom_html.handler (fun _ -> action (); Js._true);
+  b##.value := Js.string txt;
+  b##.onclick := Dom_html.handler (fun _ -> action (); Js._true);
   b
 
 let debug s =
@@ -15,7 +17,10 @@ let jsget x = Js.Opt.get x (fun () -> assert false)
 
 exception Parsing
   
-let parse_pol =
+let parse_pol s =
+  Parser.main Lexer.token (Lexing.from_string s)
+
+  (*
   let lexer = Genlex.make_lexer ["+";"-";"*";"^";"(";")"] in
   let rec mults = function
     | [] -> `One
@@ -70,18 +75,7 @@ let parse_pol =
         | [< 'Genlex.Kwd "("; p = add; 'Genlex.Kwd ")" >] -> p
     in
     add (lexer (Stream.of_string s))
-
-let string_of_pol p =
-  let rec aux = function
-    | `Mul (p,q) -> aux p ^ "*" ^ aux q
-    | `One -> "1"
-    | `Zero -> "0"
-    | `Gen c -> String.make 1 c
-    | `Add (p,q) -> aux p ^ "+" ^ aux q
-    | `Sub (p,q) -> aux p ^ "-" ^ aux q
-    | `Neg p -> "-" ^ aux p
-  in
-  aux p
+   *)
 
 let char_of_string s =
   assert (String.length s = 1);
@@ -99,13 +93,13 @@ module A = P.A
 
 let eval_pol p =
   let rec aux = function
-    | `Mul (p,q) -> A.mul (aux p) (aux q)
-    | `One -> A.one
-    | `Zero -> A.zero
-    | `Gen c -> A.inj (M.inj c)
-    | `Add (p,q) -> A.add (aux p) (aux q)
-    | `Sub (p,q) -> A.sub (aux p) (aux q)
-    | `Neg p -> A.neg (aux p)
+    | Pol.Mul (p,q) -> A.mul (aux p) (aux q)
+    | One -> A.one
+    | Zero -> A.zero
+    | Gen c -> A.inj (M.inj c)
+    | Add (p,q) -> A.add (aux p) (aux q)
+    | Sub (p,q) -> A.sub (aux p) (aux q)
+    | Neg p -> A.neg (aux p)
   in
   aux p
 
@@ -131,18 +125,18 @@ let run _ =
   let betti = jsget (doc##getElementById(Js.string "betti")) in
   let go = jsget (doc##getElementById(Js.string "go")) in
   let status = jsget (doc##getElementById(Js.string "status")) in
-  let status s = status##innerHTML <-Js.string s in
+  let status s = status##.innerHTML := Js.string s in
   let error s = status ("<em style=\"color:red\">" ^ s ^ "</em>") in
   
-  go##onclick <- Html.handler (fun _ ->
+  go##.onclick := Html.handler (fun _ ->
     try
-      let vars = Js.to_string vars##value in
-      let relations = Js.to_string relations##value in
+      let vars = Js.to_string vars##.value in
+      let relations = Js.to_string relations##.value in
 
-      grobner##innerHTML <- Js.string "";
-      chains##innerHTML <- Js.string "";
-      resolution##innerHTML <- Js.string "";
-      betti##innerHTML <- Js.string "";
+      grobner##.innerHTML := Js.string "";
+      chains##.innerHTML := Js.string "";
+      resolution##.innerHTML := Js.string "";
+      betti##.innerHTML := Js.string "";
 
       status "Parsing variables...";
       let vars = String.split_on_char ',' vars in
@@ -156,12 +150,12 @@ let run _ =
         try
           List.map parse_pol relations
         with
-        | Parsing -> error "Parsing error!"; raise Exit
+        | e -> error ("Parsing error: " ^ Printexc.to_string e); raise Exit
       in
-      grobner##innerHTML <- Js.string ("Relations: " ^ String.concat " , " (List.map string_of_pol relations));
+      grobner##.innerHTML := Js.string ("Relations: " ^ String.concat " , " (List.map Pol.to_string relations));
       let relations = List.map eval_pol relations in
       let order =
-        match Js.to_string order##value with
+        match Js.to_string order##.value with
         | "deglex" -> M.Order.deglex Alphabet.Char.leq
         | "revdeglex" -> M.Order.deglex Alphabet.Char.geq
         | _ -> assert false
@@ -169,7 +163,7 @@ let run _ =
       let pres = P.make order vars relations in
       let augmentation =
         try
-          match Js.to_string augmentation##value with
+          match Js.to_string augmentation##.value with
           | "algebra" -> P.Augmentation.graded pres
           | "monoid" -> P.Augmentation.monoid pres
           | _ -> assert false
@@ -181,7 +175,7 @@ let run _ =
 
       status "Computing Gröbner basis...";
       let pres = P.reduce (P.buchberger pres) in
-      grobner##innerHTML <- Js.string (P.to_string pres);
+      grobner##.innerHTML := Js.string (P.to_string pres);
       
       status "Computing Anick chains...";
       let heads = P.heads pres in
@@ -190,20 +184,20 @@ let run _ =
       let s = ref "" in
       for i = 0 to 6 do
         s := !s ^ string_of_int i ^ " chains: " ^ String.concat " " (List.map M.Anick.to_string !cc) ^ "<br/>";
-        chains##innerHTML <- Js.string !s;
+        chains##.innerHTML := Js.string !s;
         cc := M.Anick.extend heads !cc
       done;
 
       status "Computing resolution...";
-      let maxdeg = int_of_string (Js.to_string maxdeg##value) in
+      let maxdeg = int_of_string (Js.to_string maxdeg##.value) in
       let d = P.Anick.resolution ~augmentation pres (maxdeg+1) in
-      resolution##innerHTML <- Js.string (replace '\n' "<br/>" (P.Anick.AMod.Pres.Complex.to_string d));
+      resolution##.innerHTML := Js.string (replace '\n' "<br/>" (P.Anick.AMod.Pres.Complex.to_string d));
 
       status "Computing Betti numbers...";
       let s = ref "" in
       let h = P.Anick.betti ~augmentation pres maxdeg in
       Array.iteri (fun i n -> s := !s ^ "H" ^ string_of_int i ^ " = " ^ string_of_int n ^ "<br/>") h;
-      betti##innerHTML <- Js.string !s;
+      betti##.innerHTML := Js.string !s;
 
       status "Done.";
       Js._true
@@ -224,8 +218,8 @@ let run _ =
       aux 0
     in
     let set v r =
-      vars##value <- Js.string v;
-      relations##value <- Js.string r
+      vars##.value := Js.string v;
+      relations##.value := Js.string r
     in
     let gen n = String.make 1 (char_of_int (n + int_of_char 'a')) in
     let gen' n = String.make 1 (char_of_int (n + int_of_char 'A')) in
@@ -320,9 +314,9 @@ let run _ =
       let rel = String.concat "," (List.rev !rel) in
       set v rel
     in
-    let n = int_of_string (Js.to_string generaten##value) in
+    let n = int_of_string (Js.to_string generaten##.value) in
     (
-      match Js.to_string generate##value with
+      match Js.to_string generate##.value with
       | "sym" -> sym n
       | "ext" -> ext n
       | "symg" -> symg n
@@ -334,9 +328,9 @@ let run _ =
     Js._true
   in
 
-  generate##oninput <- Html.handler generate_handler;
-  generaten##onchange <- Html.handler generate_handler;
+  generate##.oninput := Html.handler generate_handler;
+  generaten##.onchange := Html.handler generate_handler;
   Js._true
 
 let () =
-  Html.window##onload <- Html.handler run
+  Html.window##.onload := Html.handler run

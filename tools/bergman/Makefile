@@ -1,18 +1,24 @@
-SOURCES = interface.ml
+SOURCES = pol.ml parser.mly lexer.mll interface.ml
 RESULT = bergman
-PACKS = js_of_ocaml,js_of_ocaml.syntax
-OCAMLFLAGS = -syntax camlp4o
+PACKS = js_of_ocaml js_of_ocaml-ppx
+LIBS = alg
 ALGDIR = ../../src
+INCDIRS = $(ALGDIR)
+ANNOTATE = true
 
-all: alg
-	ocamlfind ocamlc -annot -I $(ALGDIR) alg.cma -package $(PACKS) -syntax camlp4o -linkpkg -o $(RESULT) $(SOURCES)
+all: alg dc
 	js_of_ocaml $(RESULT)
-
-test: all test.ml
-	$(OCAMLC) -g -pp "camlp4o" test.ml -o test
-	OCAMLRUNPARAM=b ./test
 
 alg:
 	@$(MAKE) -C $(ALGDIR) dcl INCDIRS=
 
+test: all test.ml
+	$(OCAMLC) -g pol.cmo parser.cmo lexer.cmo test.ml -o test
+	./test
+
+conflicts:
+	menhir --explain parser.mly && less parser.conflicts && rm parser.ml parser.mli parser.conflicts
+
 .PHONY: alg
+
+include OCamlMakefile
