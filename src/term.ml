@@ -13,7 +13,9 @@ module Op = struct
   (* TODO: it would be even better to use physical equality *)
   let eq (g1:t) (g2:t) = (g1 = g2)
 
-  let to_string (_,name,_:t) = name
+  let name (_,name,_:t) = name
+
+  let to_string f = name f
 
   let arity (_,_,n:t) = n
 end
