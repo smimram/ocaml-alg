@@ -24,7 +24,8 @@
 <link title="Ring" rel="Chapter" href="Ring.html">
 <link title="Series" rel="Chapter" href="Series.html">
 <link title="Simplicial" rel="Chapter" href="Simplicial.html">
-<link title="Term" rel="Chapter" href="Term.html"><title>Term.Substitution</title>
+<link title="Term" rel="Chapter" href="Term.html">
+<link title="Utils" rel="Chapter" href="Utils.html"><title>Term.Substitution</title>
 </head>
 <body>
 <code class="code"><span class="keyword">sig</span><br>
@@ -41,6 +42,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;eq&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;is_renaming&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;is_injective_renaming&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;inverse&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(<span class="constructor">Term</span>.var&nbsp;*&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t)&nbsp;list<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;in_dom&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">Var</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
 <span class="keyword">end</span></code></body></html>

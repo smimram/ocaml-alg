@@ -28,7 +28,8 @@
 <link title="Ring" rel="Chapter" href="Ring.html">
 <link title="Series" rel="Chapter" href="Series.html">
 <link title="Simplicial" rel="Chapter" href="Simplicial.html">
-<link title="Term" rel="Chapter" href="Term.html"><title>Term.RS</title>
+<link title="Term" rel="Chapter" href="Term.html">
+<link title="Utils" rel="Chapter" href="Utils.html"><title>Term.RS</title>
 </head>
 <body>
 <div class="navbar"><a class="pre" href="Term.Pos.html" title="Term.Pos">Previous</a>
@@ -91,9 +92,28 @@
 </div>
 </div>
 
+<pre><span id="VALcritical_rules"><span class="keyword">val</span> critical_rules</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Rule.t</a> -> <a href="Term.RS.Rule.html#TYPEt">Rule.t</a> -> (<a href="Term.RS.Step.html#TYPEt">Step.t</a> * <a href="Term.RS.Step.html#TYPEt">Step.t</a>) list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Unify the source of <code class="code">r2</code> with a subterm of the source of <code class="code">r1</code>.</p>
+</div>
+</div>
+
 <pre><span id="VALcritical"><span class="keyword">val</span> critical</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> (<a href="Term.RS.Step.html#TYPEt">Step.t</a> * <a href="Term.RS.Step.html#TYPEt">Step.t</a>) list</code></pre><div class="info ">
 <div class="info-desc">
 <p>Critical branchings.</p>
+</div>
+</div>
+
+<pre><span id="VALknuth_bendix"><span class="keyword">val</span> knuth_bendix</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> <a href="Term.RS.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Knuth-Bendix completion.</p>
+</div>
+</div>
+
+<pre><span id="EXCEPTIONNot_confluent"><span class="keyword">exception</span> Not_confluent</span></pre>
+<div class="info ">
+<div class="info-desc">
+<p>Raised when the system is not confluent.</p>
 </div>
 </div>
 

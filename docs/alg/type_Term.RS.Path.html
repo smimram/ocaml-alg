@@ -24,7 +24,8 @@
 <link title="Ring" rel="Chapter" href="Ring.html">
 <link title="Series" rel="Chapter" href="Series.html">
 <link title="Simplicial" rel="Chapter" href="Simplicial.html">
-<link title="Term" rel="Chapter" href="Term.html"><title>Term.RS.Path</title>
+<link title="Term" rel="Chapter" href="Term.html">
+<link title="Utils" rel="Chapter" href="Utils.html"><title>Term.RS.Path</title>
 </head>
 <body>
 <code class="code"><span class="keyword">sig</span><br>
@@ -35,4 +36,8 @@
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;step&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Step</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;to_string&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;append&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;toplevel_rules&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.rule&nbsp;list<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;term_eq&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;eq&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;rules&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Path</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">RS</span>.<span class="constructor">Rule</span>.t&nbsp;list<br>
 <span class="keyword">end</span></code></body></html>
