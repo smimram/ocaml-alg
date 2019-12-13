@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Knuth-Bendix</title>
+    <link rel="stylesheet" type="text/css" href="kb.css">
+    <script type="text/javascript" src="kb.js"></script>
+    <style>
+      h3 { color: black; font-size: small; }
+    </style>
+  </head>
+
+  <body>
+    <div class="lang_sel"></div>
+    <div class="all">
+      <div class="header">
+        <div class="subtitle">Knuth-Bendix completion</div>
+      </div>
+      <div class="main_menu">
+        <a href="https://github.com/smimram/ocaml-alg">github</a>
+        <a class="active" href="">completion</a>
+      </div>
+      <!--
+      <div class="side_bar">
+        <div class="sub_menu">
+          <div>Knuth-Bendix</div>
+          <a href="#news">News</a>
+          <a href="#background">Background</a>
+          <a href="#topics">Topics</a>
+          <a href="#proceedings">Proceedings</a>
+          <a href="#program">Program</a>
+          <a href="#timeline">Important Dates</a>
+          <a href="#submission">Submission</a>
+          <a href="#invited">Invited Speakers</a>
+          <a href="#organiziers">Organizing Committee</a>
+          <a href="#programmers">Program Committee</a>
+          <a href="#navigators">Steering Committee</a>
+          <a href="#history">Previous IWCs</a>
+        </div>
+      </div>
+      -->
+      <div class="content">
+
+        <h1 class="ctitle">Knuth-Bendix completion</h1>
+        <p>
+          This page provides an online implementation
+          of <a href="https://en.wikipedia.org/wiki/Knuth%E2%80%93Bendix_completion_algorithm">Knuth-Bendix
+          completion algorithm</a>.
+        </p>
+
+        <h2 id="theory">Theory</h2>
+        <h3>Symbols</h3>
+        <p>
+          Please enter function names (lowercase letters only) with arities separated by
+          commas.
+        </p>
+        <p><textarea id="symbols" style="width:80%;">m:2,e:0</textarea></p>
+
+        <h3>Rules</h3>
+        <p>Please enter the rules.</p>
+        <p><textarea id="rules" style="width:80%;" rows="5">m(m(x,y),z)=m(x,m(y,z))
+m(e,x)=x
+m(x,e)=x</textarea></p>
+
+        <p>
+          <input id="go" type="submit" value="GO"/>
+        </p>
+
+
+        <h2 id="resulta">Results</h2>
+        <p id="status" class="output">...</p>
+
+        <div class="footer"></div>
+      </div>
+    </div>
+  </body>
+</html>
