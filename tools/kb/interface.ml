@@ -61,7 +61,9 @@ let run _ =
            status ("Parsed: " ^ RS.to_string rs);
 
            status "Computing Knuth-Bendix completion...";
-           let display rs = completion##.innerHTML := Js.string (replace '\n' "<br/>" (RS.to_string rs)) in
+           let display rs =
+             completion##.innerHTML := Js.string (replace '\n' "<br/>" (RS.to_string rs))
+           in
            let rs = RS.knuth_bendix ~callback:display rs in
            display rs;
 
