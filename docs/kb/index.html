@@ -50,14 +50,16 @@
         <h2 id="theory">Theory</h2>
         <h3>Symbols</h3>
         <p>
-          Please enter function names (lowercase letters only) with arities separated by
-          commas. First symbols have higher weight.
+          Please enter function names (lowercase letters only) with arities
+          separated by commas. First symbols have higher weight (we currently
+          use <a href="https://en.wikipedia.org/wiki/Path_ordering_(term_rewriting)">lexicographic
+          path order</a>).
         </p>
-        <p><textarea id="symbols" style="width:80%;">i:1, m:2, e:0</textarea></p>
+        <p><textarea id="symbols" style="width:90%;">i:1, m:2, e:0</textarea></p>
 
         <h3>Rules</h3>
         <p>Please enter the rules.</p>
-        <p><textarea id="rules" style="width:80%;" rows="5">m(m(x,y),z) = m(x,m(y,z))
+        <p><textarea id="rules" style="width:90%;" rows="5">m(m(x,y),z) = m(x,m(y,z))
 m(i(x),x) = e
 m(e,x) = x</textarea></p>
 
