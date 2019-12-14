@@ -42,6 +42,7 @@ let run _ =
   let syms = jsget (Html.CoerceTo.textarea (jsget (doc##getElementById(Js.string "symbols")))) in
   let rules = jsget (Html.CoerceTo.textarea (jsget (doc##getElementById(Js.string "rules")))) in
   let completion = jsget (doc##getElementById(Js.string "completion")) in
+  let squier = jsget (doc##getElementById(Js.string "squier")) in
   let go = jsget (doc##getElementById(Js.string "go")) in
   let status = jsget (doc##getElementById(Js.string "status")) in
   let status s = status##.innerHTML := Js.string s in
@@ -60,8 +61,23 @@ let run _ =
            status ("Parsed: " ^ RS.to_string rs);
 
            status "Computing Knuth-Bendix completion...";
-           let rs = RS.knuth_bendix rs in
-           completion##.innerHTML := Js.string (replace '\n' "<br/>" (RS.to_string rs));
+           let display rs = completion##.innerHTML := Js.string (replace '\n' "<br/>" (RS.to_string rs)) in
+           let rs = RS.knuth_bendix ~callback:display rs in
+           display rs;
+
+           status "Computing Squier completion...";
+           let sq = RS.squier rs in
+           let sqs =
+             let rule_name = Utils.namer (=) in
+             let ans = ref "" in
+             List.iter
+               (fun (s1,s2) ->
+                  let n = rule_name (s1,s2) in
+                  ans := Printf.sprintf "%s%02d:\n%s\n%s\n\n%!" !ans n (RS.Path.to_string s1) (RS.Path.to_string s2)
+               ) sq;
+             !ans
+           in
+           squier##.innerHTML := Js.string (replace '\n' "<br/>" sqs);
 
            status "Done.";
            Js._true
