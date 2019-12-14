@@ -104,9 +104,11 @@
 </div>
 </div>
 
-<pre><span id="VALknuth_bendix"><span class="keyword">val</span> knuth_bendix</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> <a href="Term.RS.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALknuth_bendix"><span class="keyword">val</span> knuth_bendix</span> : <code class="type">?gt:(<a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.html#TYPEterm">Term.term</a> -> bool) -><br>       ?callback:((string * <a href="Term.html#TYPEterm">Term.term</a> * <a href="Term.html#TYPEterm">Term.term</a>) list -> unit) -><br>       <a href="Term.RS.html#TYPEt">t</a> -> (string * <a href="Term.html#TYPEterm">Term.term</a> * <a href="Term.html#TYPEterm">Term.term</a>) list</code></pre><div class="info ">
 <div class="info-desc">
-<p>Knuth-Bendix completion.</p>
+<p>Knuth-Bendix completion. <code class="code">gt</code> is the strict order on terms, <code class="code">callback</code> is
+      a function which is called regularly with the current rewriting system as
+      argument (useful to display during the completion).</p>
 </div>
 </div>
 
