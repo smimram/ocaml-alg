@@ -559,14 +559,12 @@ module RS = struct
     in
     sym steps
 
-  (** Knuth-Bendix completion. *)
-  let knuth_bendix (rs:t) =
-    let gt = LPO.gt (>=) in
-    (* Check that all rules are correctly oriented. *)
-    List.iter
-      (fun ((_,t,u) as r) ->
-         if not (gt t u) then Printf.printf "bad orientation for rule: %s\n%!" (Rule.to_string r)
-      ) rs;
+  (** Knuth-Bendix completion. [gt] is the strict order on terms, [callback] is
+      a function which is called regularly with the current rewriting system as
+      argument (useful to display during the completion). *)
+  let knuth_bendix?(gt=LPO.gt (>=)) ?(callback=fun _ -> ()) (rs:t) =
+    (* Reorient the rules according to the order. *)
+    let rs = List.map (fun (n,t,u) -> if not (gt t u) then (n,u,t) else (n,t,u)) rs in
     (* Name for new rules. *)
     let name =
       let n = ref (-1) in
@@ -606,7 +604,8 @@ module RS = struct
              let r = (name (), t1, t2) in
              Printf.printf "add %s\n%s\n%s\n\n%!" (Rule.to_string r) (Path.to_string p1) (Path.to_string p2);
              add r
-        ) cp
+        ) cp;
+      callback !rs
     done;
     !rs
 
