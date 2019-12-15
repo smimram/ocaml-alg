@@ -33,20 +33,8 @@ module Var = struct
 
   (** Create a function which will assign names to variables. *)
   let namer () =
-    let cur = ref 0 in
-    let nn = ref [] in
-    fun (v:t) ->
-      let n =
-        try
-          List.assq v !nn
-        with
-        | Not_found ->
-          let n = !cur in
-          incr cur;
-          nn := (v,n) :: !nn;
-          n
-      in
-      "x" ^ string_of_int n
+    let f = Utils.namer eq in
+    fun x -> "x" ^ string_of_int (f x)
 
   (** String representation of a variable. *)
   let to_string = namer ()
@@ -422,8 +410,8 @@ module RS = struct
     let has_context s =
       not (Pos.is_empty (pos s) && Subst.is_injective_renaming (subst s))
 
-    let label ?var s =
-      Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string ?var (subst s)
+    let label ?var s = Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string ?var (subst s)
+    (* let label ?var s *)
 
     let to_string ?var s =
       string_of_term ?var (source s) ^ " -" ^ label ?var s ^ "-> " ^ string_of_term ?var (target s)
