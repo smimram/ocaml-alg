@@ -25,25 +25,31 @@ module Var = struct
   (** A variable. *)
   type t = unit ref
 
+  (** Create a fresh variable. *)
   let fresh () : t = ref ()
 
+  (** Equality between variables. *)
   let eq (x:t) (y:t) = x == y
 
-  let to_string =
+  (** Create a function which will assign names to variables. *)
+  let namer () =
     let cur = ref 0 in
     let nn = ref [] in
     fun (v:t) ->
-    let n =
-      try
-        List.assq v !nn
-      with
-      | Not_found ->
-         let n = !cur in
-         incr cur;
-         nn := (v,n) :: !nn;
-         n
-    in
-    "x" ^ string_of_int n
+      let n =
+        try
+          List.assq v !nn
+        with
+        | Not_found ->
+          let n = !cur in
+          incr cur;
+          nn := (v,n) :: !nn;
+          n
+      in
+      "x" ^ string_of_int n
+
+  (** String representation of a variable. *)
+  let to_string = namer ()
 end
 
 (** A variable. *)
@@ -70,25 +76,25 @@ let rec eq t1 t2 =
   | Var x, Var y -> Var.eq x y
   | App (f1, _), App (f2, _) when not (Op.eq f1 f2) -> false
   | App (_, a1), App (_, a2) ->
-     (
-       let l1 = Array.length a1 in
-       if l1 <> Array.length a2 then false else
-         try
-           for i = 0 to Array.length a1 - 1 do
-             if not (eq a1.(i) a2.(i)) then raise Exit
-           done;
-           true
-         with
-         | Exit -> false
-     )
+    (
+      let l1 = Array.length a1 in
+      if l1 <> Array.length a2 then assert false;
+      try
+        for i = 0 to Array.length a1 - 1 do
+          if not (eq a1.(i) a2.(i)) then raise Exit
+        done;
+        true
+      with
+      | Exit -> false
+    )
   | _ -> false
 
 (** String representation of a term. *)
-let rec to_string = function
-  | App (f, a) -> Op.to_string f ^ "(" ^ String.concat "," (List.map to_string (Array.to_list a)) ^ ")"
-  | Var x -> Var.to_string x
+let rec to_string ?(var=Var.to_string) = function
+  | App (f, a) -> Op.to_string f ^ "(" ^ String.concat "," (List.map (to_string ~var) (Array.to_list a)) ^ ")"
+  | Var x -> var x
 
-let string_of_term = to_string
+let string_of_term ?var = to_string ?var
 
 (** Is a term a variable? *)
 let is_var = function
@@ -134,8 +140,8 @@ module Substitution = struct
   (** A substitution. *)
   type t = (var * term) list
 
-  let to_string s =
-    "[" ^ String.concat "," (List.map (fun (x,t) -> to_string t ^ "/" ^ to_string (Var x)) s) ^ "]"
+  let to_string ?var s =
+    "[" ^ String.concat "," (List.map (fun (x,t) -> to_string ?var t ^ "/" ^ to_string ?var (Var x)) s) ^ "]"
 
   (** Emtpy substitution. *)
   let empty : t = []
@@ -350,8 +356,8 @@ module RS = struct
 
     let target ((r,s,t):t) = t
 
-    let to_string r =
-      name r ^ " : " ^ to_string (source r) ^ " -> " ^ to_string (target r)
+    let to_string ?var r =
+      name r ^ " : " ^ to_string ?var (source r) ^ " -> " ^ to_string ?var (target r)
 
     let eq (r1:t) (r2:t) =
       (* Printf.printf "EQ %s WITH %s\n%!" (to_string r1) (to_string r2); *)
@@ -378,7 +384,7 @@ module RS = struct
   let empty : t = []
 
   let to_string rs =
-    String.concat "\n" (List.map Rule.to_string rs)
+    String.concat "\n" (List.map (fun r -> Rule.to_string ~var:(Var.namer()) r) rs)
 
   (** Rewriting steps. *)
   module Step = struct
@@ -416,11 +422,11 @@ module RS = struct
     let has_context s =
       not (Pos.is_empty (pos s) && Subst.is_injective_renaming (subst s))
 
-    let label s =
-      Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string (subst s)
+    let label ?var s =
+      Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string ?var (subst s)
 
-    let to_string s =
-      string_of_term (source s) ^ " -" ^ label s ^ "-> " ^ string_of_term (target s)
+    let to_string ?var s =
+      string_of_term ?var (source s) ^ " -" ^ label ?var s ^ "-> " ^ string_of_term ?var (target s)
 
     let eq (s1:t) (s2:t) =
       (* Printf.printf "EQ %s WITH %s\n%!" (to_string s1) (to_string s2); *)
@@ -479,9 +485,9 @@ module RS = struct
       assert (eq (target p) (Step.source s));
       Step (p,s)
 
-    let rec to_string = function
-      | Empty t -> string_of_term t
-      | Step (p,s) -> to_string p ^ " -" ^ Step.label s ^ "-> " ^ string_of_term (Step.target s)
+    let rec to_string ?var = function
+      | Empty t -> string_of_term ?var t
+      | Step (p,s) -> to_string ?var p ^ " -" ^ Step.label ?var s ^ "-> " ^ string_of_term ?var (Step.target s)
 
     let rec append p = function
       | Step (q, s) -> Step (append p q, s)
