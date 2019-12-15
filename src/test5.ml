@@ -29,29 +29,16 @@ let () =
 let m x y = app m [|x;y|]
 let i x = app i [|x|]
 let groups = [
-  RS.Rule.make "r1" (m e x) x;
-  RS.Rule.make "r2" (m (i x) x) e;
-  RS.Rule.make "r3" (m (m x y) z) (m x (m y z));
-  RS.Rule.make "r4" (m (i x) (m x y)) y;
-  RS.Rule.make "r8" (m x e) x;
-  RS.Rule.make "r9" (i e) e;
-  RS.Rule.make "r10" (i (i x)) x;
-  RS.Rule.make "r11" (m x (i x)) e;
-  RS.Rule.make "r13" (m x (m (i x) y)) y;
-  RS.Rule.make "r20" (i (m x y)) (m (i y) (i x))
-]
-(* Version without units. *)
-let groups = [
-  (* RS.Rule.make "r1" (m e x) x; *)
-  (* RS.Rule.make "r2" (m (i x) x) e; *)
-  RS.Rule.make "r3" (m (m x y) z) (m x (m y z));
-  RS.Rule.make "r4" (m (i x) (m x y)) y;
-  (* RS.Rule.make "r8" (m x e) x; *)
-  (* RS.Rule.make "r9" (i e) e; *)
-  RS.Rule.make "r10" (i (i x)) x;
-  (* RS.Rule.make "r11" (m x (i x)) e; *)
-  RS.Rule.make "r13" (m x (m (i x) y)) y;
-  RS.Rule.make "r20" (i (m x y)) (m (i y) (i x))
+  RS.Rule.make "A"  (m (m x y) z) (m x (m y z));
+  RS.Rule.make "Eₗ" (m e x) x;
+  RS.Rule.make "Eᵣ" (m x e) x;
+  RS.Rule.make "E"  (i e) e;
+  RS.Rule.make "Iₗ" (m (i x) x) e;
+  RS.Rule.make "Iᵣ" (m x (i x)) e;
+  RS.Rule.make "I²" (i (i x)) x;
+  RS.Rule.make "I₁" (m (i x) (m x y)) y;
+  RS.Rule.make "I₂" (m x (m (i x) y)) y;
+  RS.Rule.make "Iₘ" (i (m x y)) (m (i y) (i x))
 ]
 
 let () =
@@ -73,6 +60,7 @@ let () =
        Printf.printf "%02d: %s\n    %s\n\n%!" n (RS.Path.to_string s1) (RS.Path.to_string s2)
     ) (RS.squier groups)
 
+(*
 let () =
   Printf.printf "Possible homotopical reductions:\n\n";
   List.iter
@@ -86,3 +74,4 @@ let () =
          let rr2 = String.concat ", " (List.map RS.Rule.name rr2) in
          Printf.printf "%02d: %s\n    %s / %s\n    %s\n    %s\n\n%!" (rule_name (s1,s2)) tr rr1 rr2 (RS.Path.to_string s1) (RS.Path.to_string s2)
     ) (RS.squier groups)
+*)
