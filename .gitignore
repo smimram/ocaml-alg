@@ -10,3 +10,6 @@
 *~
 ._d
 ._bcdi
+*.aux
+*.log
+*.pdf

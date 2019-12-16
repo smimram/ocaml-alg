@@ -38,6 +38,11 @@ module Var = struct
     let f = Utils.namer eq in
     fun x -> "x" ^ string_of_int (f x)
 
+  let namer_natural () =
+    let f = Utils.namer eq in
+    let name = [|"x"; "y"; "z"; "t"; "u"; "v"; "w"|] in
+    fun x -> name.(f x)
+
   (** String representation of a variable. *)
   let to_string = namer ()
 end
@@ -365,7 +370,9 @@ module RS = struct
     let target ((r,s,t):t) = t
 
     let to_string ?var r =
-      name r ^ " : " ^ to_string ?var (source r) ^ " -> " ^ to_string ?var (target r)
+      let s = to_string ?var (source r) in
+      let t = to_string ?var (target r) in
+      name r ^ " : " ^ s ^ " -> " ^ t
 
     let eq (r1:t) (r2:t) =
       (* Printf.printf "EQ %s WITH %s\n%!" (to_string r1) (to_string r2); *)
@@ -391,8 +398,8 @@ module RS = struct
   (** Empty rewriting system. *)
   let empty : t = []
 
-  let to_string rs =
-    String.concat "\n" (List.map (fun r -> Rule.to_string ~var:(Var.namer()) r) rs)
+  let to_string ?(var=Var.namer) rs =
+    String.concat "\n" (List.map (fun r -> Rule.to_string ~var:(var()) r) rs)
 
   (** Rewriting steps. *)
   module Step = struct
@@ -549,6 +556,30 @@ module RS = struct
         if List.exists (Rule.eq r) rr then rr
         else r::rr
       | Empty _ -> []
+
+    (** Length of a path. *)
+    let rec length = function
+      | Step (p, _) -> 1 + length p
+      | Empty _ -> 0
+
+    (** nth step in a path. *)
+    let nth_step n p =
+      let rec aux n = function
+        | Step (p, s) ->
+          if n = 0 then s else aux (n-1) p
+        | Empty _ -> assert false
+      in
+      aux (length p - 1 - n) p
+
+    (** nth term in a path. *)
+    let nth_term n p =
+      let rec aux n = function
+        | Step (p, s) ->
+          if n = 0 then Step.target s else aux (n-1) p
+        | Empty t ->
+          if n = 0 then t else assert false
+      in
+      aux (length p - n) p
   end
 
   (** Normalize a term. *)
@@ -659,7 +690,7 @@ module RS = struct
 
   (** Squier completion. *)
   let squier rs =
-!!    List.map
+    List.map
       (fun (s1,s2) ->
         let p1 = Path.append (Path.step (Path.empty (Step.source s1)) s1) (normalize rs (Step.target s1)) in
         let p2 = Path.append (Path.step (Path.empty (Step.source s2)) s2) (normalize rs (Step.target s2)) in
