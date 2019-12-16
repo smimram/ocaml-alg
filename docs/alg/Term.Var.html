@@ -17,6 +17,7 @@
 <link title="Alphabet" rel="Chapter" href="Alphabet.html">
 <link title="Automaton" rel="Chapter" href="Automaton.html">
 <link title="Category" rel="Chapter" href="Category.html">
+<link title="Extlib" rel="Chapter" href="Extlib.html">
 <link title="Field" rel="Chapter" href="Field.html">
 <link title="Globular" rel="Chapter" href="Globular.html">
 <link title="Graph" rel="Chapter" href="Graph.html">
@@ -54,6 +55,27 @@
 </div>
 
 
-<pre><span id="VALfresh"><span class="keyword">val</span> fresh</span> : <code class="type">unit -> <a href="Term.Var.html#TYPEt">t</a></code></pre>
-<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Term.Var.html#TYPEt">t</a> -> <a href="Term.Var.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Term.Var.html#TYPEt">t</a> -> string</code></pre></body></html>
+<pre><span id="VALfresh"><span class="keyword">val</span> fresh</span> : <code class="type">unit -> <a href="Term.Var.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Create a fresh variable.</p>
+</div>
+</div>
+
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Term.Var.html#TYPEt">t</a> -> <a href="Term.Var.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Equality between variables.</p>
+</div>
+</div>
+
+<pre><span id="VALnamer"><span class="keyword">val</span> namer</span> : <code class="type">unit -> <a href="Term.Var.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p>Create a function which will assign names to variables.</p>
+</div>
+</div>
+
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Term.Var.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p>String representation of a variable.</p>
+</div>
+</div>
+</body></html>

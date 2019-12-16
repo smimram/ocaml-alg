@@ -17,6 +17,7 @@
 <link title="Alphabet" rel="Chapter" href="Alphabet.html">
 <link title="Automaton" rel="Chapter" href="Automaton.html">
 <link title="Category" rel="Chapter" href="Category.html">
+<link title="Extlib" rel="Chapter" href="Extlib.html">
 <link title="Field" rel="Chapter" href="Field.html">
 <link title="Globular" rel="Chapter" href="Globular.html">
 <link title="Graph" rel="Chapter" href="Graph.html">
@@ -54,7 +55,12 @@
 </div>
 
 
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type"><a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.Pos.html#TYPEt">Term.Pos.t</a> -> <a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> Subst.t -> <a href="Term.RS.Step.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type"><a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.Pos.html#TYPEt">Term.Pos.t</a> -> <a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> Subst.t -> <a href="Term.RS.Step.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Create a rewriting step.</p>
+</div>
+</div>
+
 <pre><span id="VALsource"><span class="keyword">val</span> source</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Source.</p>
@@ -71,6 +77,7 @@
 <pre><span id="VALrule"><span class="keyword">val</span> rule</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.RS.html#TYPErule">Term.RS.rule</a></code></pre>
 <pre><span id="VALsubst"><span class="keyword">val</span> subst</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.html#TYPEsubst">Term.subst</a></code></pre>
 <pre><span id="VALhas_context"><span class="keyword">val</span> has_context</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALlabel"><span class="keyword">val</span> label</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> string</code></pre>
-<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALoldlabel"><span class="keyword">val</span> oldlabel</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Step.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALlabel"><span class="keyword">val</span> label</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Step.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Step.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.RS.Step.html#TYPEt">t</a> -> bool</code></pre></body></html>

@@ -17,6 +17,7 @@
 <link title="Alphabet" rel="Chapter" href="Alphabet.html">
 <link title="Automaton" rel="Chapter" href="Automaton.html">
 <link title="Category" rel="Chapter" href="Category.html">
+<link title="Extlib" rel="Chapter" href="Extlib.html">
 <link title="Field" rel="Chapter" href="Field.html">
 <link title="Globular" rel="Chapter" href="Globular.html">
 <link title="Graph" rel="Chapter" href="Graph.html">
@@ -118,13 +119,13 @@
 </div>
 </div>
 
-<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Term.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Var.t</a> -> string) -> <a href="Term.html#TYPEt">t</a> -> string</code></pre><div class="info ">
 <div class="info-desc">
 <p>String representation of a term.</p>
 </div>
 </div>
 
-<pre><span id="VALstring_of_term"><span class="keyword">val</span> string_of_term</span> : <code class="type"><a href="Term.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALstring_of_term"><span class="keyword">val</span> string_of_term</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Var.t</a> -> string) -> <a href="Term.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALis_var"><span class="keyword">val</span> is_var</span> : <code class="type"><a href="Term.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
 <div class="info-desc">
 <p>Is a term a variable?</p>
@@ -132,6 +133,12 @@
 </div>
 
 <pre><span id="VALget_var"><span class="keyword">val</span> get_var</span> : <code class="type"><a href="Term.html#TYPEt">t</a> -> <a href="Term.html#TYPEvar">var</a></code></pre>
+<pre><span id="VALvars"><span class="keyword">val</span> vars</span> : <code class="type"><a href="Term.html#TYPEt">t</a> -> <a href="Term.Var.html#TYPEt">Var.t</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Variables in a term.</p>
+</div>
+</div>
+
 <pre><span id="VALoccurs"><span class="keyword">val</span> occurs</span> : <code class="type"><a href="Term.Var.html#TYPEt">Var.t</a> -> <a href="Term.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
 <div class="info-desc">
 <p>Whether a variable occurs in a term.</p>
@@ -160,7 +167,7 @@
 
 <pre><span id="EXCEPTIONNot_unifiable"><span class="keyword">exception</span> Not_unifiable</span></pre>
 
-<pre><span id="VALunify"><span class="keyword">val</span> unify</span> : <code class="type"><a href="Term.html#TYPEterm">term</a> -> <a href="Term.html#TYPEterm">term</a> -> Subst.t</code></pre><div class="info ">
+<pre><span id="VALunify"><span class="keyword">val</span> unify</span> : <code class="type"><a href="Term.html#TYPEterm">term</a> -> <a href="Term.html#TYPEterm">term</a> -> Subst.t * Subst.t</code></pre><div class="info ">
 <div class="info-desc">
 <p>Most general unifier.</p>
 </div>

@@ -12,6 +12,7 @@
 <link title="Alphabet" rel="Chapter" href="Alphabet.html">
 <link title="Automaton" rel="Chapter" href="Automaton.html">
 <link title="Category" rel="Chapter" href="Category.html">
+<link title="Extlib" rel="Chapter" href="Extlib.html">
 <link title="Field" rel="Chapter" href="Field.html">
 <link title="Globular" rel="Chapter" href="Globular.html">
 <link title="Graph" rel="Chapter" href="Graph.html">
@@ -30,7 +31,9 @@
 <body>
 <code class="code"><span class="keyword">sig</span><br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t&nbsp;=&nbsp;(<span class="constructor">Term</span>.var&nbsp;*&nbsp;<span class="constructor">Term</span>.term)&nbsp;list<br>
-&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;to_string&nbsp;:&nbsp;(<span class="constructor">Term</span>.var&nbsp;*&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t)&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;to_string&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?var:(<span class="constructor">Term</span>.<span class="constructor">Var</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Term</span>.var&nbsp;*&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t)&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;empty&nbsp;:&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;simple&nbsp;:&nbsp;<span class="constructor">Term</span>.var&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.term&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Term</span>.<span class="constructor">Substitution</span>.t<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;add&nbsp;:<br>
