@@ -410,8 +410,17 @@ module RS = struct
     let has_context s =
       not (Pos.is_empty (pos s) && Subst.is_injective_renaming (subst s))
 
-    let label ?var s = Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string ?var (subst s)
-    (* let label ?var s *)
+    (* let label ?var s = Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string ?var (subst s) *)
+    let rec label ?var s =
+      match pos s, source s with
+      | p::pos, App (f, a) ->
+        let ap = label ?var (a.(p), pos, rule s, subst s) in
+        let a = Array.map (string_of_term ?var) a in
+        a.(p) <- ap;
+        let a = String.concat "," (Array.to_list a) in
+        Op.to_string f ^ "(" ^ a ^ ")"
+      | p::pos, Var x -> assert false
+      | [], _ -> Rule.name (rule s) ^ Subst.to_string ?var (subst s)
 
     let to_string ?var s =
       string_of_term ?var (source s) ^ " -" ^ label ?var s ^ "-> " ^ string_of_term ?var (target s)

@@ -1,4 +1,4 @@
-SOURCES = utils.ml \
+SOURCES = extlib.ml utils.ml \
           alphabet.ml monoid.ml group.ml ring.ml field.ml matrix.ml module.ml algebra.ml series.ml \
           hypergraph.ml graph.ml globular.ml simplicial.ml category.ml precategory.ml \
           automaton.ml term.ml
