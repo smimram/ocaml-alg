@@ -85,6 +85,7 @@ let () =
   let rules = String.concat "\n" rules in
   print "\\section{Rules}\n\n\\begin{align*}\n%s\n\\end{align*}\n\n" rules;
   print "\\section{Coherence}\n\n";
+  let rulen = ref 0 in
   List.iter
     (fun (p1,p2) ->
        let p1,p2 =
@@ -105,15 +106,40 @@ let () =
            Printf.sprintf "%s\\ar[drr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s"
              (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2)
          (*
+         | 1, 4 ->
+           Printf.sprintf "%s\\ar[drrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&&%s"
+             (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2)
+         | 1, 5 ->
+           Printf.sprintf "%s\\ar[ddrrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&&%s\\ar[d,\"%s\"]\\\\\n&&&%s"
+             (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2)
+         *)
+         | 1, 4 ->
+           Printf.sprintf "%s\\ar[ddrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s"
+             (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2)
+         | 1, 5 ->
+           Printf.sprintf "%s\\ar[dddrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s"
+             (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2)
+         | 1, 6 ->
+           Printf.sprintf "%s\\ar[ddddrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s"
+             (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2)
+         (*
          | 2, 1 ->
            Printf.sprintf "%s\\ar[d,\"%s\"']\\ar[dr,\"%s\"]\\\\\n%s\\ar[r,\"%s\"']&%s"
            (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
          *)
          | 2, 2 ->
-           Printf.sprintf "%s\\ar[r,\"%s\"]\\ar[d,\"%s\"']&%s\\ar[d,\"%s\"]\\\\\n%s\\ar[r,\"%s\"']&%s"
-             (tm 0 p1) (st 0 p2) (st 0 p1) (tm 1 p2) (st 1 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
+           Printf.sprintf "%s\\ar[d,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n%s\\ar[r,\"%s\"']&%s"
+             (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
+         | 2, 3 ->
+           Printf.sprintf "%s\\ar[d,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n%s\\ar[rr,\"%s\"']&&%s"
+             (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
+         | 2, 4 ->
+           Printf.sprintf "%s\\ar[d,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n%s\\ar[rrr,\"%s\"']&&&%s"
+             (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
          | l1, l2 -> Printf.sprintf "TODO: %d, %d" l1 l2
        in
+       incr rulen;
+       print "\\noindent\nRule %d:\n" !rulen;
        print "\\[\n\\begin{tikzcd}\n%s\n\\end{tikzcd}\n\\]\n\n" cd
     ) coherence;
   Printf.printf "Done.\n%!"

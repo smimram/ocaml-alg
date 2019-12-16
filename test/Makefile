@@ -14,6 +14,10 @@ alg:
 clean:
 	rm -f $(PROG)
 
+pdf: build
+	./squierGroup
+	pdflatex squierGroupFull.tex
+
 %: %.ml
 	ocamlopt.opt -annot -I ../src alg.cmxa $< -o $@
 
