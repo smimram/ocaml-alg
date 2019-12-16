@@ -147,6 +147,14 @@ module Substitution = struct
   (** Emtpy substitution. *)
   let empty : t = []
 
+  (** Identity substition. *)
+  let id vars : t =
+    List.map (fun x -> x, Var x) vars
+
+  (** Renaming of variables. *)
+  let rename vars : t =
+    List.map (fun x -> x, Var (Var.fresh ())) vars
+
   let simple x t : t = [x,t]
 
   let add s x t : t = (x,t)::s
@@ -202,6 +210,10 @@ module Substitution = struct
 
   let in_dom (s:t) x =
     List.exists (fun (y,_) -> Var.eq y x) s
+
+  (** Restrict the domain of a substitution. *)
+  let restrict vars s : t =
+    List.filter (fun (x,_) -> List.exists (Var.eq x) vars) s
 end
 
 module Subst = Substitution
@@ -224,25 +236,19 @@ exception Not_unifiable
 (** Most general unifier. *)
 let unify t1 t2 =
   (* Printf.printf "UNIFY %s WITH %s\n%!" (to_string t1) (to_string t2); *)
-  let rec aux q (s1,s2) =
+  let rec aux q s =
     match q with
-    | [] -> s1, s2
+    | [] -> s
     | p::q ->
        match p with
        | Var x, t ->
           if occurs x t then raise Not_unifiable;
-          let s1' = Subst.simple x t in
-          let f1 = Subst.app s1' in
-          let q = List.map (fun (t1,t2) -> f1 t1, t2) q in
-          let s2 = Subst.compose s2 s1' in
-          aux q (Subst.add s1 x t, s2)
-       | t, Var x ->
-         if occurs x t then raise Not_unifiable;
-         let s2' = Subst.simple x t in
-         let f2 = Subst.app s2' in
-         let q = List.map (fun (t1,t2) -> t1, f2 t2) q in
-         let s1 = Subst.compose s1 s2' in
-         aux q (s1, Subst.add s2 x t)
+          let s' = Subst.simple x t in
+          let f = Subst.app s' in
+          let q = List.map (fun (t1,t2) -> f t1, f t2) q in
+          let s = Subst.compose s s' in
+          aux q (Subst.add s x t)
+       | t, Var x -> aux ((Var x,t)::q) s
        | App (f1,a1), App (f2,a2) ->
           if not (Op.eq f1 f2) then raise Not_unifiable;
           let q = ref q in
@@ -250,19 +256,20 @@ let unify t1 t2 =
           for i = 0 to Array.length a1 - 1 do
             q := (a1.(i),a2.(i)) :: !q
           done;
-          aux !q (s1,s2)
+          aux !q s
   in
-  aux [t1,t2] (Subst.empty,Subst.empty)
+  aux [t1,t2] Subst.empty
 
+(*
 let unify t1 t2 =
-  let s1, s2 = unify t1 t2 in
+  let s = unify t1 t2 in
   let var = Var.namer () in
   let t1 = to_string ~var t1 in
   let t2 = to_string ~var t2 in
-  let ss1 = Subst.to_string ~var s1 in
-  let ss2 = Subst.to_string ~var s2 in
-  Printf.printf "UNIFY %s WITH %s IS %s / %s\n%!" t1 t2 ss1 ss2;
-  s1, s2
+  let ss = Subst.to_string ~var s in
+  Printf.printf "UNIFY %s WITH %s IS %s\n%!" t1 t2 ss;
+  s
+*)
 
 (** Whether a pattern matches a term. *)
 let matches t1 t2 =
@@ -270,18 +277,18 @@ let matches t1 t2 =
     match q with
     | [] -> s
     | p::q ->
-       match p with
-       | Var x, t ->
-          if Subst.in_dom s x then (if eq (Subst.app s (Var x)) t then aux q s else raise Not_unifiable)
-          else aux q (Subst.add s x t)
-       | _, Var _ -> raise Not_unifiable
-       | App (f1,a1), App (f2,a2) ->
-          if not (Op.eq f1 f2) then raise Not_unifiable;
-          let q = ref q in
-          for i = 0 to Array.length a1 - 1 do
-            q := (a1.(i),a2.(i)) :: !q
-          done;
-          aux !q s
+      match p with
+      | Var x, t ->
+        if Subst.in_dom s x then (if eq (Subst.app s (Var x)) t then aux q s else raise Not_unifiable)
+        else aux q (Subst.add s x t)
+      | _, Var _ -> raise Not_unifiable
+      | App (f1,a1), App (f2,a2) ->
+        if not (Op.eq f1 f2) then raise Not_unifiable;
+        let q = ref q in
+        for i = 0 to Array.length a1 - 1 do
+          q := (a1.(i),a2.(i)) :: !q
+        done;
+        aux !q s
   in
   aux [t1,t2] Subst.empty
 
@@ -298,20 +305,20 @@ let equivalent ?(s=Subst.empty) t1 t2 =
     match q with
     | [] -> s
     | p::q ->
-       match p with
-       | Var x, Var y ->
-          if Subst.in_dom s x then (if eq (Subst.app s (Var x)) (Var y) then aux q s else raise Not_unifiable)
-          else
-            let s = Subst.add s x (Var y) in
-            aux q s
-       | _, Var _ | Var _, _ -> raise Not_unifiable
-       | App (f1,a1), App (f2,a2) ->
-          if not (Op.eq f1 f2) then raise Not_unifiable;
-          let q = ref q in
-          for i = 0 to Array.length a1 - 1 do
-            q := (a1.(i),a2.(i)) :: !q
-          done;
-          aux !q s
+      match p with
+      | Var x, Var y ->
+        if Subst.in_dom s x then (if eq (Subst.app s (Var x)) (Var y) then aux q s else raise Not_unifiable)
+        else
+          let s = Subst.add s x (Var y) in
+          aux q s
+      | _, Var _ | Var _, _ -> raise Not_unifiable
+      | App (f1,a1), App (f2,a2) ->
+        if not (Op.eq f1 f2) then raise Not_unifiable;
+        let q = ref q in
+        for i = 0 to Array.length a1 - 1 do
+          q := (a1.(i),a2.(i)) :: !q
+        done;
+        aux !q s
   in
   aux [t1,t2] s
 
@@ -405,14 +412,14 @@ module RS = struct
     let rec target ((t,p,r,s):t) =
       match p with
       | i::p ->
-         (
-           match t with
-           | App (f,a) ->
-              let a = Array.copy a in
-              a.(i) <- target (a.(i),p,r,s);
-              App (f,a)
-           | _ -> failwith "Bad rewriting step."
-         )
+        (
+          match t with
+          | App (f,a) ->
+            let a = Array.copy a in
+            a.(i) <- target (a.(i),p,r,s);
+            App (f,a)
+          | _ -> failwith "Bad rewriting step."
+        )
       | [] -> Subst.app s (Rule.target r)
 
     let pos ((t,p,r,s):t) = p
@@ -563,7 +570,12 @@ module RS = struct
       | App (f,a) ->
         let s =
           try
-            let s1,s2 = unify t (Rule.source r2) in
+            let t2 = Rule.source r2 in
+            let n1 = Subst.rename (vars t) in
+            let n2 = Subst.rename (vars t2) in
+            let s = unify (Subst.app n1 t) (Subst.app n2 t2) in
+            let s1 = Subst.compose n1 s in
+            let s2 = Subst.compose n2 s in
             let t = Subst.app s1 (Rule.source r1) in
             let step1 = Step.make t Pos.empty r1 s1 in
             let step2 = Step.make t p r2 s2 in
@@ -647,7 +659,7 @@ module RS = struct
 
   (** Squier completion. *)
   let squier rs =
-    List.map
+!!    List.map
       (fun (s1,s2) ->
         let p1 = Path.append (Path.step (Path.empty (Step.source s1)) s1) (normalize rs (Step.target s1)) in
         let p2 = Path.append (Path.step (Path.empty (Step.source s2)) s2) (normalize rs (Step.target s2)) in
