@@ -57,6 +57,18 @@
 </div>
 </div>
 
+<pre><span id="VALid"><span class="keyword">val</span> id</span> : <code class="type"><a href="Term.html#TYPEvar">Term.var</a> list -> <a href="Term.Substitution.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Identity substition.</p>
+</div>
+</div>
+
+<pre><span id="VALrename"><span class="keyword">val</span> rename</span> : <code class="type"><a href="Term.html#TYPEvar">Term.var</a> list -> <a href="Term.Substitution.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Renaming of variables.</p>
+</div>
+</div>
+
 <pre><span id="VALsimple"><span class="keyword">val</span> simple</span> : <code class="type"><a href="Term.html#TYPEvar">Term.var</a> -> <a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.Substitution.html#TYPEt">t</a></code></pre>
 <pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type">(<a href="Term.html#TYPEvar">Term.var</a> * <a href="Term.html#TYPEterm">Term.term</a>) list -> <a href="Term.html#TYPEvar">Term.var</a> -> <a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.Substitution.html#TYPEt">t</a></code></pre>
 <pre><span id="VALfind"><span class="keyword">val</span> find</span> : <code class="type"><a href="Term.Substitution.html#TYPEt">t</a> -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> <a href="Term.html#TYPEterm">Term.term</a></code></pre><div class="info ">
@@ -96,4 +108,10 @@
 </div>
 </div>
 
-<pre><span id="VALin_dom"><span class="keyword">val</span> in_dom</span> : <code class="type"><a href="Term.Substitution.html#TYPEt">t</a> -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> bool</code></pre></body></html>
+<pre><span id="VALin_dom"><span class="keyword">val</span> in_dom</span> : <code class="type"><a href="Term.Substitution.html#TYPEt">t</a> -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> bool</code></pre>
+<pre><span id="VALrestrict"><span class="keyword">val</span> restrict</span> : <code class="type"><a href="Term.Var.html#TYPEt">Term.Var.t</a> list -> (<a href="Term.html#TYPEvar">Term.var</a> * <a href="Term.html#TYPEterm">Term.term</a>) list -> <a href="Term.Substitution.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Restrict the domain of a substitution.</p>
+</div>
+</div>
+</body></html>
