@@ -26,7 +26,7 @@ let parse_rs syms rules =
   let rs = Parser.main Lexer.token (Lexing.from_string rules) in
   let name =
     let n = ref 0 in
-    fun () -> incr n; "r" ^ string_of_int !n
+    fun () -> incr n; "R" ^ string_of_int !n
   in
   List.map (fun (s,t) -> RS.Rule.make (name ()) s t) rs
 
