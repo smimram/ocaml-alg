@@ -1,5 +1,6 @@
 (* Testing Squier completion *)
 
+open Extlib
 open Term
 
 let m = Op.make "m" 2
@@ -67,9 +68,10 @@ let () =
 
 let rule_name = Utils.namer (=)
 
+let coherence = List.map (fun (p1,p2) -> RS.Zigzag.of_path p1, RS.Zigzag.of_path p2) coherence
+
 let () =
   Printf.printf "\n****** zigzag *****\n\n%!";
-  let coherence = List.map (fun (p1,p2) -> RS.Zigzag.of_path p1, RS.Zigzag.of_path p2) coherence in
   List.iter
     (fun (p1,p2) ->
        let n = rule_name (p1,p2) in
@@ -78,3 +80,12 @@ let () =
        let s2 = RS.Zigzag.to_string ~var p2 in
        Printf.printf "%02d: %s\n    %s\n\n%!" (n+1) s1 s2
     ) coherence
+
+let () =
+  let r = RS.find_rule groups "Eᵣ" in
+  let c = List.nth 35 coherence in
+  let var = Term.Var.namer_natural () in
+  Printf.printf "eliminating Eᵣ in %s / %s\n%!" (RS.Zigzag.to_string ~var (fst c)) (RS.Zigzag.to_string ~var (snd c));
+  let v = RS.Zigzag.value r c in
+  Printf.printf "(%s) => %s\n%!" (RS.Rule.to_string ~var r) (RS.Zigzag.to_string ~var v)
+    

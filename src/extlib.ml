@@ -10,4 +10,8 @@ module List = struct
       | [] -> raise Not_found
     in
     aux 0 l
+
+  let rec nth n = function
+    | x::l -> if n = 0 then x else nth (n-1) l
+    | [] -> raise Not_found
 end

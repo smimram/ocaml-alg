@@ -192,6 +192,15 @@ module Substitution = struct
   let is_renaming (s:t) =
     List.for_all (fun (x,t) -> is_var t) s
 
+  (** Inverse of a renaming. *)
+  let inv s : t =
+    List.map
+      (fun (x,t) ->
+         match t with
+         | Var y -> y, Var x
+         | _ -> assert false
+      ) s
+
   let is_injective_renaming (s:t) =
     let rec aux vars = function
       | [] -> true
@@ -405,6 +414,10 @@ module RS = struct
   let to_string ?(var=Var.namer) rs =
     String.concat "\n" (List.map (fun r -> Rule.to_string ~var:(var()) r) rs)
 
+  (** Find the rule with given name. *)
+  let find_rule rs r =
+    List.find (fun r' -> Rule.name r' = r) rs
+
   (** Rewriting steps. *)
   module Step = struct
     (** A rewriting step. *)
@@ -583,133 +596,6 @@ module RS = struct
       aux (length p - n) p
   end
 
-  (** Rewriting zigzags. *)
-  module Zigzag = struct
-    (** Zigzag step. *)
-    (* We change the representation to more traditional terms, because we want
-       to be able to rewrite. *)
-    module Step = struct
-      type t =
-        | TApp of Op.t * t array (** Term application. *)
-        | RApp of Rule.t * Subst.t (** Rule application. *)
-        | SVar of var (** Variable. *)
-
-      let rec to_string ?(var=Var.to_string) = function
-        | TApp (f, a) ->
-          let a = Array.to_list a in
-          let a = List.map (to_string ~var) a in
-          let a = String.concat "," a in
-          Op.name f ^ "(" ^ a ^ ")"
-        | RApp (r, s) ->
-          let a = Rule.args r s in
-          let a = List.map (string_of_term ~var) a in
-          let a = String.concat "," a in
-          Rule.name r ^ "(" ^ a ^ ")"
-        | SVar x -> var x
-
-      let rec of_term = function
-        | App (f, a) -> TApp (f, Array.map of_term a)
-        | Var x -> SVar x
-
-      let rec of_step ((t,pos,r,s):Step.t) =
-        match t, pos with
-        | _, [] ->
-          RApp (r, s)
-        | App (f, a), p::pos ->
-          let t = a.(p) in
-          let a = Array.map of_term a in
-          a.(p) <- of_step (t, pos, r, s);
-          TApp (f, a)
-        | _ -> assert false
-
-      let rec source = function
-        | TApp (f, a) -> App (f, Array.map source a)
-        | RApp (r, s) -> Subst.app s (Rule.source r)
-        | SVar x -> Var x
-
-      let rec target = function
-        | TApp (f, a) -> App (f, Array.map source a)
-        | RApp (r, s) -> Subst.app s (Rule.target r)
-        | SVar x -> Var x
-
-      (** Whether a rule occurs in a step. *)
-      let rec has_rule r = function
-        | TApp (_, a) -> Array.exists (has_rule r) a
-        | RApp (r', _) -> Rule.eq r r'
-        | SVar _ -> false
-    end
-
-    (** A rewriting zigzag. *)
-    type t =
-      | Empty of term
-      | Step of bool * Step.t * t (* false means inverted *)
-
-    (** String representation. *)
-    let to_string ?var p =
-      match p with
-      | Empty t -> string_of_term ?var t
-      | _ ->
-        let rec aux = function
-          | Step (d,s,Empty _) ->
-            Step.to_string ?var s ^ (if d then "" else "-")
-          | Step (d,s,p) ->
-            Step.to_string ?var s ^ (if d then "" else "-") ^ "." ^ aux p
-          | Empty _ -> assert false
-        in
-        aux p
-
-    (** Create a zigzag from a path. *)
-    let rec of_path p =
-      match p with
-      | Path.Empty t -> Empty t
-      | _ ->
-        (* Compute the list of steps. *)
-        let rec aux = function
-          | Path.Step (p,s) -> s::(aux p)
-          | Empty _ -> []
-        in
-        let l = List.rev (aux p) in
-        let rec aux = function
-          | s::l -> Step (true, Step.of_step s, aux l)
-          | [] -> Empty (Path.target p)
-        in
-        aux l
-
-    let source = function
-      | Step (d, s, _) -> (if d then Step.source else Step.target) s
-      | Empty t -> t
-
-    let rec target = function
-      | Step (_, _, p) -> target p
-      | Empty t -> t
-
-    let is_empty = function
-      | Step _ -> false
-      | Empty _ -> true
-
-    let rec to_list = function
-      | Step (d, s, p) -> (d,s)::(to_list p)
-      | Empty t -> []
-
-    let rec of_list = function
-      | [d,s] ->
-        if d then Step (d, s, Empty (Step.target s))
-        else Step (d, s, Empty (Step.source s))
-      | (d,s)::l ->
-        Step (d, s, of_list l)
-      | [] -> assert false
-
-    (** Inverse of a path. *)
-    let inv p =
-      match p with
-      | Empty t -> Empty t
-      | _ ->
-        p |> to_list |> List.map (fun (d,s) -> not d, s) |> List.rev |> of_list
-
-    (** Express a rule as a zigzag in a cell. *)
-    (* let value r (p1,p2) = *)
-  end
-
   (** Normalize a term. *)
   let rec normalize rs t =
     let rec aux p =
@@ -825,4 +711,168 @@ module RS = struct
         p1, p2
       )
       (critical rs)
+
+  (** Rewriting zigzags. *)
+  module Zigzag = struct
+    (** Zigzag step. *)
+    (* We change the representation to more traditional terms, because we want
+       to be able to rewrite. *)
+    module Step = struct
+      type t =
+        | TApp of Op.t * t array (** Term application. *)
+        | RApp of Rule.t * Subst.t (** Rule application. *)
+        | SVar of var (** Variable. *)
+
+      let rec to_string ?(var=Var.to_string) = function
+        | TApp (f, a) ->
+          let a = Array.to_list a in
+          let a = List.map (to_string ~var) a in
+          let a = String.concat "," a in
+          Op.name f ^ "(" ^ a ^ ")"
+        | RApp (r, s) ->
+          let a = Rule.args r s in
+          let a = List.map (string_of_term ~var) a in
+          let a = String.concat "," a in
+          Rule.name r ^ "(" ^ a ^ ")"
+        | SVar x -> var x
+
+      let rec of_term = function
+        | App (f, a) -> TApp (f, Array.map of_term a)
+        | Var x -> SVar x
+
+      let rec of_step ((t,pos,r,s):Step.t) =
+        match t, pos with
+        | _, [] ->
+          RApp (r, s)
+        | App (f, a), p::pos ->
+          let t = a.(p) in
+          let a = Array.map of_term a in
+          a.(p) <- of_step (t, pos, r, s);
+          TApp (f, a)
+        | _ -> assert false
+
+      let rec source = function
+        | TApp (f, a) -> App (f, Array.map source a)
+        | RApp (r, s) -> Subst.app s (Rule.source r)
+        | SVar x -> Var x
+
+      let rec target = function
+        | TApp (f, a) -> App (f, Array.map source a)
+        | RApp (r, s) -> Subst.app s (Rule.target r)
+        | SVar x -> Var x
+
+      (** Whether a rule occurs in a step. *)
+      let rec has_rule r = function
+        | TApp (_, a) -> Array.exists (has_rule r) a
+        | RApp (r', _) -> Rule.eq r r'
+        | SVar _ -> false
+
+      (** Apply a substitution. *)
+      let rec subst s = function
+        | TApp (f, a) -> TApp (f, Array.map (subst s) a)
+        | RApp (r, s') -> RApp (r, Subst.compose s' s)
+        | SVar x -> of_term (Subst.find s x)
+    end
+
+    (** A rewriting zigzag. *)
+    type t =
+      | Empty of term
+      | Step of bool * Step.t * t (* false means inverted *)
+
+    (** String representation. *)
+    let to_string ?var p =
+      match p with
+      | Empty t -> string_of_term ?var t
+      | _ ->
+        let rec aux = function
+          | Step (d,s,Empty _) ->
+            Step.to_string ?var s ^ (if d then "" else "-")
+          | Step (d,s,p) ->
+            Step.to_string ?var s ^ (if d then "" else "-") ^ "." ^ aux p
+          | Empty _ -> assert false
+        in
+        aux p
+
+    (** Create a zigzag from a path. *)
+    let rec of_path p =
+      match p with
+      | Path.Empty t -> Empty t
+      | _ ->
+        (* Compute the list of steps. *)
+        let rec aux = function
+          | Path.Step (p,s) -> s::(aux p)
+          | Empty _ -> []
+        in
+        let l = List.rev (aux p) in
+        let rec aux = function
+          | s::l -> Step (true, Step.of_step s, aux l)
+          | [] -> Empty (Path.target p)
+        in
+        aux l
+
+    let source = function
+      | Step (d, s, _) -> (if d then Step.source else Step.target) s
+      | Empty t -> t
+
+    let rec target = function
+      | Step (_, _, p) -> target p
+      | Empty t -> t
+
+    let is_empty = function
+      | Step _ -> false
+      | Empty _ -> true
+
+    let rec to_list = function
+      | Step (d, s, p) -> (d,s)::(to_list p)
+      | Empty t -> []
+
+    let rec of_list = function
+      | [d,s] ->
+        if d then Step (d, s, Empty (Step.target s))
+        else Step (d, s, Empty (Step.source s))
+      | (d,s)::l ->
+        Step (d, s, of_list l)
+      | [] -> assert false
+
+    let rec append p1 p2 =
+      match p1 with
+      | Step (d, s, p) -> Step (d, s, append p p2)
+      | Empty t ->
+        assert (eq (source p2) t);
+        p2
+
+    (** Inverse of a path. *)
+    let inv p =
+      match p with
+      | Empty t -> Empty t
+      | _ ->
+        p |> to_list |> List.map (fun (d,s) -> not d, s) |> List.rev |> of_list
+
+    (** Apply a substitution. *)
+    let rec subst s = function
+      | Step (d, st, p) -> Step (d, Step.subst s st, subst s p)
+      | Empty t -> Empty (Subst.app s t)
+
+    let rec has_rule r = function
+      | Step (_, s, p) -> Step.has_rule r s || has_rule r p
+      | Empty _ -> false
+
+    (** Express a rule as a zigzag in a cell. *)
+    let rec value r (p1,p2) =
+      if not (has_rule r p1) then
+        if not (has_rule r p2) then assert false
+        else value r (p2,p1)
+      else
+        let rec aux prefix = function
+          | Step (d, (RApp (r', s)), p) when Rule.eq r r' ->
+            assert (not (has_rule r p));
+            assert (Subst.is_renaming s);
+            let prefix = List.rev prefix in
+            let prefix = if prefix = [] then Empty (source p2) else of_list prefix in
+            subst (Subst.inv s) (append (append (inv prefix) p2) p)
+          | Step (d, s, p) -> aux ((d,s)::prefix) p
+          | Empty _ -> assert false
+        in
+        aux [] p1
+  end
 end
