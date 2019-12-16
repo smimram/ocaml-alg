@@ -35,7 +35,7 @@ let groups = [
   RS.Rule.make "E"  (i e) e;
   RS.Rule.make "Iₗ" (m (i x) x) e;
   RS.Rule.make "Iᵣ" (m x (i x)) e;
-  RS.Rule.make "I²" (i (i x)) x;
+  RS.Rule.make "Iᵢ" (i (i x)) x;
   RS.Rule.make "I₁" (m (i x) (m x y)) y;
   RS.Rule.make "I₂" (m x (m (i x) y)) y;
   RS.Rule.make "Iₘ" (i (m x y)) (m (i y) (i x))

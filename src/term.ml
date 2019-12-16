@@ -161,10 +161,8 @@ module Substitution = struct
   let rec app (s:t) = function
     | App (g, a) -> App (g, Array.map (app s) a)
     | Var x ->
-      (
-        try find s x
-        with Not_found -> Var x
-      )
+      try find s x
+      with Not_found -> Var x
 
   (** Compose substitutions. *)
   let compose (s:t) (s':t) : t =
@@ -215,54 +213,57 @@ let rec refresh s t =
   match t with
   | App (f,a) -> App (f, Array.map (refresh s) a)
   | Var x ->
-     (
-       try
-         Subst.find !s x
-       with
-       | Not_found ->
-          let x' = var () in
-          s := Subst.add !s x x';
-          x'
-     )
+    try Subst.find !s x
+    with Not_found ->
+      let x' = var () in
+      s := Subst.add !s x x';
+      x'
 
 exception Not_unifiable
 
 (** Most general unifier. *)
 let unify t1 t2 =
   (* Printf.printf "UNIFY %s WITH %s\n%!" (to_string t1) (to_string t2); *)
-  let rec aux q s =
+  let rec aux q (s1,s2) =
     match q with
-    | [] -> s
+    | [] -> s1, s2
     | p::q ->
        match p with
        | Var x, t ->
           if occurs x t then raise Not_unifiable;
-          let xt = Subst.simple x t in
-          let fxt = Subst.app xt in
-          let q = List.map (fun (t1,t2) -> fxt t1, fxt t2) q in
-          let s = Subst.compose s xt in
-          aux q (Subst.add s x t)
+          let s1' = Subst.simple x t in
+          let f1 = Subst.app s1' in
+          let q = List.map (fun (t1,t2) -> f1 t1, t2) q in
+          let s2 = Subst.compose s2 s1' in
+          aux q (Subst.add s1 x t, s2)
        | t, Var x ->
-          let q = (Var x, t)::q in
-          aux q s
+         if occurs x t then raise Not_unifiable;
+         let s2' = Subst.simple x t in
+         let f2 = Subst.app s2' in
+         let q = List.map (fun (t1,t2) -> t1, f2 t2) q in
+         let s1 = Subst.compose s1 s2' in
+         aux q (s1, Subst.add s2 x t)
        | App (f1,a1), App (f2,a2) ->
           if not (Op.eq f1 f2) then raise Not_unifiable;
           let q = ref q in
           for i = 0 to Array.length a1 - 1 do
             q := (a1.(i),a2.(i)) :: !q
           done;
-          aux !q s
+          aux !q (s1,s2)
   in
-  aux [t1,t2] Subst.empty
+  aux [t1,t2] (Subst.empty,Subst.empty)
 
+(*
 let unify t1 t2 =
-  let s = unify t1 t2 in
+  let s1, s2 = unify t1 t2 in
   let var = Var.namer () in
   let t1 = to_string ~var t1 in
   let t2 = to_string ~var t2 in
-  let ss = Subst.to_string ~var s in
-  Printf.printf "UNIFY %s WITH %s IS %s\n%!" t1 t2 ss;
-  s
+  let ss1 = Subst.to_string ~var s1 in
+  let ss2 = Subst.to_string ~var s2 in
+  Printf.printf "UNIFY %s WITH %s IS %s / %s\n%!" t1 t2 ss1 ss2;
+  s1, s2
+*)
 
 (** Whether a pattern matches a term. *)
 let matches t1 t2 =
@@ -392,8 +393,9 @@ module RS = struct
     (** A rewriting step. *)
     type t = term * pos * rule * subst
 
+    (** Create a rewriting step. *)
     let make t p r s : t =
-      (* Printf.printf "STEP : %s / %s / %s / %s\n%!" (to_string t) (Pos.to_string p) (Rule.to_string r) (Subst.to_string s); *)
+      (* Printf.printf "STEP : %s / %s / %s / %s\n%!" (string_of_term t) (Pos.to_string p) (Rule.to_string r) (Subst.to_string s); *)
       assert (eq (Pos.subterm t p) (Subst.app s (Rule.source r)));
       t,p,r,s
 
@@ -427,8 +429,8 @@ module RS = struct
     let oldlabel ?var s = Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string ?var (subst s)
 
     let rec label ?var s =
-      Printf.printf "label: %s\n%!" (oldlabel ?var s);
-      Printf.printf "rule : %s\n%!" (Rule.to_string ?var (rule s));
+      (* Printf.printf "label: %s\n%!" (oldlabel ?var s); *)
+      (* Printf.printf "rule : %s\n%!" (Rule.to_string ?var (rule s)); *)
       match pos s, source s with
       | p::pos, App (f, a) ->
         let ap = label ?var (a.(p), pos, rule s, subst s) in
@@ -562,10 +564,10 @@ module RS = struct
       | App (f,a) ->
         let s =
           try
-            let s = unify (Rule.source r2) t in
-            let t = Subst.app s (Rule.source r1) in
-            let step1 = Step.make t Pos.empty r1 s in
-            let step2 = Step.make t p r2 s in
+            let s1,s2 = unify t (Rule.source r2) in
+            let t = Subst.app s1 (Rule.source r1) in
+            let step1 = Step.make t Pos.empty r1 s1 in
+            let step2 = Step.make t p r2 s2 in
             if Pos.is_empty p && Rule.eq r1 r2 then [] else [step1,step2]
           with
           | Not_unifiable -> []
