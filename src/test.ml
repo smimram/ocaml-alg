@@ -53,28 +53,28 @@ let () =
 (* TODO: equality does not seem to be working... *)
 let rule_name = Utils.namer (=)
 
+let coherence = RS.squier groups
+
 let () =
   List.iter
     (fun (s1,s2) ->
        let n = rule_name (s1,s2) in
-       let var = Term.Var.namer () in
+       let var = Term.Var.namer_natural () in
        let s1 = RS.Path.to_string ~var s1 in
        let s2 = RS.Path.to_string ~var s2 in
-       Printf.printf "%02d: %s\n    %s\n\n%!" n s1 s2
-    ) (RS.squier groups)
+       Printf.printf "%02d: %s\n    %s\n\n%!" (n+1) s1 s2
+    ) coherence
 
-(*
+let rule_name = Utils.namer (=)
+
 let () =
-  Printf.printf "Possible homotopical reductions:\n\n";
+  Printf.printf "\n****** zigzag *****\n\n%!";
+  let coherence = List.map (fun (p1,p2) -> RS.Zigzag.of_path p1, RS.Zigzag.of_path p2) coherence in
   List.iter
-    (fun (s1,s2) ->
-       let tr = (RS.Path.toplevel_rules s1)@(RS.Path.toplevel_rules s2) in
-       if tr <> [] then
-         let tr = String.concat " " (List.map RS.Rule.to_string tr) in
-         let rr1 = RS.Path.rules s1 in
-         let rr2 = RS.Path.rules s2 in
-         let rr1 = String.concat ", " (List.map RS.Rule.name rr1) in
-         let rr2 = String.concat ", " (List.map RS.Rule.name rr2) in
-         Printf.printf "%02d: %s\n    %s / %s\n    %s\n    %s\n\n%!" (rule_name (s1,s2)) tr rr1 rr2 (RS.Path.to_string s1) (RS.Path.to_string s2)
-    ) (RS.squier groups)
-*)
+    (fun (p1,p2) ->
+       let n = rule_name (p1,p2) in
+       let var = Term.Var.namer_natural () in
+       let s1 = RS.Zigzag.to_string ~var p1 in
+       let s2 = RS.Zigzag.to_string ~var p2 in
+       Printf.printf "%02d: %s\n    %s\n\n%!" (n+1) s1 s2
+    ) coherence
