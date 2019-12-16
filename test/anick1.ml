@@ -79,5 +79,5 @@ let () =
   assert (P.Anick.KMod.Pres.Complex.valid d);
   Printf.printf "%s\n%!" (P.Anick.KMod.Pres.Complex.to_string d);
   Printf.printf "Computing homology...\n%!";
-  let h = P.Anick.homology pres n in
+  let h = P.Anick.betti pres n in
   Array.iteri (fun i n -> Printf.printf "H%d = %d\n" i n) h
