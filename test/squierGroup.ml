@@ -1,4 +1,4 @@
-(* Testing Squier completion *)
+(** Squier's coherent completion of the theory of groups. *)
 
 open Term
 

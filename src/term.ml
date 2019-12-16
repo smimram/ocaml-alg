@@ -369,6 +369,18 @@ module RS = struct
 
     let target ((r,s,t):t) = t
 
+    (** Variables of the rule. *)
+    let vars r = vars (source r)
+
+    (** Arity of the rule. *)
+    let arity r = List.length (vars r)
+
+    (** Arguments of a rule, sorted according to its variables. *)
+    let args r s =
+      let vars = vars r in
+      let args = List.sort (fun (x,t) (y,u) -> List.index (fun z -> Var.eq z x) vars - List.index (fun z -> Var.eq z y) vars) s in
+      List.map snd args
+
     let to_string ?var r =
       let s = to_string ?var (source r) in
       let t = to_string ?var (target r) in
@@ -454,13 +466,10 @@ module RS = struct
       | p::pos, Var x -> assert false
       | [], _ ->
         let r = rule s in
-        let vars = vars (Rule.source r) in
-        let subst = subst s in
-        let subst = List.sort (fun (x,t) (y,u) -> List.index (fun z -> Var.eq z x) vars - List.index (fun z -> Var.eq z y) vars) subst in
-        let subst = List.map snd subst in
-        let subst = List.map (string_of_term ?var) subst in
-        let subst = String.concat "," subst in
-        Rule.name r ^ "(" ^ subst ^ ")"
+        let args = Rule.args r (subst s) in
+        let args = List.map (string_of_term ?var) args in
+        let args = String.concat "," args in
+        Rule.name r ^ "(" ^ args ^ ")"
 
     let to_string ?var s =
       string_of_term ?var (source s) ^ " -" ^ label ?var s ^ "-> " ^ string_of_term ?var (target s)
@@ -580,6 +589,83 @@ module RS = struct
           if n = 0 then t else assert false
       in
       aux (length p - n) p
+  end
+
+  (** Rewriting zigzags. *)
+  module Zigzag = struct
+    (** Zigzag step. *)
+    (* We change the representation to more traditional terms, because we want
+       to be able to rewrite. *)
+    module Step = struct
+      type t =
+        | TApp of Op.t * t array (** Term application. *)
+        | RApp of Rule.t * t (** Rule application. *)
+        | SVar of var (** Variable. *)
+
+      (*
+      let of_step s =
+        match Step.source s, Step.pos s with
+        | _, [] ->
+          let r = Step.rule s in
+          let vars = Rule.vars r in
+          let args = Rules.subst s in
+          let args = List.sort (fun (x,t) (y,u) -> List.index (fun z -> Var.eq z x) vars - List.index (fun z -> Var.eq z y) vars) args in
+          RApp (r, args)
+       *)
+    end
+
+    (*
+    (** A rewriting zigzag. *)
+    type t =
+      | Empty of term
+      | Step of t * bool * step (* false means inverted *)
+
+    (** Create a zigzag from a path. *)
+    let rec of_path = function
+      | Path.Step (p, s) -> Step (of_path p, true, s)
+      | Empty t -> Empty t
+
+    let rec source = function
+      | Step (p, _, _) -> source p
+      | Empty t -> t
+
+    let rec target = function
+      | Step (p, d, s) -> if d then Step.target s else Step.source s
+      | Empty t -> t
+
+    let is_empty = function
+      | Step _ -> false
+      | Empty _ -> true
+
+    let to_list p =
+      assert (not (is_empty p));
+      let rec aux = function
+        | Step (p, d, s) -> (d,s)::(aux p)
+        | Empty t -> []
+      in
+      List.rev (aux p)
+
+    let of_list l =
+      assert (l <> []);
+      let rec aux = function
+        | [d,s] ->
+          if d then Step (Empty (Step.source s), d, s)
+          else Step (Empty (Step.target s), d, s)
+        | (d,s)::l ->
+          Step (aux l, d, s)
+        | [] -> assert false
+      in
+      aux (List.rev l)
+
+    (** Inverse of a path. *)
+    let inv p =
+      match p with
+      | Empty t -> Empty t
+      | _ ->
+        p |> to_list |> List.map (fun (d,s) -> not d, s) |> List.rev |> of_list
+
+    let ctx 
+    *)
   end
 
   (** Normalize a term. *)

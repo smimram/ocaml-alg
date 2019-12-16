@@ -16,7 +16,7 @@ OCAMLDOCFLAGS = -sort
 all: dncl
 
 test: all
-	$(OCAMLOPT) -annot -I .. alg.cmxa test6.ml -o test
+	$(OCAMLOPT) -bin-annot -I .. alg.cmxa test.ml -o test
 	OCAMLRUNPARAM=b ./test
 
 include OCamlMakefile
