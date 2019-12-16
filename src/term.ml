@@ -605,7 +605,7 @@ module RS = struct
     module Step = struct
       type t =
         | TApp of Op.t * t array (** Term application. *)
-        | RApp of Rule.t * t array (** Rule application. *)
+        | RApp of Rule.t * Subst.t (** Rule application. *)
         | SVar of var (** Variable. *)
 
       let rec to_string ?(var=Var.to_string) = function
@@ -614,9 +614,9 @@ module RS = struct
           let a = List.map (to_string ~var) a in
           let a = String.concat "," a in
           Op.name f ^ "(" ^ a ^ ")"
-        | RApp (r, a) ->
-          let a = Array.to_list a in
-          let a = List.map (to_string ~var) a in
+        | RApp (r, s) ->
+          let a = Rule.args r s in
+          let a = List.map (string_of_term ~var) a in
           let a = String.concat "," a in
           Rule.name r ^ "(" ^ a ^ ")"
         | SVar x -> var x
@@ -628,10 +628,7 @@ module RS = struct
       let rec of_step ((t,pos,r,s):Step.t) =
         match t, pos with
         | _, [] ->
-          let args = Rule.args r s in
-          let args = List.map of_term args in
-          let args = Array.of_list args in
-          RApp (r, args)
+          RApp (r, s)
         | App (f, a), p::pos ->
           let t = a.(p) in
           let a = Array.map of_term a in
@@ -641,20 +638,12 @@ module RS = struct
 
       let rec source = function
         | TApp (f, a) -> App (f, Array.map source a)
-        | RApp (r, a) ->
-          let a = Array.to_list a in
-          let a = List.map source a in
-          let s = Rule.args_subst r a in
-          Subst.app s (Rule.source r)
+        | RApp (r, s) -> Subst.app s (Rule.source r)
         | SVar x -> Var x
 
       let rec target = function
         | TApp (f, a) -> App (f, Array.map source a)
-        | RApp (r, a) ->
-          let a = Array.to_list a in
-          let a = List.map source a in
-          let s = Rule.args_subst r a in
-          Subst.app s (Rule.target r)
+        | RApp (r, s) -> Subst.app s (Rule.target r)
         | SVar x -> Var x
     end
 
