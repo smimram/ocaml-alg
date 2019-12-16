@@ -1,5 +1,7 @@
 (** Term rewriting systems. *)
 
+open Extlib
+
 (** Operations. *)
 module Op = struct
   (** An operation. *)
@@ -93,6 +95,17 @@ let get_var = function
   | Var x -> x
   | _ -> raise Not_found
 
+(** Variables in a term. *)
+let vars t =
+  let rec aux vars = function
+    | App (_, a) ->
+      Array.fold_left (fun vars t -> aux vars t) vars a
+    | Var x ->
+      if List.exists (Var.eq x) vars then vars
+      else x::vars
+  in
+  List.rev (aux [] t)
+
 (** Whether a variable occurs in a term. *)
 let rec occurs x = function
   | App (_, a) -> Array.exists (occurs x) a
@@ -148,12 +161,10 @@ module Substitution = struct
   let rec app (s:t) = function
     | App (g, a) -> App (g, Array.map (app s) a)
     | Var x ->
-       (
-         try
-           find s x
-         with
-           Not_found -> Var x
-       )
+      (
+        try find s x
+        with Not_found -> Var x
+      )
 
   (** Compose substitutions. *)
   let compose (s:t) (s':t) : t =
@@ -244,12 +255,14 @@ let unify t1 t2 =
   in
   aux [t1,t2] Subst.empty
 
-(*
 let unify t1 t2 =
   let s = unify t1 t2 in
-  Printf.printf "UNIFY %s WITH %s IS %s\n%!" (to_string t1) (to_string t2) (Subst.to_string s);
+  let var = Var.namer () in
+  let t1 = to_string ~var t1 in
+  let t2 = to_string ~var t2 in
+  let ss = Subst.to_string ~var s in
+  Printf.printf "UNIFY %s WITH %s IS %s\n%!" t1 t2 ss;
   s
-*)
 
 (** Whether a pattern matches a term. *)
 let matches t1 t2 =
@@ -410,8 +423,12 @@ module RS = struct
     let has_context s =
       not (Pos.is_empty (pos s) && Subst.is_injective_renaming (subst s))
 
-    (* let label ?var s = Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string ?var (subst s) *)
+    (* TOOD: remove this *)
+    let oldlabel ?var s = Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string ?var (subst s)
+
     let rec label ?var s =
+      Printf.printf "label: %s\n%!" (oldlabel ?var s);
+      Printf.printf "rule : %s\n%!" (Rule.to_string ?var (rule s));
       match pos s, source s with
       | p::pos, App (f, a) ->
         let ap = label ?var (a.(p), pos, rule s, subst s) in
@@ -420,7 +437,15 @@ module RS = struct
         let a = String.concat "," (Array.to_list a) in
         Op.to_string f ^ "(" ^ a ^ ")"
       | p::pos, Var x -> assert false
-      | [], _ -> Rule.name (rule s) ^ Subst.to_string ?var (subst s)
+      | [], _ ->
+        let r = rule s in
+        let vars = vars (Rule.source r) in
+        let subst = subst s in
+        let subst = List.sort (fun (x,t) (y,u) -> List.index (fun z -> Var.eq z x) vars - List.index (fun z -> Var.eq z y) vars) subst in
+        let subst = List.map snd subst in
+        let subst = List.map (string_of_term ?var) subst in
+        let subst = String.concat "," subst in
+        Rule.name r ^ "(" ^ subst ^ ")"
 
     let to_string ?var s =
       string_of_term ?var (source s) ^ " -" ^ label ?var s ^ "-> " ^ string_of_term ?var (target s)
@@ -484,7 +509,11 @@ module RS = struct
 
     let rec to_string ?var = function
       | Empty t -> string_of_term ?var t
-      | Step (p,s) -> to_string ?var p ^ " -" ^ Step.label ?var s ^ "-> " ^ string_of_term ?var (Step.target s)
+      | Step (p,s) ->
+        let src = to_string ?var p in
+        let lbl = Step.label ?var s in
+        let tgt = string_of_term ?var (Step.target s) in
+        src ^ " -" ^ lbl ^ "-> " ^ tgt
 
     let rec append p = function
       | Step (q, s) -> Step (append p q, s)

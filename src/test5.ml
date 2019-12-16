@@ -58,7 +58,9 @@ let () =
     (fun (s1,s2) ->
        let n = rule_name (s1,s2) in
        let var = Term.Var.namer () in
-       Printf.printf "%02d: %s\n    %s\n\n%!" n (RS.Path.to_string ~var s1) (RS.Path.to_string ~var s2)
+       let s1 = RS.Path.to_string ~var s1 in
+       let s2 = RS.Path.to_string ~var s2 in
+       Printf.printf "%02d: %s\n    %s\n\n%!" n s1 s2
     ) (RS.squier groups)
 
 (*
