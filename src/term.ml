@@ -225,17 +225,6 @@ module Subst = Substitution
 
 type subst = Subst.t
 
-(** Refresh variables of a term. *)
-let rec refresh s t =
-  match t with
-  | App (f,a) -> App (f, Array.map (refresh s) a)
-  | Var x ->
-    try Subst.find !s x
-    with Not_found ->
-      let x' = var () in
-      s := Subst.add !s x x';
-      x'
-
 exception Not_unifiable
 
 (** Most general unifier. *)
@@ -392,6 +381,7 @@ module RS = struct
       name r ^ " : " ^ s ^ " -> " ^ t
 
     (** Equality of rules. *)
+    (*
     let eq (r1:t) (r2:t) =
       (* Printf.printf "EQ %s WITH %s\n%!" (to_string r1) (to_string r2); *)
       if name r1 <> name r2 then false else
@@ -400,12 +390,8 @@ module RS = struct
           eq (Subst.app s (target r1)) (target r2)
         with
         | Not_unifiable -> false
-
-    let refresh ((r,s,t):t) =
-      let ss = ref Subst.empty in
-      let s = refresh ss s in
-      let t = refresh ss t in
-      make r s t
+    *)
+    let eq r1 r2 = name r1 = name r2
   end
 
   type rule = Rule.t
@@ -645,6 +631,12 @@ module RS = struct
         | TApp (f, a) -> App (f, Array.map source a)
         | RApp (r, s) -> Subst.app s (Rule.target r)
         | SVar x -> Var x
+
+      (** Whether a rule occurs in a step. *)
+      let rec has_rule r = function
+        | TApp (_, a) -> Array.exists (has_rule r) a
+        | RApp (r', _) -> Rule.eq r r'
+        | SVar _ -> false
     end
 
     (** A rewriting zigzag. *)
@@ -713,6 +705,9 @@ module RS = struct
       | Empty t -> Empty t
       | _ ->
         p |> to_list |> List.map (fun (d,s) -> not d, s) |> List.rev |> of_list
+
+    (** Express a rule as a zigzag in a cell. *)
+    (* let value r (p1,p2) = *)
   end
 
   (** Normalize a term. *)
@@ -725,7 +720,6 @@ module RS = struct
 
   (** Unify the source of [r2] with a subterm of the source of [r1]. *)
   let critical_rules r1 r2 =
-    let r2 = Rule.refresh r2 in
     (* p is the position in the left member of r1 and t is the corresponding
        term *)
     let rec aux p t =
