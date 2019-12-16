@@ -246,6 +246,7 @@ let unify t1 t2 =
        | App (f1,a1), App (f2,a2) ->
           if not (Op.eq f1 f2) then raise Not_unifiable;
           let q = ref q in
+          (* TODO: downto would be more natural *)
           for i = 0 to Array.length a1 - 1 do
             q := (a1.(i),a2.(i)) :: !q
           done;
@@ -253,7 +254,6 @@ let unify t1 t2 =
   in
   aux [t1,t2] (Subst.empty,Subst.empty)
 
-(*
 let unify t1 t2 =
   let s1, s2 = unify t1 t2 in
   let var = Var.namer () in
@@ -263,7 +263,6 @@ let unify t1 t2 =
   let ss2 = Subst.to_string ~var s2 in
   Printf.printf "UNIFY %s WITH %s IS %s / %s\n%!" t1 t2 ss1 ss2;
   s1, s2
-*)
 
 (** Whether a pattern matches a term. *)
 let matches t1 t2 =
@@ -602,7 +601,7 @@ module RS = struct
     (* Name for new rules. *)
     let name =
       let n = ref (-1) in
-      fun () -> incr n; "kb"^string_of_int !n
+      fun () -> incr n; "K"^string_of_int !n
     in
     (* Rules to handle. *)
     let queue = ref rs in

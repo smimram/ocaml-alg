@@ -24,9 +24,9 @@ let () = Printf.printf "completion\n\n%s\n\n%!" (RS.to_string monoids)
 
 
 let groups = [
-  RS.Rule.make "unit-l" (m e x) x;
-  RS.Rule.make "inv-l" (m (i x) x) e;
-  RS.Rule.make "assoc" (m (m x y) z) (m x (m y z));
+  RS.Rule.make "E" (m e x) x;
+  RS.Rule.make "I" (m (i x) x) e;
+  RS.Rule.make "A" (m (m x y) z) (m x (m y z));
 ]
 let () = Printf.printf "groups\n\n%s\n\n%!" (RS.to_string groups)
 let groups = RS.knuth_bendix groups
