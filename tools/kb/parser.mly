@@ -12,9 +12,8 @@ let sym f = List.find (fun g -> Op.name g = f) !ParserRefs.syms
 
 let app f args =
   let f = sym f in
-  let args = Array.of_list args in
-  if Array.length args <> Op.arity f then failwith ("arity mismatch for " ^ Op.to_string f);
-  App (f, args)
+  if List.length args <> Op.arity f then failwith ("arity mismatch for " ^ Op.to_string f);
+  app f args
 %}
 
 %token <string> IDENT
