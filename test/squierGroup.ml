@@ -4,14 +4,14 @@ open Term
 
 let m = Op.make "m" 2
 let e = Op.make "e" 0
-let e = app e [||]
+let e = app e []
 let i = Op.make "i" 1
 let x = var ()
 let y = var ()
 let z = var ()
 
-let m x y = app m [|x;y|]
-let i x = app i [|x|]
+let m x y = app m [x;y]
+let i x = app i [x]
 let groups = [
   RS.Rule.make "A"  (m (m x y) z) (m x (m y z));
   RS.Rule.make "E_l" (m e x) x;

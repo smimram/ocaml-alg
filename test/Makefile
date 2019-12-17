@@ -4,7 +4,7 @@ PROG = $(ML:.ml=)
 all: .gitignore test
 
 test: build
-	@for p in $(PROG); do ./$$p; done
+	@for p in $(PROG); do echo "\n\n##### Running $$p #####\n"; ./$$p || exit 1; done
 
 build: alg $(PROG)
 

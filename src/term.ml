@@ -52,18 +52,20 @@ type var = Var.t
 
 (** A term. *)
 type t =
-  | App of Op.t * t array (** application *)
-  | Var of var (** variable *)
+  [
+    | `App of Op.t * t list (** application *)
+    | `Var of var (** variable *)
+  ]
 
 type term = t
 
 (** Create a fresh variable term. *)
-let var () = Var (Var.fresh ())
+let var () : t = `Var (Var.fresh ())
 
 (** Create an application. *)
 let app f a : t =
-  assert (Array.length a = Op.arity f);
-  App (f,a)
+  assert (List.length a = Op.arity f);
+  `App (f,a)
 
 (** Simple parser for terms and applications. *)
 let parser s =
@@ -104,76 +106,68 @@ let parse ops vars s =
     | `App (f, a) ->
       let f = List.find (fun o -> Op.name o = f) ops in
       let a = List.map aux a in
-      let a = Array.of_list a in
-      App (f, a)
+      app f a
     | `Var x ->
       if not (List.mem_assoc x !vars) then vars := (x, Var.fresh ()) :: !vars;
       let x = List.assoc x !vars in
-      Var x
+      `Var x
     | `Seq _ -> assert false
     | `Inv _ -> assert false
   in
   aux (parser s)
 
 (** Equality between terms. *)
-let rec eq t1 t2 =
+let rec eq (t1:t) (t2:t) =
   match t1, t2 with
-  | Var x, Var y -> Var.eq x y
-  | App (f1, _), App (f2, _) when not (Op.eq f1 f2) -> false
-  | App (_, a1), App (_, a2) ->
-    (
-      let l1 = Array.length a1 in
-      if l1 <> Array.length a2 then assert false;
-      try
-        for i = 0 to Array.length a1 - 1 do
-          if not (eq a1.(i) a2.(i)) then raise Exit
-        done;
-        true
-      with
-      | Exit -> false
-    )
+  | `Var x, `Var y -> Var.eq x y
+  | `App (f1, a1), `App (f2, a2) ->
+    Op.eq f1 f2 &&
+    List.length a1 = List.length a2 &&
+    List.for_all2 eq a1 a2
   | _ -> false
 
+let eq_term = eq
+
 (** String representation of a term. *)
-let rec to_string ?(var=Var.to_string) = function
-  | App (f, a) -> Op.to_string f ^ "(" ^ String.concat "," (List.map (to_string ~var) (Array.to_list a)) ^ ")"
-  | Var x -> var x
+let rec to_string ?(var=Var.to_string) : t -> string = function
+  | `App (f, a) -> Op.to_string f ^ "(" ^ String.concat "," (List.map (to_string ~var) a) ^ ")"
+  | `Var x -> var x
 
 let string_of_term ?var = to_string ?var
 
 (** Is a term a variable? *)
 let is_var = function
-  | Var _ -> true
+  | `Var _ -> true
   | _ -> false
 
-let get_var = function
-  | Var x -> x
+let get_var : t -> Var.t = function
+  | `Var x -> x
   | _ -> raise Not_found
 
 (** Variables in a term. *)
-let vars t =
+let vars (t:t) =
   let rec aux vars = function
-    | App (_, a) ->
-      Array.fold_left (fun vars t -> aux vars t) vars a
-    | Var x ->
+    | `App (_, a) ->
+      List.fold_left (fun vars t -> aux vars t) vars a
+    | `Var x ->
       if List.exists (Var.eq x) vars then vars
       else x::vars
   in
   List.rev (aux [] t)
 
 (** Whether a variable occurs in a term. *)
-let rec occurs x = function
-  | App (_, a) -> Array.exists (occurs x) a
-  | Var y -> Var.eq x y
+let rec occurs x : t -> bool = function
+  | `App (_, a) -> List.exists (occurs x) a
+  | `Var y -> Var.eq x y
 
 (** Lexicographic path order on terms. *)
 module LPO = struct
   let rec gt ge_op t u =
     (* Printf.printf "%s > %s ?\n%!" (to_string t) (to_string u); *)
     match t, u with
-    | t, Var x -> not (eq t u) && occurs x t
-    | App (f,a), App (g, b) ->
-      if Array.exists (fun t -> ge ge_op t u) a then true else
+    | t, `Var x -> not (eq t u) && occurs x t
+    | `App (f,a), `App (g, b) ->
+      if List.exists (fun t -> ge ge_op t u) a then true else
       if Op.eq f g then
         (* lexicographic > *)
         let rec lex l1 l2 =
@@ -182,9 +176,9 @@ module LPO = struct
           | x1::l1, x2::l2 when gt ge_op x1 x2 -> true
           | _, _ -> false
         in
-        Array.for_all (fun u -> gt ge_op t u) b &&
-        lex (Array.to_list a) (Array.to_list b)
-      else if ge_op f g then Array.for_all (fun u -> gt ge_op t u) b
+        List.for_all (fun u -> gt ge_op t u) b &&
+        lex a b
+      else if ge_op f g then List.for_all (fun u -> gt ge_op t u) b
       else false
     | _ -> false
   and ge ge_op t u =
@@ -197,18 +191,18 @@ module Substitution = struct
   type t = (var * term) list
 
   let to_string ?var s =
-    "[" ^ String.concat "," (List.map (fun (x,t) -> to_string ?var t ^ "/" ^ to_string ?var (Var x)) s) ^ "]"
+    "[" ^ String.concat "," (List.map (fun (x,t) -> to_string ?var t ^ "/" ^ to_string ?var (`Var x)) s) ^ "]"
 
   (** Emtpy substitution. *)
   let empty : t = []
 
   (** Identity substition. *)
   let id vars : t =
-    List.map (fun x -> x, Var x) vars
+    List.map (fun x -> x, `Var x) vars
 
   (** Renaming of variables. *)
   let rename vars : t =
-    List.map (fun x -> x, Var (Var.fresh ())) vars
+    List.map (fun x -> x, `Var (Var.fresh ())) vars
 
   let simple x t : t = [x,t]
 
@@ -221,11 +215,11 @@ module Substitution = struct
     | [] -> raise Not_found
 
   (** Apply a substitution to a term. *)
-  let rec app (s:t) = function
-    | App (g, a) -> App (g, Array.map (app s) a)
-    | Var x ->
+  let rec app (s:t) : term -> term = function
+    | `App (g, a) -> `App (g, List.map (app s) a)
+    | `Var x ->
       try find s x
-      with Not_found -> Var x
+      with Not_found -> `Var x
 
   (** Compose substitutions. *)
   let compose (s:t) (s':t) : t =
@@ -234,22 +228,13 @@ module Substitution = struct
   (** Equality of substitutions. *)
   let eq s1 s2 =
     let included (s1:t) (s2:t) =
-      List.for_all (fun (x,t) -> eq t (app s1 (Var x))) s1
+      List.for_all (fun (x,t) -> eq t (app s1 (`Var x))) s1
     in
     included s1 s2 && included s2 s1
 
   (** Is a substitution a renaming of variables? *)
   let is_renaming (s:t) =
     List.for_all (fun (x,t) -> is_var t) s
-
-  (** Inverse of a renaming. *)
-  let inv s : t =
-    List.map
-      (fun (x,t) ->
-         match t with
-         | Var y -> y, Var x
-         | _ -> assert false
-      ) s
 
   let is_injective_renaming (s:t) =
     let rec aux vars = function
@@ -264,13 +249,17 @@ module Substitution = struct
     aux [] s
 
   (** Inverse of a renaming. *)
-  let inverse (s:t) =
+  let inv (s:t) =
     List.map
       (fun (x,t) ->
         match t with
-        | Var y -> y, Var x
+        | `Var y -> y, `Var x
         | _ -> failwith "Not inversible."
       ) s
+
+  (** Domain of a substitution. *)
+  let domain (s:t) =
+    List.map fst s
 
   let in_dom (s:t) x =
     List.exists (fun (y,_) -> Var.eq y x) s
@@ -294,24 +283,22 @@ let unify t1 t2 =
     | [] -> s
     | p::q ->
        match p with
-       | Var x, t ->
+       | `Var x, t ->
           if occurs x t then raise Not_unifiable;
           let s' = Subst.simple x t in
           let f = Subst.app s' in
           let q = List.map (fun (t1,t2) -> f t1, f t2) q in
           let s = Subst.compose s s' in
           aux q (Subst.add s x t)
-       | t, Var x -> aux ((Var x,t)::q) s
-       | App (f1,a1), App (f2,a2) ->
+       | t, `Var x -> aux ((`Var x,t)::q) s
+       | `App (f1,a1), `App (f2,a2) ->
           if not (Op.eq f1 f2) then raise Not_unifiable;
-          let q = ref q in
-          (* TODO: downto would be more natural *)
-          for i = 0 to Array.length a1 - 1 do
-            q := (a1.(i),a2.(i)) :: !q
-          done;
-          aux !q s
+          let q = (List.map2 pair a1 a2) @ q in
+          aux q s
   in
-  aux [t1,t2] Subst.empty
+  let s = aux [t1,t2] Subst.empty in
+  assert (eq (Subst.app s t1) (Subst.app s t2));
+  s
 
 (*
 let unify t1 t2 =
@@ -331,17 +318,14 @@ let matches t1 t2 =
     | [] -> s
     | p::q ->
       match p with
-      | Var x, t ->
-        if Subst.in_dom s x then (if eq (Subst.app s (Var x)) t then aux q s else raise Not_unifiable)
+      | `Var x, t ->
+        if Subst.in_dom s x then (if eq (Subst.app s (`Var x)) t then aux q s else raise Not_unifiable)
         else aux q (Subst.add s x t)
-      | _, Var _ -> raise Not_unifiable
-      | App (f1,a1), App (f2,a2) ->
+      | _, `Var _ -> raise Not_unifiable
+      | `App (f1,a1), `App (f2,a2) ->
         if not (Op.eq f1 f2) then raise Not_unifiable;
-        let q = ref q in
-        for i = 0 to Array.length a1 - 1 do
-          q := (a1.(i),a2.(i)) :: !q
-        done;
-        aux !q s
+        let q = (List.map2 pair a1 a2)@q in
+        aux q s
   in
   aux [t1,t2] Subst.empty
 
@@ -353,54 +337,25 @@ let matches t1 t2 =
  *)
 
 (** Whether two terms are alpha-equivalent *)
-let equivalent ?(s=Subst.empty) t1 t2 =
+let equivalent ?(s=Subst.empty) (t1:t) (t2:t) =
   let rec aux q s =
     match q with
     | [] -> s
     | p::q ->
       match p with
-      | Var x, Var y ->
-        if Subst.in_dom s x then (if eq (Subst.app s (Var x)) (Var y) then aux q s else raise Not_unifiable)
+      | `Var x, `Var y ->
+        if Subst.in_dom s x then (if eq (Subst.app s (`Var x)) (`Var y) then aux q s else raise Not_unifiable)
         else
-          let s = Subst.add s x (Var y) in
+          let s = Subst.add s x (`Var y) in
           aux q s
-      | _, Var _ | Var _, _ -> raise Not_unifiable
-      | App (f1,a1), App (f2,a2) ->
+      | _, `Var _ | `Var _, _ -> raise Not_unifiable
+      | `App (f1,a1), `App (f2,a2) ->
         if not (Op.eq f1 f2) then raise Not_unifiable;
-        let q = ref q in
-        for i = 0 to Array.length a1 - 1 do
-          q := (a1.(i),a2.(i)) :: !q
-        done;
-        aux !q s
+        let q = (List.map2 pair a1 a2)@q in
+        aux q s
   in
-  aux [t1,t2] s
-
-(** Positions in terms. *)
-module Pos = struct
-  (** A position in a term. *)
-  type t = int list
-
-  (** Initial position. *)
-  let empty : t = []
-
-  let to_string (p:t) =
-    "[" ^ String.concat ":" (List.map string_of_int p) ^ "]"
-
-  let is_empty (p:t) = p = []
-
-  (** Append a direction. *)
-  let append (p:t) i : t = p@[i]
-
-  let rec subterm t (p:t) =
-    match t, p with
-    | App(f,a), i::p -> subterm a.(i) p
-    | t, [] -> t
-    | _ -> failwith "Bad position."
-
-  let eq (p1:t) (p2:t) = p1 = p2
-end
-
-type pos = Pos.t
+  try ignore (aux [t1,t2] s); true
+  with Not_unifiable -> false
 
 (** Rewriting systems. *)
 module RS = struct
@@ -476,99 +431,111 @@ module RS = struct
   (** Rewriting steps. *)
   module Step = struct
     (** A rewriting step. *)
-    type t = term * pos * rule * subst
+    type t =
+      [
+        | `App of Op.t * t list (** Term application. *)
+        | `RApp of Rule.t * Subst.t (** Rule application. *)
+        | `Var of var (** Variable. *)
+      ]
 
-    (** Create a rewriting step. *)
-    let make t p r s : t =
-      (* Printf.printf "STEP : %s / %s / %s / %s\n%!" (string_of_term t) (Pos.to_string p) (Rule.to_string r) (Subst.to_string s); *)
-      assert (eq (Pos.subterm t p) (Subst.app s (Rule.source r)));
-      t,p,r,s
+    let of_term (t : term) : t = (t :> t)
+
+    let app f a : t =
+      assert (List.length a = Op.arity f);
+      `App (f, a)
+
+    let rapp r s : t =
+      (* Printf.printf "rapp: %s to %s\n%!" (Rule.to_string r) (Subst.to_string s); *)
+      let vr = Rule.vars r in
+      let vs = Subst.domain s in
+      assert (List.for_all (fun x -> List.exists (Var.eq x) vs) vr);
+      assert (List.for_all (fun x -> List.exists (Var.eq x) vr) vs);
+      `RApp (r, s)
+
+    let var x = `Var x
+
+    (** Apply a substitution. *)
+    let rec subst ?(extensible=false) s : t -> t = function
+      | `App (f, a) -> app f (List.map (subst s) a)
+      | `RApp (r, s') -> rapp r (Subst.compose s' s)
+      | `Var x -> (try of_term (Subst.find s x) with Not_found -> `Var x)
 
     (** Source. *)
-    let source ((t,p,r,s):t) = t
+    let rec source : t -> term = function
+      | `App (f, a) -> `App (f, List.map source a)
+      | `RApp (r, s) -> Subst.app s (Rule.source r)
+      | `Var x -> `Var x
 
     (** Target. *)
-    let rec target ((t,p,r,s):t) =
-      match p with
-      | i::p ->
-        (
-          match t with
-          | App (f,a) ->
-            let a = Array.copy a in
-            a.(i) <- target (a.(i),p,r,s);
-            App (f,a)
-          | _ -> failwith "Bad rewriting step."
-        )
-      | [] -> Subst.app s (Rule.target r)
+    let rec target : t -> term = function
+      | `App (f, a) -> `App (f, List.map target a)
+      | `RApp (r, s) ->
+        Subst.app s (Rule.target r)
+      | `Var x -> `Var x
 
-    let pos ((t,p,r,s):t) = p
-
-    let rule ((t,p,r,s):t) = r
-
-    let subst ((t,p,r,s):t) = s
-
-    let has_context s =
-      not (Pos.is_empty (pos s) && Subst.is_injective_renaming (subst s))
-
-    (* TOOD: remove this *)
-    let oldlabel ?var s = Pos.to_string (pos s) ^ Rule.name (rule s) ^ Subst.to_string ?var (subst s)
-
-    let rec label ?var s =
-      (* Printf.printf "label: %s\n%!" (oldlabel ?var s); *)
-      (* Printf.printf "rule : %s\n%!" (Rule.to_string ?var (rule s)); *)
-      match pos s, source s with
-      | p::pos, App (f, a) ->
-        let ap = label ?var (a.(p), pos, rule s, subst s) in
-        let a = Array.map (string_of_term ?var) a in
-        a.(p) <- ap;
-        let a = String.concat "," (Array.to_list a) in
-        Op.to_string f ^ "(" ^ a ^ ")"
-      | p::pos, Var x -> assert false
-      | [], _ ->
-        let r = rule s in
-        let args = Rule.args r (subst s) in
-        let args = List.map (string_of_term ?var) args in
-        let args = String.concat "," args in
-        Rule.name r ^ "(" ^ args ^ ")"
+    let rec label ?(var=Var.to_string) = function
+      | `App (f, a) ->
+        let a = List.map (label ~var) a in
+        let a = String.concat "," a in
+        Op.name f ^ "(" ^ a ^ ")"
+      | `RApp (r, s) ->
+        let a = Rule.args r s in
+        let a = List.map (string_of_term ~var) a in
+        let a = String.concat "," a in
+        Rule.name r ^ "(" ^ a ^ ")"
+      | `Var x -> var x
 
     let to_string ?var s =
-      string_of_term ?var (source s) ^ " -" ^ label ?var s ^ "-> " ^ string_of_term ?var (target s)
+      label ?var (source s) ^ " -" ^ label ?var s ^ "-> " ^ label ?var (target s)
 
-    let eq (s1:t) (s2:t) =
-      (* Printf.printf "EQ %s WITH %s\n%!" (to_string s1) (to_string s2); *)
-      try
-        let _ = equivalent (source s1) (source s2) in
-        (* TODO: is it ok not to propagate the substitution to the rules? *)
-        Pos.eq (pos s1) (pos s2)
-        && Rule.eq (rule s1) (rule s2)
-        && Subst.eq (subst s1) (subst s2)
-      with
-      | Not_unifiable -> false
+    let rec rule = function
+      | `App (f, a) ->
+        let rec list = function
+          | t::l -> (try rule t with Not_found -> list l)
+          | [] -> raise Not_found
+        in
+        list a
+      | `RApp (r, _) -> r
+      | `Var _ -> raise Not_found
+
+    let has_context = function
+      | `App _ -> true
+      | `RApp (r, s) -> not (Subst.is_injective_renaming s)
+      | `Var _ -> assert false
+
+    let rec eq (s1:t) (s2:t) =
+      match s1,s2 with
+      | `App (f, a), `App (f', a') -> Op.eq f f' && List.for_all2 eq a a'
+      | `RApp (r, s), `RApp (r', s') -> Rule.eq r r' && Subst.eq s s'
+      | `Var x, `Var y -> Var.eq x y
+      | _ -> false
   end
 
   type step = Step.t
 
   (** All possible rewriting steps. *)
   let steps (rs:t) t : step list =
-    let t0 = t in
-    let rec aux r p = function
-      | Var x -> []
-      | App (f,a) as t ->
+    let rec aux r ctx = function
+      | `Var x -> []
+      | `App (f,a) as t ->
          let s =
            try
              let s = matches (Rule.source r) t in
-             [Step.make t0 p r s]
+             [ctx (Step.rapp r s)]
            with
            | Not_unifiable -> []
          in
-         let s = ref s in
-         for i = 0 to Array.length a - 1 do
-           let p = Pos.append p i in
-           s := !s @ (aux r p a.(i))
-         done;
-         !s
+         let s' =
+           List.mapi
+             (fun i t ->
+                let ctx t = ctx (`App (f, List.replace_nth (a :> Step.t list) i t)) in
+                aux r ctx t
+             ) a
+         in
+         let s' = List.flatten s' in
+         s' @ s
     in
-    List.flatten (List.map (fun r -> aux r Pos.empty t) rs)
+    List.flatten (List.map (fun r -> aux r id t) rs)
 
   (** Rewriting paths. *)
   module Path = struct    
@@ -587,7 +554,10 @@ module RS = struct
       | Step (_,s) -> Step.target s
       | Empty t -> t
 
-    let step p s =
+    let step s =
+      Step (Empty (Step.source s), s)
+ 
+    let append_step p s =
       assert (eq (target p) (Step.source s));
       Step (p,s)
 
@@ -610,11 +580,10 @@ module RS = struct
       | Empty t -> []
       | Step (p,s) -> (toplevel_rules p)@(if Step.has_context s then [] else [Step.rule s])
 
-    let term_eq = eq
     let rec eq p p' =
       match p,p' with
       | Step (p,s), Step (p',s') -> eq p p' && Step.eq s s'
-      | Empty t, Empty t' -> term_eq t t'
+      | Empty t, Empty t' -> eq_term t t'
       | _ -> false
 
     (** Rules occurring in a step. *)
@@ -655,41 +624,41 @@ module RS = struct
   let rec normalize rs t =
     let rec aux p =
       let s = steps rs (Path.target p) in
-      if s = [] then p else aux (Path.step p (List.hd s))
+      if s = [] then p else aux (Path.append_step p (List.hd s))
     in
     aux (Path.empty t)
 
   (** Unify the source of [r2] with a subterm of the source of [r1]. *)
   let critical_rules r1 r2 =
-    (* p is the position in the left member of r1 and t is the corresponding
-       term *)
-    let rec aux p t =
+    let rec aux ctx t =
       match t with
-      | Var x -> []
-      | App (f,a) ->
+      | `Var x -> []
+      | `App (f,a) ->
         let s =
           try
             let t2 = Rule.source r2 in
-            let n1 = Subst.rename (vars t) in
-            let n2 = Subst.rename (vars t2) in
-            let s = unify (Subst.app n1 t) (Subst.app n2 t2) in
-            let s1 = Subst.compose n1 s in
-            let s2 = Subst.compose n2 s in
-            let t = Subst.app s1 (Rule.source r1) in
-            let step1 = Step.make t Pos.empty r1 s1 in
-            let step2 = Step.make t p r2 s2 in
-            if Pos.is_empty p && Rule.eq r1 r2 then [] else [step1,step2]
+            (* We rename rule 2 before unification. Note that we cannot rename
+               rule 1 because some of its variables can occur in the context. *)
+            let n2 = Subst.rename (Rule.vars r2) in
+            let s = unify t (Subst.app n2 t2) in
+            (* Extend the domain of definition. *)
+            let step1 = Step.rapp r1 (Subst.compose (Subst.id (Rule.vars r1)) s) in
+            let step2 = Step.subst s (ctx (Step.rapp r2 n2)) in
+            assert (equivalent (Step.source step1) (Step.source step2));
+            if Rule.eq r1 r2 && not (Step.has_context step1) && not (Step.has_context step2) then [] else [step1,step2]
           with
           | Not_unifiable -> []
         in
-        let s = ref s in
-        for i = 0 to Array.length a - 1 do
-          let p = Pos.append p i in
-          s := !s @ (aux p a.(i))
-        done;
-        !s
+        let s' =
+          List.mapi
+            (fun i t ->
+               let ctx t = ctx (`App (f, List.replace_nth (a :> Step.t list) i t)) in
+               aux ctx t) a
+        in
+        let s' = List.flatten s' in
+        s @ s'
     in
-    aux Pos.empty (Rule.source r1)
+    aux id (Rule.source r1)
 
   (** Critical branchings. *)
   let critical (rs:t) =
@@ -739,8 +708,8 @@ module RS = struct
       let cp = List.flatten (List.map (fun s -> (critical_rules r s)@(critical_rules s r)) !rs) in
       List.iter
         (fun (s1, s2) ->
-           let p1 = Path.append (Path.step (Path.empty (Step.source s1)) s1) (normalize !rs (Step.target s1)) in
-           let p2 = Path.append (Path.step (Path.empty (Step.source s2)) s2) (normalize !rs (Step.target s2)) in
+           let p1 = Path.append (Path.step s1) (normalize !rs (Step.target s1)) in
+           let p2 = Path.append (Path.step s2) (normalize !rs (Step.target s2)) in
            let t1 = Path.target p1 in
            let t2 = Path.target p2 in
            if not (eq t1 t2) then
@@ -760,13 +729,16 @@ module RS = struct
   let squier rs =
     List.map
       (fun (s1,s2) ->
-        let p1 = Path.append (Path.step (Path.empty (Step.source s1)) s1) (normalize rs (Step.target s1)) in
-        let p2 = Path.append (Path.step (Path.empty (Step.source s2)) s2) (normalize rs (Step.target s2)) in
+         Printf.printf "branching\n%s\n%s\n\n%!" (Step.to_string s1) (Step.to_string s2);
+        let p1 = Path.append (Path.step s1) (normalize rs (Step.target s1)) in
+        let p2 = Path.append (Path.step s2) (normalize rs (Step.target s2)) in
+        Printf.printf "normalized\n%s\n%s\n\n%!" (Path.to_string p1) (Path.to_string p2);
         if not (eq (Path.target p1) (Path.target p2)) then raise Not_confluent;
         p1, p2
       )
       (critical rs)
 
+  (*
   (** Rewriting zigzags. *)
   module Zigzag = struct
     (** Zigzag step. *)
@@ -774,9 +746,11 @@ module RS = struct
        to be able to rewrite. *)
     module Step = struct
       type t =
-        | TApp of Op.t * t list (** Term application. *)
-        | RApp of Rule.t * Subst.t (** Rule application. *)
-        | SVar of var (** Variable. *)
+        [
+          | TApp of Op.t * t list (** Term application. *)
+          | RApp of Rule.t * Subst.t (** Rule application. *)
+          | SVar of var (** Variable. *)
+        ]
 
       let rec to_string ?(var=Var.to_string) = function
         | TApp (f, a) ->
@@ -1025,4 +999,5 @@ module RS = struct
       { rs with rules; coherence }
       (* TODO: remove leftover rule and coherence. *)
   end
+*)
 end

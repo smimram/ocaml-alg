@@ -1,5 +1,7 @@
 let id x = x
 
+let pair x y = x, y
+
 let (|>) x f = f x
 
 module List = struct

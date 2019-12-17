@@ -7,7 +7,7 @@ let m = Op.make "m" 2
 let e = Op.make "e" 0
 let i = Op.make "i" 1
 let ops = [m; e; i]
-let e = app e [||]
+let e = app e []
 let x = var ()
 let y = var ()
 let z = var ()
@@ -33,8 +33,8 @@ let () =
   let t = Term.parse ops vars "m(m(x,y),z)" in
   Printf.printf "term: %s\n%!" (Term.to_string t)
 
-let m x y = app m [|x;y|]
-let i x = app i [|x|]
+let m x y = app m [x;y]
+let i x = app i [x]
 let groups = [
   RS.Rule.make "A"  (m (m x y) z) (m x (m y z));
   RS.Rule.make "Eₗ" (m e x) x;
@@ -72,6 +72,7 @@ let () =
        Printf.printf "%02d: %s\n    %s\n\n%!" (n+1) s1 s2
     ) coherence
 
+(*
 let rule_name = Utils.namer (=)
 
 let coherence = List.map (fun (p1,p2) -> RS.Zigzag.of_path p1, RS.Zigzag.of_path p2) coherence
@@ -98,6 +99,6 @@ let () =
   (* Printf.printf "eliminating Eᵣ in %s / %s\n%!" (RS.Zigzag.to_string ~var (fst c)) (RS.Zigzag.to_string ~var (snd c)); *)
   (* let v = RS.Zigzag.value r c in *)
   (* Printf.printf "(%s) => %s\n%!" (RS.Rule.to_string ~var r) (RS.Zigzag.to_string ~var v) *)
-  let cpres = RS.Coherent.elim_rule cpres "Eᵣ" "C36" in
+  (* let cpres = RS.Coherent.elim_rule cpres "Eᵣ" "C36" in *)
   ()
-    
+*)
