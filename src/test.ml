@@ -100,5 +100,5 @@ let () =
   (* let v = RS.Zigzag.value r c in *)
   (* Printf.printf "(%s) => %s\n%!" (RS.Rule.to_string ~var r) (RS.Zigzag.to_string ~var v) *)
   (* let cpres = RS.Coherent.elim_rule cpres "Eᵣ" "C36" in *)
-  ()
+  )(
 *)
