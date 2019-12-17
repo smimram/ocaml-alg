@@ -5,9 +5,7 @@ addons:
   apt:
     packages:
     - ocaml-nox
-    - ocaml-findlib
-    - js-of-ocaml
 
 script:
-  - make
+  - make -C src
   - make test
