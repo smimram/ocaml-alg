@@ -461,12 +461,12 @@ module RS = struct
 
     (** Source. *)
     let rec source = function
-      | TApp (f, a1, s, a2) -> App (f, a1@[source s]@a2)
+      | TApp (f, a1, s, a2) -> app f (a1@[source s]@a2)
       | RApp (r, s) -> Subst.app s (Rule.source r)
 
     (** Target. *)
     let rec target = function
-      | TApp (f, a1, s, a2) -> App (f, a1@[target s]@a2)
+      | TApp (f, a1, s, a2) -> app f (a1@[target s]@a2)
       | RApp (r, s) -> Subst.app s (Rule.target r)
 
     let rec label ?(var=Var.to_string) = function
