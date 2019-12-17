@@ -774,13 +774,12 @@ module RS = struct
        to be able to rewrite. *)
     module Step = struct
       type t =
-        | TApp of Op.t * t array (** Term application. *)
+        | TApp of Op.t * t list (** Term application. *)
         | RApp of Rule.t * Subst.t (** Rule application. *)
         | SVar of var (** Variable. *)
 
       let rec to_string ?(var=Var.to_string) = function
         | TApp (f, a) ->
-          let a = Array.to_list a in
           let a = List.map (to_string ~var) a in
           let a = String.concat "," a in
           Op.name f ^ "(" ^ a ^ ")"
@@ -791,8 +790,14 @@ module RS = struct
           Rule.name r ^ "(" ^ a ^ ")"
         | SVar x -> var x
 
+      (* let of_string ops vars s = *)
+        (* let s = parser s in *)
+        (* let rec aux = function *)
+          (* | `Seq l ->  *)
+        (* in *)
+
       let rec of_term = function
-        | App (f, a) -> TApp (f, Array.map of_term a)
+        | App (f, a) -> TApp (f, List.map of_term (Array.to_list a))
         | Var x -> SVar x
 
       let rec of_step ((t,pos,r,s):Step.t) =
@@ -803,28 +808,29 @@ module RS = struct
           let t = a.(p) in
           let a = Array.map of_term a in
           a.(p) <- of_step (t, pos, r, s);
+          let a = Array.to_list a in
           TApp (f, a)
         | _ -> assert false
 
       let rec source = function
-        | TApp (f, a) -> App (f, Array.map source a)
+        | TApp (f, a) -> App (f, Array.of_list (List.map source a))
         | RApp (r, s) -> Subst.app s (Rule.source r)
         | SVar x -> Var x
 
       let rec target = function
-        | TApp (f, a) -> App (f, Array.map source a)
+        | TApp (f, a) -> App (f, Array.of_list (List.map source a))
         | RApp (r, s) -> Subst.app s (Rule.target r)
         | SVar x -> Var x
 
       (** Whether a rule occurs in a step. *)
       let rec has_rule r = function
-        | TApp (_, a) -> Array.exists (has_rule r) a
+        | TApp (_, a) -> List.exists (has_rule r) a
         | RApp (r', _) -> Rule.eq r r'
         | SVar _ -> false
 
       (** Apply a substitution. *)
       let rec subst s = function
-        | TApp (f, a) -> TApp (f, Array.map (subst s) a)
+        | TApp (f, a) -> TApp (f, List.map (subst s) a)
         | RApp (r, s') -> RApp (r, Subst.compose s' s)
         | SVar x -> of_term (Subst.find s x)
     end
@@ -908,15 +914,21 @@ module RS = struct
       | Step (d, st, p) -> Step (d, Step.subst s st, subst s p)
       | Empty t -> Empty (Subst.app s t)
 
+    (** Number of occurences of a given rule in a path. *)
+    let rec rule_occurences r = function
+      | Step (_, s, p) ->
+        (if Step.has_rule r s then 1 else 0) + rule_occurences r p
+      | Empty _ -> 0
+
+    (** Whether a path contains a rule. *)
     let rec has_rule r = function
       | Step (_, s, p) -> Step.has_rule r s || has_rule r p
       | Empty _ -> false
 
     (** Express a rule as a zigzag in a cell. *)
     let rec value r (p1,p2) =
-      if not (has_rule r p1) then
-        if not (has_rule r p2) then assert false
-        else value r (p2,p1)
+      assert (rule_occurences r p1 + rule_occurences r p2 = 1);
+      if not (has_rule r p1) then value r (p2,p1)
       else
         let rec aux prefix = function
           | Step (d, (RApp (r', s)), p) when Rule.eq r r' ->
@@ -929,5 +941,18 @@ module RS = struct
           | Empty _ -> assert false
         in
         aux [] p1
+
+    (** Replace a rule by a path in a path. *)
+    (* let rec replace_rule r pr p = *)
+      (* let rec step = function *)
+        (* | TApp (f, a) -> *)
+        (* | RApp (r', sub) when Rule.eq r r' -> *)
+        (* | RApp (r, s) -> RApp (r, s) *)
+        (* | SVar x -> SVar x *)
+      (* in *)
+      (* match p with *)
+      (* | Step (d, s, p) -> *)
+        (* Step (d, step s, replace_rule r pr p) *)
+      (* | Empty t -> Empty t *)
   end
 end
