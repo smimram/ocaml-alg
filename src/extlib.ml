@@ -24,6 +24,15 @@ module List = struct
       | [] -> raise Not_found
     in
     aux n id l
+
+  let rec sub l ofs len =
+    if ofs = 0 && len = 0 then []
+    else
+      match l with
+      | x::l ->
+        if ofs = 0 then x::(sub l ofs (len-1))
+        else sub l (ofs-1) len
+      | [] -> invalid_arg "List.sub"
 end
 
 module String = struct

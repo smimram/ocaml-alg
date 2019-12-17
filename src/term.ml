@@ -909,6 +909,12 @@ module RS = struct
       | Comp (Step _ as p, q) | Comp (Inv (Step _) as p, q) ->
         if n = 0 then source p else nth_term (n-1) q
       | _ -> assert false
+
+    let rec to_list = function
+      | Step s -> [Step s]
+      | Comp (p, q) -> (to_list p)@(to_list q)
+      | Id _ -> []
+      | Inv p -> List.map (fun p -> Inv p) (List.rev (to_list p))
   end
 
   (** Coherent presentations. *)
@@ -1050,7 +1056,15 @@ module RS = struct
                                &&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 8 p2) (st 8 p2) (tm 9 p2) (st 9 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
-             | l1, l2 -> Printf.sprintf "TODO: %d, %d" l1 l2
+             | l1, l2 ->
+               let p = Zigzag.canonize (Zigzag.append p1 (Zigzag.inv p2)) in
+               let ans = ref "" in
+               ans := tm 0 p ^ " ";
+               for i = 0 to Zigzag.length p - 1 do
+                 ans := Printf.sprintf "%s\\ar[r,%s]&%s" !ans (st i p) (tm (i+1) p)
+               done;
+               !ans
+               (* Printf.sprintf "TODO: %d, %d" l1 l2 *)
            in
            print "\\noindent\n\\subsection*{%s}\n" c;
            print "\\[\n\\begin{tikzcd}\n%s\n\\end{tikzcd}\n\\]\n\n" cd
