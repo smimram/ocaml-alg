@@ -498,6 +498,8 @@ module RS = struct
       match s1,s2 with
       | TApp (f, a1, s, a2), TApp (f', a1', s', a2') ->
         Op.eq f f' &&
+        List.length a1 = List.length a1' &&
+        List.length a2 = List.length a2' &&
         List.for_all2 eq_term a1 a1' &&
         eq s s' &&
         List.for_all2 eq_term a2 a2'
@@ -828,15 +830,15 @@ module RS = struct
       | Comp (Step s, p) ->
         (
           match canonize p with
-          (* | Inv (Step s') when Step.eq s s' -> Id (Step.source s) *)
-          (* | Comp (Inv (Step s'), p) when Step.eq s s' -> p *)
+          | Inv (Step s') when Step.eq s s' -> Id (Step.source s)
+          | Comp (Inv (Step s'), p) when Step.eq s s' -> p
           | p -> Comp (Step s, p)
         )
       | Comp (Inv (Step s), p) ->
         (
           match canonize p with
-          (* | Step s' when Step.eq s s' -> Id (Step.target s') *)
-          (* | Comp (Step s', p) when Step.eq s s' -> p *)
+          | Step s' when Step.eq s s' -> Id (Step.target s')
+          | Comp (Step s', p) when Step.eq s s' -> p
           | p -> Comp (Inv (Step s), p)
         )
       | Comp (p, q) -> canonize (Comp (canonize p, q))
