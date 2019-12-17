@@ -780,6 +780,12 @@ module RS = struct
       assert (eq (target p1) (source p2));
       Comp (p1, p2)
 
+    (** Concatenation of a list of paths. *)
+    let rec concat = function
+      | [p] -> p
+      | p::l -> append p (concat l)
+      | [] -> assert false
+
     (** Inverse of a path. *)
     let inv p = Inv p
 
@@ -809,28 +815,38 @@ module RS = struct
     (** Whether a path contains a rule. *)
     let rec has_rule r p = rule_occurences r p > 0
 
+    (** Put path in canonical form. *)
     let rec canonize = function
       | Comp (Id _, p) -> canonize p
-      | p -> p
+      | Comp (p, Id _) -> canonize p
+      | Comp (Comp (p, q), r) -> canonize (Comp (p, Comp (q, r)))
+      | Comp (Step p, q) -> Comp (Step p, canonize q)
+      | Comp (Inv (Step p), q) -> Comp (Inv (Step p), canonize q)
+      | Comp (p, q) -> canonize (Comp (canonize p, q))
+      | Inv (Inv p) -> canonize p
+      | Inv (Comp (p, q)) -> canonize (Comp (Inv q, Inv p))
+      | Inv (Id t) -> Id t
+      | Inv (Step s) -> Inv (Step s)
+      | Id t -> Id t
+      | Step s -> Step s
 
-    (*
     (** Express a rule as a zigzag in a cell. *)
     let rec value r (p1,p2) =
       assert (rule_occurences r p1 + rule_occurences r p2 = 1);
       if not (has_rule r p1) then value r (p2,p1)
       else
         let rec aux prefix = function
-          | Step (d, (RApp (r', s)), p) when Rule.eq r r' ->
+          | Comp (Step (RApp (r', s)), p) when Rule.eq r r'->
             assert (not (has_rule r p));
             assert (Subst.is_renaming s);
-            let prefix = List.rev prefix in
-            let prefix = if prefix = [] then Empty (source p2) else of_list prefix in
-            subst (Subst.inv s) (append (append (inv prefix) p2) p)
-          | Step (d, s, p) -> aux ((d,s)::prefix) p
-          | Empty _ -> assert false
+            let prefix = concat (List.rev prefix) in
+            subst (Subst.inv s) (concat [inv prefix; p2; p])
+          | Comp (Step _ as s, p) | Comp (Inv (Step _) as s, p) -> aux (s::prefix) p
+          | Step _ | Inv (Step _) as s -> aux prefix (Comp (s, Id (target s)))
+          | Id _ -> assert false
+          | _ -> assert false
         in
-        aux [] p1
-    *)
+        aux [Id (source p1)] (canonize p1)
 
     (** Replace a rule by a path in a path. *)
     let rec replace_rule r (pr:t) (p:t) =
@@ -849,7 +865,6 @@ module RS = struct
       | Comp (p, q) -> Comp (replace_rule r pr p, replace_rule r pr q)
       | Id t -> Id t
       | Inv p -> Inv (replace_rule r pr p)
-                          
   end
 
   (** Coherent presentations. *)
@@ -871,7 +886,6 @@ module RS = struct
     let find_coherence rs c =
       List.assoc c rs.coherence
 
-    (*
     (** Eliminate a rule with a coherence. *)
     let elim_rule rs r c =
       let r = find_rule rs r in
@@ -882,6 +896,5 @@ module RS = struct
       let coherence = List.map (fun (c,(p1,p2)) -> c, (Zigzag.replace_rule r v p1, Zigzag.replace_rule r v p2)) rs.coherence in
       { rs with rules; coherence }
       (* TODO: remove leftover rule and coherence. *)
-*)
   end
 end
