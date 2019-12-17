@@ -792,9 +792,10 @@ module RS = struct
     (** Inverse of a path. *)
     let inv p : t = `Inv p
 
-    (** Apply a context function to a path. *)
-    let rec map (tm : term -> term) (rs : [< Step.t] -> [< Step.t]) p : t =
-      match p with
+    (** Apply a context function to a path. In need to have two function because
+        of typing issues (variance and polymorphic variants...), but they will
+        always be the same in practice. *)
+    let rec map (tm : term -> term) (rs : Step.t -> Step.t) : t -> t = function
       | `Step s -> `Step (rs s)
       | `Comp (p, q) -> `Comp (map tm rs p, map tm rs q)
       | `Id t -> `Id (tm t)
@@ -836,6 +837,7 @@ module RS = struct
         aux [] p1
 *)
 
+    (*
     (** Replace a rule by a path in a path. *)
     let rec replace_rule r (pr:t) p =
       let rec replace_step ctx = function
@@ -844,12 +846,14 @@ module RS = struct
           let t = List.nth a n in
           let ctx t = ctx (`App (f, List.replace_nth a n t)) in
           replace_step ctx t
-        | `RApp (r', s) when Rule.eq r r' -> map ctx (subst s pr)
+        (* | `RApp (r', s) when Rule.eq r r' -> map ctx ctx (subst s pr) *)
         | `RApp (r, s) -> assert false
         | `Var x -> assert false
       in
-      match p with
-      | `Step s ->
+      (* match p with *)
+      (* | `Step s -> *)
+      ()
+*)
 
     (*
           Printf.printf "replace_rule: %s\n%!" (to_string p);
