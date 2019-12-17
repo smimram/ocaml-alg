@@ -72,7 +72,6 @@ let () =
        Printf.printf "%02d: %s\n    %s\n\n%!" (n+1) s1 s2
     ) coherence
 
-(*
 let rule_name = Utils.namer (=)
 
 let coherence = List.map (fun (p1,p2) -> RS.Zigzag.of_path p1, RS.Zigzag.of_path p2) coherence
@@ -99,6 +98,8 @@ let () =
   (* Printf.printf "eliminating Eᵣ in %s / %s\n%!" (RS.Zigzag.to_string ~var (fst c)) (RS.Zigzag.to_string ~var (snd c)); *)
   (* let v = RS.Zigzag.value r c in *)
   (* Printf.printf "(%s) => %s\n%!" (RS.Rule.to_string ~var r) (RS.Zigzag.to_string ~var v) *)
-  (* let cpres = RS.Coherent.elim_rule cpres "Eᵣ" "C36" in *)
-  )(
-*)
+  let cpres = RS.Coherent.elim_rule cpres "E" "C12" in
+  let cpres = RS.Coherent.elim_rule cpres "Eᵣ" "C36" in
+  let cpres = RS.Coherent.elim_rule cpres "Iᵣ" "C16" in
+  Printf.printf "================ eliminated:\n%s\n%!" (RS.Coherent.to_string ~var:Var.namer_natural cpres);
+  ()

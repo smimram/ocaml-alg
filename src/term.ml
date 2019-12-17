@@ -494,6 +494,7 @@ module RS = struct
       | RApp (r, s) -> not (Subst.is_injective_renaming s)
 
     let rec eq s1 s2 =
+      (* Printf.printf "eq: %s vs %s\n%!" (to_string s1) (to_string s2); *)
       match s1,s2 with
       | TApp (f, a1, s, a2), TApp (f', a1', s', a2') ->
         Op.eq f f' &&
@@ -755,12 +756,6 @@ module RS = struct
       | Id t -> string_of_term ?var t
       | Inv p -> to_string ~pa:true ?var p ^ "-"
 
-    (** Create a zigzag from a path. *)
-    let rec of_path p =
-      match p with
-      | Path.Empty t -> Id t
-      | Step (p, s) -> Comp (of_path p, Step s)
-
     let rec source = function
       | Step s -> Step.source s
       | Comp (p, _) -> source p
@@ -776,9 +771,11 @@ module RS = struct
     let step s = Step s
 
     (** Concatenation of two paths. *)
-    let rec append p1 p2 : t =
+    let comp p1 p2 =
       assert (eq (target p1) (source p2));
       Comp (p1, p2)
+
+    let rec append p1 p2 = comp p1 p2
 
     (** Concatenation of a list of paths. *)
     let rec concat = function
@@ -788,6 +785,12 @@ module RS = struct
 
     (** Inverse of a path. *)
     let inv p = Inv p
+
+    (** Create a zigzag from a path. *)
+    let rec of_path p =
+      match p with
+      | Path.Empty t -> Id t
+      | Step (p, s) -> comp (of_path p) (step s)
 
     (** Apply a context function to a path. In need to have two function because
         of typing issues (variance and polymorphic variants...), but they will
@@ -816,12 +819,26 @@ module RS = struct
     let rec has_rule r p = rule_occurences r p > 0
 
     (** Put path in canonical form. *)
-    let rec canonize = function
+    let rec canonize p =
+      (* Printf.printf "canonize: %s\n%!" (to_string p); *)
+      match p with
       | Comp (Id _, p) -> canonize p
       | Comp (p, Id _) -> canonize p
       | Comp (Comp (p, q), r) -> canonize (Comp (p, Comp (q, r)))
-      | Comp (Step p, q) -> Comp (Step p, canonize q)
-      | Comp (Inv (Step p), q) -> Comp (Inv (Step p), canonize q)
+      | Comp (Step s, p) ->
+        (
+          match canonize p with
+          (* | Inv (Step s') when Step.eq s s' -> Id (Step.source s) *)
+          (* | Comp (Inv (Step s'), p) when Step.eq s s' -> p *)
+          | p -> Comp (Step s, p)
+        )
+      | Comp (Inv (Step s), p) ->
+        (
+          match canonize p with
+          (* | Step s' when Step.eq s s' -> Id (Step.target s') *)
+          (* | Comp (Step s', p) when Step.eq s s' -> p *)
+          | p -> Comp (Inv (Step s), p)
+        )
       | Comp (p, q) -> canonize (Comp (canonize p, q))
       | Inv (Inv p) -> canonize p
       | Inv (Comp (p, q)) -> canonize (Comp (Inv q, Inv p))
@@ -846,23 +863,23 @@ module RS = struct
           | Id _ -> assert false
           | _ -> assert false
         in
-        aux [Id (source p1)] (canonize p1)
+        canonize (aux [Id (source p1)] (canonize p1))
 
     (** Replace a rule by a path in a path. *)
     let rec replace_rule r (pr:t) (p:t) =
       (* Printf.printf "replace_rule: %s\n%!" (to_string p); *)
       let rec replace_step tm_ctx rs_ctx = function
         | Step.TApp (f, a1, s, a2) ->
-          let tm_ctx t = tm_ctx (App (f, a1@[t]@a2)) in
-          let rs_ctx s = rs_ctx (Step.TApp (f, a1, s, a2)) in
+          let tm_ctx t = tm_ctx (app f (a1@[t]@a2)) in
+          let rs_ctx s = rs_ctx (Step.tapp f a1 s a2) in
           replace_step tm_ctx rs_ctx s
         | RApp (r', s) when Rule.eq r r' -> map tm_ctx rs_ctx (subst s pr)
-        | RApp (r, s) -> step (Step.RApp (r, s))
+        | RApp (r, s) -> step (rs_ctx (Step.rapp r s))
       in
       let replace_step = replace_step id id in
       match p with
       | Step s -> replace_step s
-      | Comp (p, q) -> Comp (replace_rule r pr p, replace_rule r pr q)
+      | Comp (p, q) -> comp (replace_rule r pr p) (replace_rule r pr q)
       | Id t -> Id t
       | Inv p -> Inv (replace_rule r pr p)
   end
@@ -876,6 +893,19 @@ module RS = struct
         rules : Rule.t list;
         coherence : (string * (Zigzag.t * Zigzag.t)) list;
       }
+
+    let to_string ?(var=Var.namer) rs =
+      let coherence =
+        List.map
+          (fun (c,(p1,p2)) ->
+             let var = var () in
+             let p1 = Zigzag.canonize p1 in
+             let p2 = Zigzag.canonize p2 in
+             Printf.sprintf "%s:\n%s\n%s\n" c (Zigzag.to_string ~var p1) (Zigzag.to_string ~var p2)
+          ) rs.coherence
+      in
+      let coherence = String.concat "\n" coherence in
+      coherence
 
     let make operations rules coherence =
       { operations; rules; coherence }
@@ -895,6 +925,6 @@ module RS = struct
       let rules = List.filter (fun r' -> not (Rule.eq r r')) rs.rules in
       let coherence = List.map (fun (c,(p1,p2)) -> c, (Zigzag.replace_rule r v p1, Zigzag.replace_rule r v p2)) rs.coherence in
       { rs with rules; coherence }
-      (* TODO: remove leftover rule and coherence. *)
+      (* TODO: remove coherence. *)
   end
 end
