@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="Start" href="index.html">
 <link rel="previous" href="Term.Substitution.html">
-<link rel="next" href="Term.Pos.html">
+<link rel="next" href="Term.RS.html">
 <link rel="Up" href="Term.html">
 <link title="Index of types" rel=Appendix href="index_types.html">
 <link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
@@ -36,7 +36,7 @@
 <body>
 <div class="navbar"><a class="pre" href="Term.Substitution.html" title="Term.Substitution">Previous</a>
 &nbsp;<a class="up" href="Term.html" title="Term">Up</a>
-&nbsp;<a class="post" href="Term.Pos.html" title="Term.Pos">Next</a>
+&nbsp;<a class="post" href="Term.RS.html" title="Term.RS">Next</a>
 </div>
 <h1>Module <a href="type_Term.Subst.html">Term.Subst</a></h1>
 
@@ -102,14 +102,20 @@
 </div>
 
 <pre><span id="VALis_injective_renaming"><span class="keyword">val</span> is_injective_renaming</span> : <code class="type"><a href="Term.Substitution.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALinverse"><span class="keyword">val</span> inverse</span> : <code class="type"><a href="Term.Substitution.html#TYPEt">t</a> -> (<a href="Term.html#TYPEvar">Term.var</a> * <a href="Term.Substitution.html#TYPEt">t</a>) list</code></pre><div class="info ">
+<pre><span id="VALinv"><span class="keyword">val</span> inv</span> : <code class="type"><a href="Term.Substitution.html#TYPEt">t</a> -> <a href="Term.Substitution.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Inverse of a renaming.</p>
 </div>
 </div>
 
+<pre><span id="VALdomain"><span class="keyword">val</span> domain</span> : <code class="type"><a href="Term.Substitution.html#TYPEt">t</a> -> <a href="Term.html#TYPEvar">Term.var</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Domain of a substitution.</p>
+</div>
+</div>
+
 <pre><span id="VALin_dom"><span class="keyword">val</span> in_dom</span> : <code class="type"><a href="Term.Substitution.html#TYPEt">t</a> -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> bool</code></pre>
-<pre><span id="VALrestrict"><span class="keyword">val</span> restrict</span> : <code class="type"><a href="Term.Var.html#TYPEt">Term.Var.t</a> list -> (<a href="Term.html#TYPEvar">Term.var</a> * <a href="Term.html#TYPEterm">Term.term</a>) list -> <a href="Term.Substitution.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALrestrict"><span class="keyword">val</span> restrict</span> : <code class="type"><a href="Term.Var.html#TYPEt">Term.Var.t</a> list -> <a href="Term.Substitution.html#TYPEt">t</a> -> <a href="Term.Substitution.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Restrict the domain of a substitution.</p>
 </div>

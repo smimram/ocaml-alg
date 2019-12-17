@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Term.RS.Path.html">
+<link rel="next" href="Term.RS.Coherent.html">
+<link rel="Up" href="Term.RS.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Algebra" rel="Chapter" href="Algebra.html">
+<link title="Alphabet" rel="Chapter" href="Alphabet.html">
+<link title="Automaton" rel="Chapter" href="Automaton.html">
+<link title="Category" rel="Chapter" href="Category.html">
+<link title="Extlib" rel="Chapter" href="Extlib.html">
+<link title="Field" rel="Chapter" href="Field.html">
+<link title="Globular" rel="Chapter" href="Globular.html">
+<link title="Graph" rel="Chapter" href="Graph.html">
+<link title="Group" rel="Chapter" href="Group.html">
+<link title="Hypergraph" rel="Chapter" href="Hypergraph.html">
+<link title="Matrix" rel="Chapter" href="Matrix.html">
+<link title="Module" rel="Chapter" href="Module.html">
+<link title="Monoid" rel="Chapter" href="Monoid.html">
+<link title="Precategory" rel="Chapter" href="Precategory.html">
+<link title="Ring" rel="Chapter" href="Ring.html">
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html">
+<link title="Term" rel="Chapter" href="Term.html">
+<link title="Utils" rel="Chapter" href="Utils.html"><title>Term.RS.Zigzag</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Term.RS.Path.html" title="Term.RS.Path">Previous</a>
+&nbsp;<a class="up" href="Term.RS.html" title="Term.RS">Up</a>
+&nbsp;<a class="post" href="Term.RS.Coherent.html" title="Term.RS.Coherent">Next</a>
+</div>
+<h1>Module <a href="type_Term.RS.Zigzag.html">Term.RS.Zigzag</a></h1>
+
+<pre><span id="MODULEZigzag"><span class="keyword">module</span> Zigzag</span>: <code class="code">sig</code> <a href="Term.RS.Zigzag.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Rewriting zigzags.</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Step"><span class="constructor">Step</span></span> <span class="keyword">of</span> <code class="type"><a href="Term.RS.Step.html#TYPEt">Term.RS.Step.t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Comp"><span class="constructor">Comp</span></span> <span class="keyword">of</span> <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> * <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Id"><span class="constructor">Id</span></span> <span class="keyword">of</span> <code class="type"><a href="Term.html#TYPEterm">Term.term</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Inv"><span class="constructor">Inv</span></span> <span class="keyword">of</span> <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a></code></code></td>
+
+</tr></table>
+
+<div class="info ">
+<div class="info-desc">
+<p>A rewriting zigzag.</p>
+</div>
+</div>
+
+
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?pa:bool -> ?var:(<a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p>String representation.</p>
+</div>
+</div>
+
+<pre><span id="VALsource"><span class="keyword">val</span> source</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a></code></pre>
+<pre><span id="VALtarget"><span class="keyword">val</span> target</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a></code></pre>
+<pre><span id="VALstep"><span class="keyword">val</span> step</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">Term.RS.Step.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Path reduced to one step.</p>
+</div>
+</div>
+
+<pre><span id="VALcomp"><span class="keyword">val</span> comp</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Concatenation of two paths.</p>
+</div>
+</div>
+
+<pre><span id="VALappend"><span class="keyword">val</span> append</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre>
+<pre><span id="VALconcat"><span class="keyword">val</span> concat</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> list -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Concatenation of a list of paths.</p>
+</div>
+</div>
+
+<pre><span id="VALinv"><span class="keyword">val</span> inv</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Inverse of a path.</p>
+</div>
+</div>
+
+<pre><span id="VALof_path"><span class="keyword">val</span> of_path</span> : <code class="type"><a href="Term.RS.Path.html#TYPEt">Term.RS.Path.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Create a zigzag from a path.</p>
+</div>
+</div>
+
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">(<a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.html#TYPEterm">Term.term</a>) -><br>       (<a href="Term.RS.Step.html#TYPEt">Term.RS.Step.t</a> -> <a href="Term.RS.Step.html#TYPEt">Term.RS.Step.t</a>) -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Apply a context function to a path. In need to have two function because
+        of typing issues (variance and polymorphic variants...), but they will
+        always be the same in practice.</p>
+</div>
+</div>
+
+<pre><span id="VALsubst"><span class="keyword">val</span> subst</span> : <code class="type">Subst.t -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Apply a substitution.</p>
+</div>
+</div>
+
+<pre><span id="VALrule_occurences"><span class="keyword">val</span> rule_occurences</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p>Number of occurences of a given rule in a path.</p>
+</div>
+</div>
+
+<pre><span id="VALhas_rule"><span class="keyword">val</span> has_rule</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Whether a path contains a rule.</p>
+</div>
+</div>
+
+<pre><span id="VALcanonize"><span class="keyword">val</span> canonize</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Put path in canonical form.</p>
+</div>
+</div>
+
+<pre><span id="VALvalue"><span class="keyword">val</span> value</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> * <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Express a rule as a zigzag in a cell.</p>
+</div>
+</div>
+
+<pre><span id="VALreplace_rule"><span class="keyword">val</span> replace_rule</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Replace a rule by a path in a path.</p>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Term.RS.Zigzag.html">
+<link rel="Up" href="Term.RS.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Algebra" rel="Chapter" href="Algebra.html">
+<link title="Alphabet" rel="Chapter" href="Alphabet.html">
+<link title="Automaton" rel="Chapter" href="Automaton.html">
+<link title="Category" rel="Chapter" href="Category.html">
+<link title="Extlib" rel="Chapter" href="Extlib.html">
+<link title="Field" rel="Chapter" href="Field.html">
+<link title="Globular" rel="Chapter" href="Globular.html">
+<link title="Graph" rel="Chapter" href="Graph.html">
+<link title="Group" rel="Chapter" href="Group.html">
+<link title="Hypergraph" rel="Chapter" href="Hypergraph.html">
+<link title="Matrix" rel="Chapter" href="Matrix.html">
+<link title="Module" rel="Chapter" href="Module.html">
+<link title="Monoid" rel="Chapter" href="Monoid.html">
+<link title="Precategory" rel="Chapter" href="Precategory.html">
+<link title="Ring" rel="Chapter" href="Ring.html">
+<link title="Series" rel="Chapter" href="Series.html">
+<link title="Simplicial" rel="Chapter" href="Simplicial.html">
+<link title="Term" rel="Chapter" href="Term.html">
+<link title="Utils" rel="Chapter" href="Utils.html"><title>Term.RS.Coherent</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Term.RS.Zigzag.html" title="Term.RS.Zigzag">Previous</a>
+&nbsp;<a class="up" href="Term.RS.html" title="Term.RS">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Term.RS.Coherent.html">Term.RS.Coherent</a></h1>
+
+<pre><span id="MODULECoherent"><span class="keyword">module</span> Coherent</span>: <code class="code">sig</code> <a href="Term.RS.Coherent.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Coherent presentations.</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.operations">operations</span>&nbsp;: <code class="type"><a href="Term.Op.html#TYPEt">Term.Op.t</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.rules">rules</span>&nbsp;: <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.coherence">coherence</span>&nbsp;: <code class="type">(string * (<a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a> * <a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a>)) list</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+<div class="info-desc">
+<p>A coherent presentation.</p>
+</div>
+</div>
+
+
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(unit -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Coherent.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type"><a href="Term.Op.html#TYPEt">Term.Op.t</a> list -><br>       <a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> list -><br>       (string * (<a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a> * <a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a>)) list -> <a href="Term.RS.Coherent.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfind_rule"><span class="keyword">val</span> find_rule</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> string -> <a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a></code></pre>
+<pre><span id="VALfind_coherence"><span class="keyword">val</span> find_coherence</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> string -> <a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a> * <a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a></code></pre>
+<pre><span id="VALelim_rule"><span class="keyword">val</span> elim_rule</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> string -> string -> <a href="Term.RS.Coherent.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Eliminate a rule with a coherence.</p>
+</div>
+</div>
+</body></html>

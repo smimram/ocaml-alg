@@ -978,33 +978,78 @@ module RS = struct
            let tm n p = string_of_term ~var (Zigzag.nth_term n p) in
            let cd =
              match Zigzag.length p1, Zigzag.length p2 with
-         (* | 1, 1 -> *)
-           (* Printf.sprintf "%s\\ar[d,bend right,\"%s\"']\\ar[d,bend left,\"%s\"]\\\\\n%s" *)
-             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p1) *)
-         (* | 1, 2 -> *)
-           (* Printf.sprintf "%s\\ar[dr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&%s" *)
-             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) *)
-         (* | 1, 3 -> *)
-           (* Printf.sprintf "%s\\ar[drr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s" *)
-             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) *)
-         (* | 1, 4 -> *)
-           (* Printf.sprintf "%s\\ar[ddrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s" *)
-             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) *)
-         (* | 1, 5 -> *)
-           (* Printf.sprintf "%s\\ar[dddrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s" *)
-             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) *)
-         (* | 1, 6 -> *)
-           (* Printf.sprintf "%s\\ar[ddddrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s" *)
-             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) *)
+             | 1, 1 ->
+               Printf.sprintf "%s\\ar[d,bend right,%s']\\ar[d,bend left,%s]\\\\\n%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p1)
+             | 1, 2 ->
+               Printf.sprintf "%s\\ar[dr,%s']\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2)
+             | 1, 3 ->
+               Printf.sprintf "%s\\ar[drr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2)
+             | 1, 4 ->
+               Printf.sprintf "%s\\ar[ddrr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2)
+             | 1, 5 ->
+               Printf.sprintf "%s\\ar[dddrr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2)
+             | 1, 6 ->
+               Printf.sprintf "%s\\ar[ddddrr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2)
              | 2, 2 ->
                Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
-             (* | 2, 3 -> *)
-           (* Printf.sprintf "%s\\ar[d,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n%s\\ar[rr,\"%s\"']&&%s" *)
-             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) *)
-         (* | 2, 4 -> *)
-             (* Printf.sprintf "%s\\ar[d,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n%s\\ar[rrr,\"%s\"']&&&%s" *)
-             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) *)
+             | 2, 3 ->
+               Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[rr,%s']&&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
+             | 2, 4 ->
+               Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[rrr,%s']&&&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
+             | 3, 3 ->
+               Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+                               %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
+             | 3, 4 ->
+               Printf.sprintf "%s\\ar[dd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
+             | 3, 5 ->
+               Printf.sprintf "%s\\ar[ddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
+             | 3, 8 ->
+               Printf.sprintf "%s\\ar[dddddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
+             | 3, 9 ->
+               Printf.sprintf "%s\\ar[ddddddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 8 p2) (st 8 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
+             | 3, 10 ->
+               Printf.sprintf "%s\\ar[dddddddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               &&%s\\ar[d,%s]\\\\\n\
+                               %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 8 p2) (st 8 p2) (tm 9 p2) (st 9 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
              | l1, l2 -> Printf.sprintf "TODO: %d, %d" l1 l2
            in
            print "\\noindent\n\\subsection*{%s}\n" c;
@@ -1017,7 +1062,7 @@ module RS = struct
       let fname, oc = Filename.open_temp_file "ocaml-alg" ".tex" in
       output_string oc (to_tex ?var rs);
       close_out oc;
-      let cmd = Printf.sprintf "cd %s && pdflatex %s && evince `basename %s .tex`.pdf" Filename.temp_dir_name fname fname in
+      let cmd = Printf.sprintf "cd %s && pdflatex %s && evince `basename %s .tex`.pdf" (Filename.get_temp_dir_name ()) fname fname in
       assert (Sys.command cmd = 0)
 
     let make operations rules coherence =

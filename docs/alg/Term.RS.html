@@ -5,7 +5,7 @@
 <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="Start" href="index.html">
-<link rel="previous" href="Term.Pos.html">
+<link rel="previous" href="Term.Subst.html">
 <link rel="Up" href="Term.html">
 <link title="Index of types" rel=Appendix href="index_types.html">
 <link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
@@ -33,7 +33,7 @@
 <link title="Utils" rel="Chapter" href="Utils.html"><title>Term.RS</title>
 </head>
 <body>
-<div class="navbar"><a class="pre" href="Term.Pos.html" title="Term.Pos">Previous</a>
+<div class="navbar"><a class="pre" href="Term.Subst.html" title="Term.Subst">Previous</a>
 &nbsp;<a class="up" href="Term.html" title="Term">Up</a>
 &nbsp;</div>
 <h1>Module <a href="type_Term.RS.html">Term.RS</a></h1>
@@ -45,6 +45,7 @@
 </div>
 <hr width="100%">
 
+<pre><span id="VALlist_remove_nth"><span class="keyword">val</span> list_remove_nth</span> : <code class="type">int -> 'a list -> 'a list * 'a list</code></pre>
 <pre><span id="MODULERule"><span class="keyword">module</span> <a href="Term.RS.Rule.html">Rule</a></span>: <code class="code">sig</code> <a href="Term.RS.Rule.html">..</a> <code class="code">end</code></pre><div class="info">
 <p>Rewriting rules.</p>
 
@@ -67,7 +68,13 @@
 </div>
 </div>
 
-<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Rule.t</a> list -> string</code></pre>
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(unit -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Rule.html#TYPEt">Rule.t</a> list -> string</code></pre>
+<pre><span id="VALfind_rule"><span class="keyword">val</span> find_rule</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Rule.t</a> list -> string -> <a href="Term.RS.Rule.html#TYPEt">Rule.t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Find the rule with given name.</p>
+</div>
+</div>
+
 <pre><span id="MODULEStep"><span class="keyword">module</span> <a href="Term.RS.Step.html">Step</a></span>: <code class="code">sig</code> <a href="Term.RS.Step.html">..</a> <code class="code">end</code></pre><div class="info">
 <p>Rewriting steps.</p>
 
@@ -76,7 +83,7 @@
 <pre><span id="TYPEstep"><span class="keyword">type</span> <code class="type"></code>step</span> = <code class="type"><a href="Term.RS.Step.html#TYPEt">Step.t</a></code> </pre>
 
 
-<pre><span id="VALsteps"><span class="keyword">val</span> steps</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.RS.html#TYPEstep">step</a> list</code></pre><div class="info ">
+<pre><span id="VALsteps"><span class="keyword">val</span> steps</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> <a href="Term.RS.html#TYPEt">t</a> -> <a href="Term.RS.html#TYPEstep">step</a> list</code></pre><div class="info ">
 <div class="info-desc">
 <p>All possible rewriting steps.</p>
 </div>
@@ -124,5 +131,15 @@
 <div class="info-desc">
 <p>Squier completion.</p>
 </div>
+</div>
+
+<pre><span id="MODULEZigzag"><span class="keyword">module</span> <a href="Term.RS.Zigzag.html">Zigzag</a></span>: <code class="code">sig</code> <a href="Term.RS.Zigzag.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Rewriting zigzags.</p>
+
+</div>
+
+<pre><span id="MODULECoherent"><span class="keyword">module</span> <a href="Term.RS.Coherent.html">Coherent</a></span>: <code class="code">sig</code> <a href="Term.RS.Coherent.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Coherent presentations.</p>
+
 </div>
 </body></html>

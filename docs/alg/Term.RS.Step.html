@@ -47,7 +47,32 @@
 </div>
 <hr width="100%">
 
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Term.html#TYPEterm">Term.term</a> * <a href="Term.html#TYPEpos">Term.pos</a> * <a href="Term.RS.html#TYPErule">Term.RS.rule</a> * <a href="Term.html#TYPEsubst">Term.subst</a></code> </pre>
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.TApp"><span class="constructor">TApp</span></span> <span class="keyword">of</span> <code class="type"><a href="Term.Op.html#TYPEt">Term.Op.t</a> * <a href="Term.html#TYPEterm">Term.term</a> list * <a href="Term.RS.Step.html#TYPEt">t</a> * <a href="Term.html#TYPEterm">Term.term</a> list</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>Term application.</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.RApp"><span class="constructor">RApp</span></span> <span class="keyword">of</span> <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> * Subst.t</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>Rule application.</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
 <div class="info ">
 <div class="info-desc">
 <p>A rewriting step.</p>
@@ -55,9 +80,12 @@
 </div>
 
 
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type"><a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.Pos.html#TYPEt">Term.Pos.t</a> -> <a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> Subst.t -> <a href="Term.RS.Step.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALof_term"><span class="keyword">val</span> of_term</span> : <code class="type">'a -> 'b</code></pre>
+<pre><span id="VALtapp"><span class="keyword">val</span> tapp</span> : <code class="type"><a href="Term.Op.html#TYPEt">Term.Op.t</a> -><br>       <a href="Term.html#TYPEterm">Term.term</a> list -> <a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a> list -> <a href="Term.RS.Step.html#TYPEt">t</a></code></pre>
+<pre><span id="VALrapp"><span class="keyword">val</span> rapp</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> Subst.t -> <a href="Term.RS.Step.html#TYPEt">t</a></code></pre>
+<pre><span id="VALsubst"><span class="keyword">val</span> subst</span> : <code class="type">Subst.t -> <a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.RS.Step.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
-<p>Create a rewriting step.</p>
+<p>Apply a substitution.</p>
 </div>
 </div>
 
@@ -73,11 +101,14 @@
 </div>
 </div>
 
-<pre><span id="VALpos"><span class="keyword">val</span> pos</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.html#TYPEpos">Term.pos</a></code></pre>
-<pre><span id="VALrule"><span class="keyword">val</span> rule</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.RS.html#TYPErule">Term.RS.rule</a></code></pre>
-<pre><span id="VALsubst"><span class="keyword">val</span> subst</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.html#TYPEsubst">Term.subst</a></code></pre>
-<pre><span id="VALhas_context"><span class="keyword">val</span> has_context</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALoldlabel"><span class="keyword">val</span> oldlabel</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Step.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALlabel"><span class="keyword">val</span> label</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Step.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Step.html#TYPEt">t</a> -> string</code></pre>
-<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.RS.Step.html#TYPEt">t</a> -> bool</code></pre></body></html>
+<pre><span id="VALrule"><span class="keyword">val</span> rule</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a></code></pre>
+<pre><span id="VALhas_context"><span class="keyword">val</span> has_context</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> bool</code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Term.RS.Step.html#TYPEt">t</a> -> <a href="Term.RS.Step.html#TYPEt">t</a> -> bool</code></pre>
+<pre><span id="VALhas_rule"><span class="keyword">val</span> has_rule</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> <a href="Term.RS.Step.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Whether a rule occurs in a step.</p>
+</div>
+</div>
+</body></html>

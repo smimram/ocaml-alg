@@ -54,9 +54,43 @@
 
 
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">string -> <a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.RS.Rule.html#TYPEt">t</a></code></pre>
+<pre><span id="VALof_string"><span class="keyword">val</span> of_string</span> : <code class="type"><a href="Term.Op.html#TYPEt">Term.Op.t</a> list -><br>       (string * <a href="Term.Var.html#TYPEt">Term.Var.t</a>) list Stdlib.ref -><br>       string -> string -> string -> <a href="Term.RS.Rule.html#TYPEt">t</a></code></pre>
 <pre><span id="VALname"><span class="keyword">val</span> name</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALsource"><span class="keyword">val</span> source</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a></code></pre>
 <pre><span id="VALtarget"><span class="keyword">val</span> target</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a></code></pre>
-<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Rule.html#TYPEt">t</a> -> string</code></pre>
-<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">t</a> -> <a href="Term.RS.Rule.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALrefresh"><span class="keyword">val</span> refresh</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">t</a> -> <a href="Term.RS.Rule.html#TYPEt">t</a></code></pre></body></html>
+<pre><span id="VALvars"><span class="keyword">val</span> vars</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">t</a> -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Variables of the rule.</p>
+</div>
+</div>
+
+<pre><span id="VALarity"><span class="keyword">val</span> arity</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p>Arity of the rule.</p>
+</div>
+</div>
+
+<pre><span id="VALargs"><span class="keyword">val</span> args</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">t</a> -> (<a href="Term.Var.html#TYPEt">Term.Var.t</a> * 'a) list -> 'a list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Arguments of a rule, sorted according to its variables.</p>
+</div>
+</div>
+
+<pre><span id="VALargs_subst"><span class="keyword">val</span> args_subst</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a> list -> Subst.t</code></pre><div class="info ">
+<div class="info-desc">
+<p>Substitution from arguments.</p>
+</div>
+</div>
+
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Rule.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p>String representation of a rule.</p>
+</div>
+</div>
+
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">t</a> -> <a href="Term.RS.Rule.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Equality of rules.</p>
+</div>
+</div>
+</body></html>

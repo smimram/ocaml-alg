@@ -92,15 +92,11 @@ let () =
     let coherence = List.mapi (fun i (p1,p2) -> "C"^string_of_int (i+1), (p1, p2)) coherence in
     RS.Coherent.make ops groups coherence
   in
-  (* let r = RS.Coherent.find_rule cpres "Eᵣ" in *)
-  (* let c = RS.Coherent.find_coherence cpres "C36" in *)
-  (* let var = Term.Var.namer_natural () in *)
-  (* Printf.printf "eliminating Eᵣ in %s / %s\n%!" (RS.Zigzag.to_string ~var (fst c)) (RS.Zigzag.to_string ~var (snd c)); *)
-  (* let v = RS.Zigzag.value r c in *)
-  (* Printf.printf "(%s) => %s\n%!" (RS.Rule.to_string ~var r) (RS.Zigzag.to_string ~var v) *)
+  (* RS.Coherent.view_pdf cpres; *)
   let cpres = RS.Coherent.elim_rule cpres "E" "C12" in
   (* let cpres = RS.Coherent.elim_rule cpres "E_r" "C36" in *)
   (* let cpres = RS.Coherent.elim_rule cpres "I_r" "C16" in *)
+  let cpres = RS.Coherent.elim_rule cpres "I_i" "C28" in
   let cpres = RS.Coherent.elim_rule cpres "I_1" "C5" in
   let cpres = RS.Coherent.elim_rule cpres "I_2" "C7" in
   Printf.printf "================ eliminated:\n%s\n%!" (RS.Coherent.to_string ~var:Var.namer_natural cpres);

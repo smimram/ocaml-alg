@@ -70,7 +70,7 @@
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.App"><span class="constructor">App</span></span> <span class="keyword">of</span> <code class="type"><a href="Term.Op.html#TYPEt">Op.t</a> * <a href="Term.html#TYPEt">t</a> array</code></code></td>
+<code><span id="TYPEELTt.App"><span class="constructor">App</span></span> <span class="keyword">of</span> <code class="type"><a href="Term.Op.html#TYPEt">Op.t</a> * <a href="Term.html#TYPEt">t</a> list</code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
 <div class="info-desc">
 <p>application</p>
@@ -107,9 +107,21 @@
 </div>
 </div>
 
-<pre><span id="VALapp"><span class="keyword">val</span> app</span> : <code class="type"><a href="Term.Op.html#TYPEt">Op.t</a> -> <a href="Term.html#TYPEt">t</a> array -> <a href="Term.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALapp"><span class="keyword">val</span> app</span> : <code class="type"><a href="Term.Op.html#TYPEt">Op.t</a> -> <a href="Term.html#TYPEt">t</a> list -> <a href="Term.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Create an application.</p>
+</div>
+</div>
+
+<pre><span id="VALparser"><span class="keyword">val</span> parser</span> : <code class="type">string -><br>       ([> `App of string * 'a list<br>         | `Seq of<br>             ([> `App of string * 'b list<br>               | `Inv of [> `App of string * 'c list | `Var of string ] as 'c<br>               | `Var of string ]<br>              as 'b)<br>             list<br>         | `Var of string ]<br>        as 'a)</code></pre><div class="info ">
+<div class="info-desc">
+<p>Simple parser for terms and applications.</p>
+</div>
+</div>
+
+<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type"><a href="Term.Op.html#TYPEt">Op.t</a> list -> (string * <a href="Term.Var.html#TYPEt">Var.t</a>) list Stdlib.ref -> string -> <a href="Term.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Parse a term.</p>
 </div>
 </div>
 
@@ -119,6 +131,7 @@
 </div>
 </div>
 
+<pre><span id="VALeq_term"><span class="keyword">val</span> eq_term</span> : <code class="type"><a href="Term.html#TYPEt">t</a> -> <a href="Term.html#TYPEt">t</a> -> bool</code></pre>
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(<a href="Term.Var.html#TYPEt">Var.t</a> -> string) -> <a href="Term.html#TYPEt">t</a> -> string</code></pre><div class="info ">
 <div class="info-desc">
 <p>String representation of a term.</p>
@@ -159,12 +172,6 @@
 <pre><span id="TYPEsubst"><span class="keyword">type</span> <code class="type"></code>subst</span> = <code class="type">Subst.t</code> </pre>
 
 
-<pre><span id="VALrefresh"><span class="keyword">val</span> refresh</span> : <code class="type">Subst.t Stdlib.ref -> <a href="Term.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">term</a></code></pre><div class="info ">
-<div class="info-desc">
-<p>Refresh variables of a term.</p>
-</div>
-</div>
-
 <pre><span id="EXCEPTIONNot_unifiable"><span class="keyword">exception</span> Not_unifiable</span></pre>
 
 <pre><span id="VALunify"><span class="keyword">val</span> unify</span> : <code class="type"><a href="Term.html#TYPEterm">term</a> -> <a href="Term.html#TYPEterm">term</a> -> Subst.t</code></pre><div class="info ">
@@ -179,19 +186,11 @@
 </div>
 </div>
 
-<pre><span id="VALequivalent"><span class="keyword">val</span> equivalent</span> : <code class="type">?s:Subst.t -> <a href="Term.html#TYPEt">t</a> -> <a href="Term.html#TYPEt">t</a> -> Subst.t</code></pre><div class="info ">
+<pre><span id="VALequivalent"><span class="keyword">val</span> equivalent</span> : <code class="type">?s:Subst.t -> <a href="Term.html#TYPEt">t</a> -> <a href="Term.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
 <div class="info-desc">
 <p>Whether two terms are alpha-equivalent</p>
 </div>
 </div>
-
-<pre><span id="MODULEPos"><span class="keyword">module</span> <a href="Term.Pos.html">Pos</a></span>: <code class="code">sig</code> <a href="Term.Pos.html">..</a> <code class="code">end</code></pre><div class="info">
-<p>Positions in terms.</p>
-
-</div>
-
-<pre><span id="TYPEpos"><span class="keyword">type</span> <code class="type"></code>pos</span> = <code class="type"><a href="Term.Pos.html#TYPEt">Pos.t</a></code> </pre>
-
 
 <pre><span id="MODULERS"><span class="keyword">module</span> <a href="Term.RS.html">RS</a></span>: <code class="code">sig</code> <a href="Term.RS.html">..</a> <code class="code">end</code></pre><div class="info">
 <p>Rewriting systems.</p>
