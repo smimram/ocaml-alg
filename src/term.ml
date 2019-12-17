@@ -509,7 +509,6 @@ module RS = struct
       | `RApp (r, s), `RApp (r', s') -> Rule.eq r r' && Subst.eq s s'
       | `Var x, `Var y -> Var.eq x y
       | _ -> false
-
     
     (** Whether a rule occurs in a step. *)
     let rec has_rule r : t -> bool = function
@@ -793,6 +792,14 @@ module RS = struct
     (** Inverse of a path. *)
     let inv p : t = `Inv p
 
+    (** Apply a context function to a path. *)
+    let rec map (tm : ([> term] as 'a) -> 'a) (rs) p : t =
+      match p with
+      | `Step s -> rs (`Step s)
+      | `Comp (p, q) -> `Comp (map tm rs p, map tm rs q)
+      | `Id t -> `Id (tm t)
+      | `Inv p -> `Inv (map tm rs p)
+
     (** Apply a substitution. *)
     let rec subst s : t -> t = function
       | `Step t -> `Step (Step.subst s t)
@@ -829,16 +836,23 @@ module RS = struct
         aux [] p1
 *)
 
-    (*
-    let rec map f = function
-      | Step (d, s, p) -> Step (d, f s, map f p)
-      | Empty t -> Empty (f t)
-*)
-
-    (*
     (** Replace a rule by a path in a path. *)
     let rec replace_rule r (pr:t) p =
-      Printf.printf "replace_rule: %s\n%!" (to_string p);
+      let rec replace_step ctx = function
+        | `App (f, a) ->
+          let n = List.index (Step.has_rule r) a in
+          let t = List.nth a n in
+          let ctx t = ctx (`App (f, List.replace_nth a n t)) in
+          replace_step ctx t
+        | `RApp (r', s) when Rule.eq r r' -> map ctx (subst s pr)
+        | `RApp (r, s) -> assert false
+        | `Var x -> assert false
+      in
+      match p with
+      | `Step s ->
+
+    (*
+          Printf.printf "replace_rule: %s\n%!" (to_string p);
       let rec replace_step ctx = function
         | Step.TApp (f, a) ->
           let n = List.index (Step.has_rule r) a in
