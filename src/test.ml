@@ -37,15 +37,15 @@ let m x y = app m [x;y]
 let i x = app i [x]
 let groups = [
   RS.Rule.make "A"  (m (m x y) z) (m x (m y z));
-  RS.Rule.make "Eₗ" (m e x) x;
-  RS.Rule.make "Eᵣ" (m x e) x;
+  RS.Rule.make "E_l" (m e x) x;
+  RS.Rule.make "E_r" (m x e) x;
   RS.Rule.make "E"  (i e) e;
-  RS.Rule.make "Iₗ" (m (i x) x) e;
-  RS.Rule.make "Iᵣ" (m x (i x)) e;
-  RS.Rule.make "Iᵢ" (i (i x)) x;
-  RS.Rule.make "I₁" (m (i x) (m x y)) y;
-  RS.Rule.make "I₂" (m x (m (i x) y)) y;
-  RS.Rule.make "Iₘ" (i (m x y)) (m (i y) (i x))
+  RS.Rule.make "I_l" (m (i x) x) e;
+  RS.Rule.make "I_r" (m x (i x)) e;
+  RS.Rule.make "I_i" (i (i x)) x;
+  RS.Rule.make "I_1" (m (i x) (m x y)) y;
+  RS.Rule.make "I_2" (m x (m (i x) y)) y;
+  RS.Rule.make "I_m" (i (m x y)) (m (i y) (i x))
 ]
 
 let () =
@@ -99,7 +99,9 @@ let () =
   (* let v = RS.Zigzag.value r c in *)
   (* Printf.printf "(%s) => %s\n%!" (RS.Rule.to_string ~var r) (RS.Zigzag.to_string ~var v) *)
   let cpres = RS.Coherent.elim_rule cpres "E" "C12" in
-  let cpres = RS.Coherent.elim_rule cpres "Eᵣ" "C36" in
-  let cpres = RS.Coherent.elim_rule cpres "Iᵣ" "C16" in
+  (* let cpres = RS.Coherent.elim_rule cpres "E_r" "C36" in *)
+  (* let cpres = RS.Coherent.elim_rule cpres "I_r" "C16" in *)
+  let cpres = RS.Coherent.elim_rule cpres "I_1" "C5" in
+  let cpres = RS.Coherent.elim_rule cpres "I_2" "C7" in
   Printf.printf "================ eliminated:\n%s\n%!" (RS.Coherent.to_string ~var:Var.namer_natural cpres);
-  ()
+  RS.Coherent.view_pdf cpres

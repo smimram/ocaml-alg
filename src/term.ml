@@ -788,6 +788,13 @@ module RS = struct
     (** Inverse of a path. *)
     let inv p = Inv p
 
+    (** Number of steps in a path. *)
+    let rec length = function
+      | Step _ -> 1
+      | Comp (p, q) -> length p + length q
+      | Id _ -> 0
+      | Inv p -> length p
+
     (** Create a zigzag from a path. *)
     let rec of_path p =
       match p with
@@ -884,6 +891,24 @@ module RS = struct
       | Comp (p, q) -> comp (replace_rule r pr p) (replace_rule r pr q)
       | Id t -> Id t
       | Inv p -> Inv (replace_rule r pr p)
+
+    (** nth step in a path supposed to be in canonical form. *)
+    let rec nth_step n = function
+      | Step s when n = 0 -> true, s
+      | Inv (Step s) when n = 0 -> false, s
+      | Comp (Step s, p) -> if n = 0 then true, s else nth_step (n-1) p
+      | Comp (Inv (Step s), p) -> if n = 0 then false, s else nth_step (n-1) p
+      | _ -> assert false
+
+    (** nth term in a path supposed to be in canonical form. *)
+    let rec nth_term n = function
+      | Step _ | Inv (Step _) as p ->
+        if n = 0 then source p
+        else if n = 1 then target p
+        else assert false
+      | Comp (Step _ as p, q) | Comp (Inv (Step _) as p, q) ->
+        if n = 0 then source p else nth_term (n-1) q
+      | _ -> assert false
   end
 
   (** Coherent presentations. *)
@@ -908,6 +933,92 @@ module RS = struct
       in
       let coherence = String.concat "\n" coherence in
       coherence
+
+    let to_tex ?(var=Var.namer_natural) rs =
+      let ans = ref "" in
+      let print s = Printf.ksprintf (fun s -> ans := !ans ^ s) s; in
+      print "\\documentclass{article}\n\
+             \\usepackage[utf8x]{inputenc}\n\
+             \\usepackage{amsmath}\n\
+             \\usepackage{tikz-cd}\n\
+             \\usepackage{a4wide}\n\n\
+             \\title{Coherent presentation}\n\
+             \\author{ocaml-alg}\n\n\
+             \\begin{document}\n\
+             \\maketitle\n\n";
+      let rules =
+        List.map
+          (fun r ->
+             let var = var () in
+             let s = string_of_term ~var (Rule.source r) in
+             let t = string_of_term ~var (Rule.target r) in
+             Printf.sprintf "%s &: %s \\to %s\\\\" (Rule.name r) s t
+          ) rs.rules
+      in
+      let rules = String.concat "\n" rules in
+      print "\\section{Rules}\n\
+             \n\
+             \\begin{align*}\n\
+             %s\n\
+             \\end{align*}\n\
+             \n" rules;
+      print "\\section{Coherence}\n\n";
+      List.iter
+        (fun (c,(p1,p2)) ->
+           let p1 = Zigzag.canonize p1 in
+           let p2 = Zigzag.canonize p2 in
+           let p1,p2 = if Zigzag.length p1 > Zigzag.length p2 then p2,p1 else p1,p2 in
+           let var = var () in
+           let st n p =
+             let d, s = Zigzag.nth_step n p in
+             let d = if d then "" else "<-," in
+             let s = Step.label ~var s in
+             d ^ "\"{" ^ s ^ "}\""
+           in
+           let tm n p = string_of_term ~var (Zigzag.nth_term n p) in
+           let cd =
+             match Zigzag.length p1, Zigzag.length p2 with
+         (* | 1, 1 -> *)
+           (* Printf.sprintf "%s\\ar[d,bend right,\"%s\"']\\ar[d,bend left,\"%s\"]\\\\\n%s" *)
+             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p1) *)
+         (* | 1, 2 -> *)
+           (* Printf.sprintf "%s\\ar[dr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&%s" *)
+             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) *)
+         (* | 1, 3 -> *)
+           (* Printf.sprintf "%s\\ar[drr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s" *)
+             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) *)
+         (* | 1, 4 -> *)
+           (* Printf.sprintf "%s\\ar[ddrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s" *)
+             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) *)
+         (* | 1, 5 -> *)
+           (* Printf.sprintf "%s\\ar[dddrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s" *)
+             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) *)
+         (* | 1, 6 -> *)
+           (* Printf.sprintf "%s\\ar[ddddrr,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s\\ar[d,\"%s\"]\\\\\n&&%s" *)
+             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) *)
+             | 2, 2 ->
+               Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[r,%s']&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
+             (* | 2, 3 -> *)
+           (* Printf.sprintf "%s\\ar[d,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n%s\\ar[rr,\"%s\"']&&%s" *)
+             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) *)
+         (* | 2, 4 -> *)
+             (* Printf.sprintf "%s\\ar[d,\"%s\"']\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[r,\"%s\"]&%s\\ar[d,\"%s\"]\\\\\n%s\\ar[rrr,\"%s\"']&&&%s" *)
+             (* (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) *)
+             | l1, l2 -> Printf.sprintf "TODO: %d, %d" l1 l2
+           in
+           print "\\noindent\n\\subsection*{%s}\n" c;
+           print "\\[\n\\begin{tikzcd}\n%s\n\\end{tikzcd}\n\\]\n\n" cd
+        ) rs.coherence;
+      print "\\end{document}\n";
+      !ans
+
+    let view_pdf ?var rs =
+      let fname, oc = Filename.open_temp_file "ocaml-alg" ".tex" in
+      output_string oc (to_tex ?var rs);
+      close_out oc;
+      let cmd = Printf.sprintf "cd %s && pdflatex %s && evince `basename %s .tex`.pdf" Filename.temp_dir_name fname fname in
+      assert (Sys.command cmd = 0)
 
     let make operations rules coherence =
       { operations; rules; coherence }
