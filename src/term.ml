@@ -793,9 +793,9 @@ module RS = struct
     let inv p : t = `Inv p
 
     (** Apply a context function to a path. *)
-    let rec map (tm : ([> term] as 'a) -> 'a) (rs) p : t =
+    let rec map (tm : term -> term) (rs : [< Step.t] -> [< Step.t]) p : t =
       match p with
-      | `Step s -> rs (`Step s)
+      | `Step s -> `Step (rs s)
       | `Comp (p, q) -> `Comp (map tm rs p, map tm rs q)
       | `Id t -> `Id (tm t)
       | `Inv p -> `Inv (map tm rs p)
