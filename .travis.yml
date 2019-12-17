@@ -6,6 +6,7 @@ addons:
     packages:
     - ocaml-nox
     - ocaml-findlib
+    - js-of-ocaml
 
 script:
   - make
