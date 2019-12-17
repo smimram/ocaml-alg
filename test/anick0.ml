@@ -22,5 +22,5 @@ let () =
   let d = P.Anick.complex ~augmentation pres (n+1) in
   Printf.printf "%s\n%!" (P.Anick.KMod.Pres.Complex.to_string d);
   assert (P.Anick.KMod.Pres.Complex.valid d);
-  let h = P.Anick.homology ~augmentation pres (n-1) in
+  let h = P.Anick.betti ~augmentation pres (n-1) in
   Array.iteri (fun i n -> Printf.printf "H%d = %d\n" i n) h
