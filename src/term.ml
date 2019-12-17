@@ -943,16 +943,18 @@ module RS = struct
         aux [] p1
 
     (** Replace a rule by a path in a path. *)
-    (* let rec replace_rule r pr p = *)
-      (* let rec step = function *)
-        (* | TApp (f, a) -> *)
-        (* | RApp (r', sub) when Rule.eq r r' -> *)
-        (* | RApp (r, s) -> RApp (r, s) *)
-        (* | SVar x -> SVar x *)
-      (* in *)
-      (* match p with *)
-      (* | Step (d, s, p) -> *)
-        (* Step (d, step s, replace_rule r pr p) *)
-      (* | Empty t -> Empty t *)
+          (*
+    let rec replace_rule r pr p =
+      let rec step ctx = function
+        | TApp (f, a) ->
+        | RApp (r', sub) when Rule.eq r r' ->
+        | RApp (r, s) -> ctx (RApp (r, s))
+        | SVar x -> ctx (SVar x)
+      in
+      match p with
+      | Step (d, s, p) ->
+        Step (d, step s, replace_rule r pr p)
+      | Empty t -> Empty t
+*)
   end
 end
