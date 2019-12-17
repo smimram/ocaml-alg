@@ -136,7 +136,7 @@ let rec to_string ?(var=Var.to_string) : t -> string = function
 let string_of_term ?var = to_string ?var
 
 (** Is a term a variable? *)
-let is_var = function
+let is_var : t -> bool = function
   | `Var _ -> true
   | _ -> false
 
@@ -249,7 +249,7 @@ module Substitution = struct
     aux [] s
 
   (** Inverse of a renaming. *)
-  let inv (s:t) =
+  let inv (s:t) : t =
     List.map
       (fun (x,t) ->
         match t with
@@ -265,7 +265,7 @@ module Substitution = struct
     List.exists (fun (y,_) -> Var.eq y x) s
 
   (** Restrict the domain of a substitution. *)
-  let restrict vars s : t =
+  let restrict vars (s:t) : t =
     List.filter (fun (x,_) -> List.exists (Var.eq x) vars) s
 end
 
@@ -312,7 +312,7 @@ let unify t1 t2 =
 *)
 
 (** Whether a pattern matches a term. *)
-let matches t1 t2 =
+let matches (t1:t) (t2:t) =
   let rec aux q s =
     match q with
     | [] -> s
@@ -452,7 +452,7 @@ module RS = struct
       assert (List.for_all (fun x -> List.exists (Var.eq x) vr) vs);
       `RApp (r, s)
 
-    let var x = `Var x
+    let var x : t = `Var x
 
     (** Apply a substitution. *)
     let rec subst ?(extensible=false) s : t -> t = function
@@ -473,7 +473,7 @@ module RS = struct
         Subst.app s (Rule.target r)
       | `Var x -> `Var x
 
-    let rec label ?(var=Var.to_string) = function
+    let rec label ?(var=Var.to_string) : t -> string = function
       | `App (f, a) ->
         let a = List.map (label ~var) a in
         let a = String.concat "," a in
@@ -486,9 +486,9 @@ module RS = struct
       | `Var x -> var x
 
     let to_string ?var s =
-      label ?var (source s) ^ " -" ^ label ?var s ^ "-> " ^ label ?var (target s)
+      string_of_term ?var (source s) ^ " -" ^ label ?var s ^ "-> " ^ string_of_term ?var (target s)
 
-    let rec rule = function
+    let rec rule : t -> Rule.t = function
       | `App (f, a) ->
         let rec list = function
           | t::l -> (try rule t with Not_found -> list l)
@@ -498,7 +498,7 @@ module RS = struct
       | `RApp (r, _) -> r
       | `Var _ -> raise Not_found
 
-    let has_context = function
+    let has_context : t -> bool = function
       | `App _ -> true
       | `RApp (r, s) -> not (Subst.is_injective_renaming s)
       | `Var _ -> assert false
@@ -509,6 +509,13 @@ module RS = struct
       | `RApp (r, s), `RApp (r', s') -> Rule.eq r r' && Subst.eq s s'
       | `Var x, `Var y -> Var.eq x y
       | _ -> false
+
+    
+    (** Whether a rule occurs in a step. *)
+    let rec has_rule r : t -> bool = function
+      | `App (_, a) -> List.exists (has_rule r) a
+      | `RApp (r', _) -> Rule.eq r r'
+      | `Var _ -> false
   end
 
   type step = Step.t
@@ -999,5 +1006,5 @@ module RS = struct
       { rs with rules; coherence }
       (* TODO: remove leftover rule and coherence. *)
   end
-*)
+  *)
 end
