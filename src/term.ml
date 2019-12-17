@@ -749,67 +749,69 @@ module RS = struct
   module Zigzag = struct
     (** A rewriting zigzag. *)
     type t =
-      | Step of Step.t
-      | Comp of t * t
-      | Id of term
-      | Inv of t
+      [
+        | `Step of Step.t
+        | `Comp of t * t
+        | `Id of term
+        | `Inv of t
+      ]
 
     (** String representation. *)
     let rec to_string ?(pa=false) ?var = function
-      | Step s -> Step.label ?var s
-      | Comp (p1,p2) ->
+      | `Step s -> Step.label ?var s
+      | `Comp (p1,p2) ->
         let s = to_string ~pa:true ?var p1 ^ "." ^ to_string ?var p2 in
         if pa then "(" ^ s ^ ")" else s
-      | Id t -> string_of_term ?var t
-      | Inv p -> to_string ~pa:true ?var p ^ "-"
+      | `Id t -> string_of_term ?var t
+      | `Inv p -> to_string ~pa:true ?var p ^ "-"
 
     (** Create a zigzag from a path. *)
-    let rec of_path p =
+    let rec of_path p : t =
       match p with
-      | Path.Empty t -> Id t
-      | Step (p, s) -> Comp (of_path p, Step s)
+      | Path.Empty t -> `Id t
+      | Step (p, s) -> `Comp (of_path p, `Step s)
 
-    let rec source = function
-      | Step s -> Step.source s
-      | Comp (p, _) -> source p
-      | Id t -> t
-      | Inv p -> target p
-    and target = function
-      | Step s -> Step.target s
-      | Comp (_, p) -> target p
-      | Id t -> t
-      | Inv p -> source p
+    let rec source : t -> term = function
+      | `Step s -> Step.source s
+      | `Comp (p, _) -> source p
+      | `Id t -> t
+      | `Inv p -> target p
+    and target : t -> term = function
+      | `Step s -> Step.target s
+      | `Comp (_, p) -> target p
+      | `Id t -> t
+      | `Inv p -> source p
 
     (** Path reduced to one step. *)
-    let step s = Step s
+    let step s : t = `Step s
 
     (** Concatenation of two paths. *)
-    let rec append p1 p2 =
+    let rec append p1 p2 : t =
       assert (eq (target p1) (source p2));
-      Comp (p1, p2)
+      `Comp (p1, p2)
 
     (** Inverse of a path. *)
-    let inv p = Inv p
+    let inv p : t = `Inv p
 
     (** Apply a substitution. *)
-    let rec subst s = function
-      | Step t -> Step (Step.subst s t)
-      | Comp (p1, p2) -> Comp (subst s p1, subst s p2)
-      | Id t -> Id (Subst.app s t)
-      | Inv p -> Inv (subst s p)
+    let rec subst s : t -> t = function
+      | `Step t -> `Step (Step.subst s t)
+      | `Comp (p1, p2) -> `Comp (subst s p1, subst s p2)
+      | `Id t -> `Id (Subst.app s t)
+      | `Inv p -> `Inv (subst s p)
 
     (** Number of occurences of a given rule in a path. *)
-    let rec rule_occurences r = function
-      | Step s -> if Step.has_rule r s then 1 else 0
-      | Comp (p, q) -> rule_occurences r p + rule_occurences r q
-      | Id _ -> 0
-      | Inv p -> rule_occurences r p
+    let rec rule_occurences r : t -> int = function
+      | `Step s -> if Step.has_rule r s then 1 else 0
+      | `Comp (p, q) -> rule_occurences r p + rule_occurences r q
+      | `Id _ -> 0
+      | `Inv p -> rule_occurences r p
 
     (** Whether a path contains a rule. *)
     let rec has_rule r p = rule_occurences r p > 0
 
+    (*
     (** Express a rule as a zigzag in a cell. *)
-                           (*
     let rec value r (p1,p2) =
       assert (rule_occurences r p1 + rule_occurences r p2 = 1);
       if not (has_rule r p1) then value r (p2,p1)
