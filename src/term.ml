@@ -5,21 +5,34 @@ open Extlib
 (** Operations. *)
 module Op = struct
   (** An operation. *)
-  type t = int * string * int
+  type t =
+    {
+      weight : int;
+      name : string;
+      arity : int;
+      to_string : string list -> string;
+    }
+
+  let name f = f.name
+
+  let weight f = f.weight
+
+  let arity f = f.arity
 
   (** Create an operation with given name and arity. *)
-  let make ?(weight=0) name arity : t =
-    (weight, name, arity)
+  let make ?to_string ?(weight=0) name arity : t =
+    let to_string =
+      match to_string with
+      | Some to_string -> to_string
+      | None -> fun a -> name ^ "(" ^ String.concat "," a ^ ")"
+    in
+    { weight; name; arity; to_string }
 
   (** Compare two operations for equality. *)
-  (* TODO: it would be even better to use physical equality *)
-  let eq (g1:t) (g2:t) = (g1 = g2)
+  let eq f1 f2 =
+    f1.name = f2.name && f1.arity = f2.arity && f1.weight = f2.weight
 
-  let name (_,name,_:t) = name
-
-  let to_string f = name f
-
-  let arity (_,_,n:t) = n
+  let to_string f a = f.to_string a
 end
 
 (** Variables. *)
@@ -128,7 +141,7 @@ let eq_term = eq
 
 (** String representation of a term. *)
 let rec to_string ?(var=Var.to_string) = function
-  | App (f, a) -> Op.to_string f ^ "(" ^ String.concat "," (List.map (to_string ~var) a) ^ ")"
+  | App (f, a) -> Op.to_string f (List.map (to_string ~var) a)
   | Var x -> var x
 
 let string_of_term ?var = to_string ?var
@@ -474,8 +487,7 @@ module RS = struct
         let a1 = List.map (string_of_term ~var) a1 in
         let a2 = List.map (string_of_term ~var) a2 in
         let a = a1@[label ~var s]@a2 in
-        let a = String.concat "," a in
-        Op.name f ^ "(" ^ a ^ ")"
+        Op.to_string f a
       | RApp (r, s) ->
         let a = Rule.args r s in
         let a = List.map (string_of_term ~var) a in
@@ -735,7 +747,11 @@ module RS = struct
          (* Printf.printf "branching\n%s\n%s\n\n%!" (Step.to_string s1) (Step.to_string s2); *)
          let p1 = Path.append (Path.step s1) (normalize rs (Step.target s1)) in
          let p2 = Path.append (Path.step s2) (normalize rs (Step.target s2)) in
-         if not (eq (Path.target p1) (Path.target p2)) then raise Not_confluent;
+         if not (eq (Path.target p1) (Path.target p2)) then
+           (
+             Printf.printf "not confluent:\n%s\n%s\n%!" (Path.to_string p1) (Path.to_string p2);
+             raise Not_confluent
+           );
          p1, p2
       )
       (critical rs)
@@ -787,6 +803,15 @@ module RS = struct
 
     (** Inverse of a path. *)
     let inv p = Inv p
+
+    (** Equality between paths. *)
+    let rec eq p p' =
+      match p, p' with
+      | Step s, Step s' -> Step.eq s s'
+      | Comp (p, q), Comp (p', q') -> eq p p' && eq q q'
+      | Id t, Id t' -> eq_term t t'
+      | Inv p, Inv p' -> eq p p'
+      | _ -> false
 
     (** Number of steps in a path. *)
     let rec length = function
@@ -1058,10 +1083,15 @@ module RS = struct
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 8 p2) (st 8 p2) (tm 9 p2) (st 9 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
              | l1, l2 ->
                let p = Zigzag.canonize (Zigzag.append p1 (Zigzag.inv p2)) in
+               let l = Zigzag.length p in
+               let n = 2 in
                let ans = ref "" in
-               ans := tm 0 p ^ " ";
-               for i = 0 to Zigzag.length p - 1 do
-                 ans := Printf.sprintf "%s\\ar[r,%s]&%s" !ans (st i p) (tm (i+1) p)
+               for i = 0 to (l-1)/n do
+                 ans := !ans ^ (tm (i*n) p);
+                 for j = 0 to min n (l - i*n) - 1 do
+                   ans := Printf.sprintf "%s\\ar[r,%s]&%s" !ans (st i p) (tm (i*n+j+1) p)
+                 done;
+                 ans := !ans ^ "\\\\"
                done;
                !ans
                (* Printf.sprintf "TODO: %d, %d" l1 l2 *)
@@ -1091,12 +1121,13 @@ module RS = struct
     (** Eliminate a rule with a coherence. *)
     let elim_rule rs r c =
       let r = find_rule rs r in
+      (* let cname = c in *)
       let c = find_coherence rs c in
       let v = Zigzag.value r c in
       let var = Var.namer_natural () in Printf.printf "\nelim rule: [%s] => %s\n%!" (Rule.to_string ~var r) (Zigzag.to_string ~var v);
       let rules = List.filter (fun r' -> not (Rule.eq r r')) rs.rules in
       let coherence = List.map (fun (c,(p1,p2)) -> c, (Zigzag.replace_rule r v p1, Zigzag.replace_rule r v p2)) rs.coherence in
+      (* let coherence = List.filter (fun (c,_) -> c <> cname) coherence in *)
       { rs with rules; coherence }
-      (* TODO: remove coherence. *)
   end
 end

@@ -33,9 +33,7 @@ let () =
   (* let r' = RS.Rule.refresh r in *)
 (* assert (RS.Rule.eq r r') *)
 
-(* let rule_name = Utils.namer (fun (s1,s2) (s1',s2') -> RS.Path.eq s1 s1' && RS.Path.eq s2 s2') *)
-(* TODO: equality does not seem to be working... *)
-let rule_name = Utils.namer (=)
+let rule_name = Utils.namer (fun (s1,s2) (s1',s2') -> RS.Path.eq s1 s1' && RS.Path.eq s2 s2')
 
 let coherence = RS.squier groups
 
