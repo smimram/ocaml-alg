@@ -1,3 +1,5 @@
+let id x = x
+
 let (|>) x f = f x
 
 module List = struct
@@ -11,9 +13,15 @@ module List = struct
     in
     aux 0 l
 
-  let rec nth n = function
-    | x::l -> if n = 0 then x else nth (n-1) l
-    | [] -> raise Not_found
+  (** Replace the nth element of a list. *)
+  let replace_nth l n x =
+    let rec aux n k = function
+      | y::l ->
+        if n = 0 then k (x::l)
+        else aux (n-1) (fun l -> k (y::l)) l
+      | [] -> raise Not_found
+    in
+    aux n id l
 end
 
 module String = struct

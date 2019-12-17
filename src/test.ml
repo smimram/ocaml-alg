@@ -88,10 +88,16 @@ let () =
     ) coherence
 
 let () =
-  let r = RS.find_rule groups "Eᵣ" in
-  let c = List.nth 35 coherence in
-  let var = Term.Var.namer_natural () in
-  Printf.printf "eliminating Eᵣ in %s / %s\n%!" (RS.Zigzag.to_string ~var (fst c)) (RS.Zigzag.to_string ~var (snd c));
-  let v = RS.Zigzag.value r c in
-  Printf.printf "(%s) => %s\n%!" (RS.Rule.to_string ~var r) (RS.Zigzag.to_string ~var v)
+  let cpres =
+    let coherence = List.mapi (fun i (p1,p2) -> "C"^string_of_int (i+1), (p1, p2)) coherence in
+    RS.Coherent.make ops groups coherence
+  in
+  (* let r = RS.Coherent.find_rule cpres "Eᵣ" in *)
+  (* let c = RS.Coherent.find_coherence cpres "C36" in *)
+  (* let var = Term.Var.namer_natural () in *)
+  (* Printf.printf "eliminating Eᵣ in %s / %s\n%!" (RS.Zigzag.to_string ~var (fst c)) (RS.Zigzag.to_string ~var (snd c)); *)
+  (* let v = RS.Zigzag.value r c in *)
+  (* Printf.printf "(%s) => %s\n%!" (RS.Rule.to_string ~var r) (RS.Zigzag.to_string ~var v) *)
+  let cpres = RS.Coherent.elim_rule cpres "Eᵣ" "C36" in
+  ()
     

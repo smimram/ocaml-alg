@@ -812,38 +812,51 @@ module RS = struct
           TApp (f, a)
         | _ -> assert false
 
-      let rec source = function
-        | TApp (f, a) -> App (f, Array.of_list (List.map source a))
-        | RApp (r, s) -> Subst.app s (Rule.source r)
-        | SVar x -> Var x
-
-      let rec target = function
-        | TApp (f, a) -> App (f, Array.of_list (List.map source a))
-        | RApp (r, s) -> Subst.app s (Rule.target r)
-        | SVar x -> Var x
-
-      (** Whether a rule occurs in a step. *)
-      let rec has_rule r = function
-        | TApp (_, a) -> List.exists (has_rule r) a
-        | RApp (r', _) -> Rule.eq r r'
-        | SVar _ -> false
+      let rec eq s1 s2 =
+        match s1,s2 with
+        | TApp (f, a), TApp (f', a') -> Op.eq f f' && List.for_all2 eq a a'
+        | RApp (r, s), RApp (r', s') -> Rule.eq r r' && Subst.eq s s'
+        | SVar x, SVar y -> Var.eq x y
+        | _ -> false
 
       (** Apply a substitution. *)
       let rec subst s = function
         | TApp (f, a) -> TApp (f, List.map (subst s) a)
         | RApp (r, s') -> RApp (r, Subst.compose s' s)
         | SVar x -> of_term (Subst.find s x)
+
+      let rec source = function
+        | TApp (f, a) -> TApp (f, List.map source a)
+        | RApp (r, s) -> subst s (of_term (Rule.source r))
+        | SVar x -> SVar x
+
+      let rec target = function
+        | TApp (f, a) -> TApp (f, List.map target a)
+        | RApp (r, s) ->
+          Printf.printf "rule is %s\n%!" (Rule.to_string r);
+          Printf.printf "subst is %s\n%!" (Subst.to_string s);
+          subst s (of_term (Rule.target r))
+        | SVar x -> SVar x
+      let target t =
+        Printf.printf "taget: %s\n%!" (to_string t);
+        target t
+
+      (** Whether a rule occurs in a step. *)
+      let rec has_rule r = function
+        | TApp (_, a) -> List.exists (has_rule r) a
+        | RApp (r', _) -> Rule.eq r r'
+        | SVar _ -> false
     end
 
     (** A rewriting zigzag. *)
     type t =
-      | Empty of term
       | Step of bool * Step.t * t (* false means inverted *)
+      | Empty of Step.t (* term encoded as a step for compatibility with contexts *)
 
     (** String representation. *)
     let to_string ?var p =
       match p with
-      | Empty t -> string_of_term ?var t
+      | Empty t -> Step.to_string ?var t
       | _ ->
         let rec aux = function
           | Step (d,s,Empty _) ->
@@ -857,7 +870,7 @@ module RS = struct
     (** Create a zigzag from a path. *)
     let rec of_path p =
       match p with
-      | Path.Empty t -> Empty t
+      | Path.Empty t -> Empty (Step.of_term t)
       | _ ->
         (* Compute the list of steps. *)
         let rec aux = function
@@ -867,7 +880,7 @@ module RS = struct
         let l = List.rev (aux p) in
         let rec aux = function
           | s::l -> Step (true, Step.of_step s, aux l)
-          | [] -> Empty (Path.target p)
+          | [] -> Empty (Step.of_term (Path.target p))
         in
         aux l
 
@@ -879,6 +892,13 @@ module RS = struct
       | Step (_, _, p) -> target p
       | Empty t -> t
 
+    (** Path reduced to one step. *)
+    let step d s =
+      (* Printf.printf "making step %s %s (target is %s)\n%!" (if d then "+" else "-") (Step.to_string s) (Step.to_string (Step.target s)); *)
+      if d then Step (d, s, Empty (Step.target s))
+      else Step (d, s, Empty (Step.source s))
+
+    (** Whether a path is empty. *)
     let is_empty = function
       | Step _ -> false
       | Empty _ -> true
@@ -888,18 +908,17 @@ module RS = struct
       | Empty t -> []
 
     let rec of_list = function
-      | [d,s] ->
-        if d then Step (d, s, Empty (Step.target s))
-        else Step (d, s, Empty (Step.source s))
-      | (d,s)::l ->
-        Step (d, s, of_list l)
+      | [d,s] -> step d s
+      | (d,s)::l -> Step (d, s, of_list l)
       | [] -> assert false
 
+    (** Concatenation of two paths. *)
     let rec append p1 p2 =
+      (* Printf.printf "append %s with %s\n%!" (to_string p1) (to_string p2); *)
       match p1 with
       | Step (d, s, p) -> Step (d, s, append p p2)
       | Empty t ->
-        assert (eq (source p2) t);
+        assert (Step.eq (source p2) t);
         p2
 
     (** Inverse of a path. *)
@@ -912,7 +931,7 @@ module RS = struct
     (** Apply a substitution. *)
     let rec subst s = function
       | Step (d, st, p) -> Step (d, Step.subst s st, subst s p)
-      | Empty t -> Empty (Subst.app s t)
+      | Empty t -> Empty (Step.subst s t)
 
     (** Number of occurences of a given rule in a path. *)
     let rec rule_occurences r = function
@@ -942,19 +961,68 @@ module RS = struct
         in
         aux [] p1
 
+    let rec map f = function
+      | Step (d, s, p) -> Step (d, f s, map f p)
+      | Empty t -> Empty (f t)
+
     (** Replace a rule by a path in a path. *)
-          (*
-    let rec replace_rule r pr p =
-      let rec step ctx = function
-        | TApp (f, a) ->
-        | RApp (r', sub) when Rule.eq r r' ->
-        | RApp (r, s) -> ctx (RApp (r, s))
-        | SVar x -> ctx (SVar x)
+    let rec replace_rule r (pr:t) p =
+      Printf.printf "replace_rule: %s\n%!" (to_string p);
+      let rec replace_step ctx = function
+        | Step.TApp (f, a) ->
+          let n = List.index (Step.has_rule r) a in
+          let t = List.nth a n in
+          let ctx t = ctx (Step.TApp (f, List.replace_nth a n t)) in
+          replace_step ctx t
+        | RApp (r', s) when Rule.eq r r' -> map ctx (subst s pr)
+        | RApp (r, s) -> assert false
+        | SVar x -> assert false
+      in
+      let replace_step d s =
+        if Step.has_rule r s then
+          let ans = replace_step id s in
+          if d then ans else inv ans
+        else step d s
+      in
+      let replace_step d s =
+        Printf.printf "replace_step: %s%s\n%!" (if d then "" else "-") (Step.to_string s);
+        let ans = replace_step d s in
+        Printf.printf "replace_step: %s%s is %s\n%!" (if d then "" else "-") (Step.to_string s) (to_string ans);
+        ans
       in
       match p with
-      | Step (d, s, p) ->
-        Step (d, step s, replace_rule r pr p)
+      | Step (d, s, p) -> append (replace_step d s) (replace_rule r pr p)
       | Empty t -> Empty t
-*)
+  end
+
+  (** Coherent presentations. *)
+  module Coherent = struct
+    (** A coherent presentation. *)
+    type t =
+      {
+        operations : Op.t list;
+        rules : Rule.t list;
+        coherence : (string * (Zigzag.t * Zigzag.t)) list;
+      }
+
+    let make operations rules coherence =
+      { operations; rules; coherence }
+
+    let find_rule rs r =
+      find_rule rs.rules r
+
+    let find_coherence rs c =
+      List.assoc c rs.coherence
+
+    (** Eliminate a rule with a coherence. *)
+    let elim_rule rs r c =
+      let r = find_rule rs r in
+      let c = find_coherence rs c in
+      let v = Zigzag.value r c in
+      let var = Var.namer_natural () in Printf.printf "\nelim rule: [%s] => %s\n%!" (Rule.to_string ~var r) (Zigzag.to_string ~var v);
+      let rules = List.filter (fun r' -> not (Rule.eq r r')) rs.rules in
+      let coherence = List.map (fun (c,(p1,p2)) -> c, (Zigzag.replace_rule r v p1, Zigzag.replace_rule r v p2)) rs.coherence in
+      { rs with rules; coherence }
+      (* TODO: remove leftover rule and coherence. *)
   end
 end
