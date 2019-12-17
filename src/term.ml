@@ -65,6 +65,56 @@ let app f a : t =
   assert (Array.length a = Op.arity f);
   App (f,a)
 
+(** Simple parser for terms and applications. *)
+let parser s =
+  let rec term s =
+    let s = String.trim s in
+    try
+      let n = String.index s '(' in
+      let f = String.sub s 0 n in
+      assert (s.[String.length s - 1] = ')');
+      let a = String.sub s (n+1) (String.length s - (n+1) - 1) in
+      let a =
+        let k = ref 0 in
+        let p = function
+          | '(' -> incr k; false
+          | ')' -> decr k; false
+          | ',' -> !k = 0
+          | _ -> false
+        in
+        String.split_on_predicate p a
+      in
+      let a = List.map term a in
+      `App (f, a)
+    with
+    | Not_found -> `Var s
+  in
+  let step s =
+    let s = String.trim s in
+    if s.[String.length s - 1] = '-' then `Inv (term (String.sub s 0 (String.length s - 1)))
+    else term s
+  in
+  let l = String.split_on_char '.' s in
+  if List.length l = 1 then term (List.hd l)
+  else `Seq (List.map step l)
+
+(** Parse a term. *)
+let parse ops vars s =
+  let rec aux = function
+    | `App (f, a) ->
+      let f = List.find (fun o -> Op.name o = f) ops in
+      let a = List.map aux a in
+      let a = Array.of_list a in
+      App (f, a)
+    | `Var x ->
+      if not (List.mem_assoc x !vars) then vars := (x, Var.fresh ()) :: !vars;
+      let x = List.assoc x !vars in
+      Var x
+    | `Seq _ -> assert false
+    | `Inv _ -> assert false
+  in
+  aux (parser s)
+
 (** Equality between terms. *)
 let rec eq t1 t2 =
   match t1, t2 with
@@ -360,6 +410,11 @@ module RS = struct
     type t = string * term * term
 
     let make r s t : t = (r,s,t)
+
+    let of_string ops vars r s t =
+      let s = parse ops vars s in
+      let t = parse ops vars t in
+      make r s t
 
     let name ((r,s,t):t) = r
 

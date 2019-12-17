@@ -15,3 +15,28 @@ module List = struct
     | x::l -> if n = 0 then x else nth (n-1) l
     | [] -> raise Not_found
 end
+
+module String = struct
+  include String
+
+  (** Find the index of the first character matching a predicate. *)
+  let find p s =
+    let ans = ref (-1) in
+    try
+      for i = 0 to String.length s - 1 do
+        if p s.[i] then
+          (
+            ans := i;
+            raise Exit
+          )
+      done;
+      raise Not_found
+    with
+    | Exit -> !ans
+
+  let rec split_on_predicate p s =
+    try
+      let n = find p s in
+      (String.sub s 0 n)::(split_on_predicate p (String.sub s (n+1) (String.length s - (n+1))))
+    with Not_found -> [s]
+end

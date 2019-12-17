@@ -5,8 +5,9 @@ open Term
 
 let m = Op.make "m" 2
 let e = Op.make "e" 0
-let e = app e [||]
 let i = Op.make "i" 1
+let ops = [m; e; i]
+let e = app e [||]
 let x = var ()
 let y = var ()
 let z = var ()
@@ -26,6 +27,11 @@ let () =
   Printf.printf "t: %s\n%!" (to_string t);
   Printf.printf "t^: %s\n\n%!" (RS.Path.to_string (RS.normalize rs t));
  *)
+
+let () =
+  let vars = ref [] in
+  let t = Term.parse ops vars "m(m(x,y),z)" in
+  Printf.printf "term: %s\n%!" (Term.to_string t)
 
 let m x y = app m [|x;y|]
 let i x = app i [|x|]
