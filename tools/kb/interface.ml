@@ -26,7 +26,7 @@ let parse_rs syms rules =
   let rs = Parser.main Lexer.token (Lexing.from_string rules) in
   let name =
     let n = ref 0 in
-    fun () -> incr n; "R" ^ string_of_int !n
+    fun () -> incr n; "R<sub>" ^ string_of_int !n ^ "</sub>"
   in
   let rs = List.map (fun (s,t) -> RS.Rule.make (name ()) s t) rs in
   RS.make s rs
@@ -63,24 +63,29 @@ let run _ =
 
            status "Computing Knuth-Bendix completion...";
            let display rs =
-             completion##.innerHTML := Js.string (replace '\n' "<br/>" (RS.to_string rs))
+             completion##.innerHTML := Js.string (replace '\n' "<br/>" (RS.to_string ~var:Var.namer_natural rs))
            in
-           let rs = RS.knuth_bendix ~callback:display rs in
+           let namer =
+             let n = ref 0 in
+             fun () -> incr n; Printf.sprintf "K<sub>%d</sub>" !n
+           in
+           let rs = RS.knuth_bendix ~namer ~callback:display rs in
            display rs;
 
            status "Computing Squier completion...";
            let sq = RS.squier rs in
            let sqs =
-             let rule_name = Utils.namer (=) in
+             let rule_name = Utils.namer (fun (s1,s2) (s1',s2') -> RS.Path.eq s1 s1' && RS.Path.eq s2 s2') in
              let ans = ref "" in
              List.iter
                (fun (s1,s2) ->
-                  let n = rule_name (s1,s2) in
-                  ans := Printf.sprintf "%s%02d:\n%s\n%s\n\n%!" !ans n (RS.Path.to_string s1) (RS.Path.to_string s2)
+                  let n = rule_name (s1,s2) + 1 in
+                  let var = Var.namer_natural () in
+                  ans := Printf.sprintf "%s<h3>C<sub>%d</sub></h3><p>%s<br/>%s</p>%!" !ans n (RS.Path.to_string ~var s1) (RS.Path.to_string ~var s2)
                ) sq;
              !ans
            in
-           squier##.innerHTML := Js.string (replace '\n' "<br/>" sqs);
+           squier##.innerHTML := Js.string sqs;
 
            status "Done.";
            Js._true
