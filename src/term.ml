@@ -752,7 +752,7 @@ module RS = struct
              Printf.printf "add %s\n%s\n%s\n\n%!" (Rule.to_string r) (Path.to_string p1) (Path.to_string p2);
              add r
         ) cp;
-      callback !rules
+      callback { rs with rules = !rules }
     done;
     { rs with rules = !rules }
 

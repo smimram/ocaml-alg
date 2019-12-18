@@ -45,7 +45,37 @@
 </div>
 <hr width="100%">
 
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">int * string * int</code> </pre>
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.weight">weight</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.name">name</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.arity">arity</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.to_string">to_string</span>&nbsp;: <code class="type">string list -> string</code>;</code></td>
+
+</tr></table>
+}
+
 <div class="info ">
 <div class="info-desc">
 <p>An operation.</p>
@@ -53,7 +83,10 @@
 </div>
 
 
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">?weight:int -> string -> int -> <a href="Term.Op.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALname"><span class="keyword">val</span> name</span> : <code class="type"><a href="Term.Op.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALweight"><span class="keyword">val</span> weight</span> : <code class="type"><a href="Term.Op.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALarity"><span class="keyword">val</span> arity</span> : <code class="type"><a href="Term.Op.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">?to_string:(string list -> string) -><br>       ?weight:int -> string -> int -> <a href="Term.Op.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Create an operation with given name and arity.</p>
 </div>
@@ -65,6 +98,4 @@
 </div>
 </div>
 
-<pre><span id="VALname"><span class="keyword">val</span> name</span> : <code class="type"><a href="Term.Op.html#TYPEt">t</a> -> string</code></pre>
-<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Term.Op.html#TYPEt">t</a> -> string</code></pre>
-<pre><span id="VALarity"><span class="keyword">val</span> arity</span> : <code class="type"><a href="Term.Op.html#TYPEt">t</a> -> int</code></pre></body></html>
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Term.Op.html#TYPEt">t</a> -> string list -> string</code></pre></body></html>

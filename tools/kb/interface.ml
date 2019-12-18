@@ -28,7 +28,8 @@ let parse_rs syms rules =
     let n = ref 0 in
     fun () -> incr n; "R" ^ string_of_int !n
   in
-  List.map (fun (s,t) -> RS.Rule.make (name ()) s t) rs
+  let rs = List.map (fun (s,t) -> RS.Rule.make (name ()) s t) rs in
+  RS.make s rs
 
 (** Replace [c] by [t] in [s]. *)
 let rec replace c t s =

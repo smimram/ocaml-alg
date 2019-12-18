@@ -113,13 +113,14 @@
 </div>
 </div>
 
-<pre><span id="VALparser"><span class="keyword">val</span> parser</span> : <code class="type">string -><br>       ([> `App of string * 'a list<br>         | `Seq of<br>             ([> `App of string * 'b list<br>               | `Inv of [> `App of string * 'c list | `Var of string ] as 'c<br>               | `Var of string ]<br>              as 'b)<br>             list<br>         | `Var of string ]<br>        as 'a)</code></pre><div class="info ">
+<pre><span id="VALparser"><span class="keyword">val</span> parser</span> : <code class="type">string -><br>       ([> `App of string * 'a list<br>         | `Inv of [> `App of string * 'b list | `Var of string ] as 'b<br>         | `Seq of<br>             ([> `App of string * 'c list<br>               | `Inv of [> `App of string * 'd list | `Var of string ] as 'd<br>               | `Var of string ]<br>              as 'c)<br>             list<br>         | `Var of string ]<br>        as 'a)</code></pre><div class="info ">
 <div class="info-desc">
 <p>Simple parser for terms and applications.</p>
 </div>
 </div>
 
-<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type"><a href="Term.Op.html#TYPEt">Op.t</a> list -> (string * <a href="Term.Var.html#TYPEt">Var.t</a>) list Stdlib.ref -> string -> <a href="Term.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALparse_var"><span class="keyword">val</span> parse_var</span> : <code class="type">string -> <a href="Term.Var.html#TYPEt">Var.t</a></code></pre>
+<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type"><a href="Term.Op.html#TYPEt">Op.t</a> list -> string -> <a href="Term.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Parse a term.</p>
 </div>

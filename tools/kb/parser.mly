@@ -12,7 +12,7 @@ let sym f = List.find (fun g -> Op.name g = f) !ParserRefs.syms
 
 let app f args =
   let f = sym f in
-  if List.length args <> Op.arity f then failwith ("arity mismatch for " ^ Op.to_string f);
+  if List.length args <> Op.arity f then failwith ("arity mismatch for " ^ Op.name f);
   app f args
 %}
 

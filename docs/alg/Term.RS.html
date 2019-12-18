@@ -54,7 +54,23 @@
 <pre><span id="TYPErule"><span class="keyword">type</span> <code class="type"></code>rule</span> = <code class="type"><a href="Term.RS.Rule.html#TYPEt">Rule.t</a></code> </pre>
 
 
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Term.RS.html#TYPErule">rule</a> list</code> </pre>
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.operations">operations</span>&nbsp;: <code class="type"><a href="Term.Op.html#TYPEt">Term.Op.t</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.rules">rules</span>&nbsp;: <code class="type"><a href="Term.RS.html#TYPErule">rule</a> list</code>;</code></td>
+
+</tr></table>
+}
+
 <div class="info ">
 <div class="info-desc">
 <p>A rewriting system.</p>
@@ -62,14 +78,20 @@
 </div>
 
 
-<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="TYPErs"><span class="keyword">type</span> <code class="type"></code>rs</span> = <code class="type"><a href="Term.RS.html#TYPEt">t</a></code> </pre>
+
+
+<pre><span id="VALoperations"><span class="keyword">val</span> operations</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> <a href="Term.Op.html#TYPEt">Term.Op.t</a> list</code></pre>
+<pre><span id="VALrules"><span class="keyword">val</span> rules</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> <a href="Term.RS.html#TYPErule">rule</a> list</code></pre>
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type"><a href="Term.Op.html#TYPEt">Term.Op.t</a> list -> <a href="Term.RS.html#TYPErule">rule</a> list -> <a href="Term.RS.html#TYPEt">t</a></code></pre>
+<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Term.Op.html#TYPEt">Term.Op.t</a> list -> <a href="Term.RS.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Empty rewriting system.</p>
 </div>
 </div>
 
-<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(unit -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Rule.html#TYPEt">Rule.t</a> list -> string</code></pre>
-<pre><span id="VALfind_rule"><span class="keyword">val</span> find_rule</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Rule.t</a> list -> string -> <a href="Term.RS.Rule.html#TYPEt">Rule.t</a></code></pre><div class="info ">
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(unit -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALfind"><span class="keyword">val</span> find</span> : <code class="type"><a href="Term.RS.html#TYPEt">t</a> -> string -> <a href="Term.RS.Rule.html#TYPEt">Rule.t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Find the rule with given name.</p>
 </div>
@@ -112,7 +134,7 @@
 </div>
 </div>
 
-<pre><span id="VALknuth_bendix"><span class="keyword">val</span> knuth_bendix</span> : <code class="type">?gt:(<a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.html#TYPEterm">Term.term</a> -> bool) -><br>       ?callback:((string * <a href="Term.html#TYPEterm">Term.term</a> * <a href="Term.html#TYPEterm">Term.term</a>) list -> unit) -><br>       <a href="Term.RS.html#TYPEt">t</a> -> (string * <a href="Term.html#TYPEterm">Term.term</a> * <a href="Term.html#TYPEterm">Term.term</a>) list</code></pre><div class="info ">
+<pre><span id="VALknuth_bendix"><span class="keyword">val</span> knuth_bendix</span> : <code class="type">?gt:(<a href="Term.html#TYPEterm">Term.term</a> -> <a href="Term.html#TYPEterm">Term.term</a> -> bool) -><br>       ?callback:((string * <a href="Term.html#TYPEterm">Term.term</a> * <a href="Term.html#TYPEterm">Term.term</a>) list -> unit) -><br>       <a href="Term.RS.html#TYPEt">t</a> -> <a href="Term.RS.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Knuth-Bendix completion. <code class="code">gt</code> is the strict order on terms, <code class="code">callback</code> is
       a function which is called regularly with the current rewriting system as

@@ -117,6 +117,19 @@
 </div>
 </div>
 
+<pre><span id="VALglobe"><span class="keyword">val</span> globe</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Equality between paths.</p>
+</div>
+</div>
+
+<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p>Number of steps in a path.</p>
+</div>
+</div>
+
 <pre><span id="VALof_path"><span class="keyword">val</span> of_path</span> : <code class="type"><a href="Term.RS.Path.html#TYPEt">Term.RS.Path.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Create a zigzag from a path.</p>
@@ -143,6 +156,14 @@
 </div>
 </div>
 
+<pre><span id="VALrule_algebraic_occurences"><span class="keyword">val</span> rule_algebraic_occurences</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p>Number of occurences of a given rule in a path, counted negatively when inverted.</p>
+</div>
+</div>
+
+<pre><span id="VALis_id"><span class="keyword">val</span> is_id</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> bool</code></pre>
+<pre><span id="VALis_inv"><span class="keyword">val</span> is_inv</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> bool</code></pre>
 <pre><span id="VALhas_rule"><span class="keyword">val</span> has_rule</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
 <div class="info-desc">
 <p>Whether a path contains a rule.</p>
@@ -155,7 +176,7 @@
 </div>
 </div>
 
-<pre><span id="VALvalue"><span class="keyword">val</span> value</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> * <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALvalue"><span class="keyword">val</span> value</span> : <code class="type"><a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Express a rule as a zigzag in a cell.</p>
 </div>
@@ -166,4 +187,23 @@
 <p>Replace a rule by a path in a path.</p>
 </div>
 </div>
-</body></html>
+
+<pre><span id="VALnth_step"><span class="keyword">val</span> nth_step</span> : <code class="type">int -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> bool * <a href="Term.RS.Step.html#TYPEt">Term.RS.Step.t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>nth step in a path supposed to be in canonical form.</p>
+</div>
+</div>
+
+<pre><span id="VALnth_term"><span class="keyword">val</span> nth_term</span> : <code class="type">int -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.html#TYPEterm">Term.term</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>nth term in a path supposed to be in canonical form.</p>
+</div>
+</div>
+
+<pre><span id="VALto_list"><span class="keyword">val</span> to_list</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> <a href="Term.RS.Zigzag.html#TYPEt">t</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p>List.of_steps in a path.</p>
+</div>
+</div>
+
+<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type"><a href="Term.RS.Zigzag.html#TYPEt">t</a> -> string -> <a href="Term.RS.Zigzag.html#TYPEt">t</a></code></pre></body></html>
