@@ -121,7 +121,7 @@ let () =
   let cpres = RS.Coherent.elim_rule cpres "I_i" "C28" in
   let cpres = RS.Coherent.elim_rule cpres "I_1" "C5" in
   let cpres = RS.Coherent.elim_rule cpres "I_2" "C7" in
-  (* let cpres = RS.Coherent.elim_rule cpres "H" "CH" in *)
+  let cpres = RS.Coherent.elim_rule cpres "H" "CH" in
   Printf.printf "================ eliminated:\n%s\n%!" (RS.Coherent.to_string ~var:Var.namer_natural cpres);
   RS.Coherent.view_pdf cpres
 

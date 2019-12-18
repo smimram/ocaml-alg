@@ -1156,18 +1156,20 @@ module RS = struct
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 8 p2) (st 8 p2) (tm 9 p2) (st 9 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
              | l1, l2 ->
                let p = Zigzag.canonize (Zigzag.append p1 (Zigzag.inv p2)) in
-               let l = Zigzag.length p in
-               let n = 2 in
-               let ans = ref "" in
-               for i = 0 to (l-1)/n do
-                 ans := !ans ^ (tm (i*n) p);
-                 for j = 0 to min n (l - i*n) - 1 do
-                   ans := Printf.sprintf "%s\\ar[r,%s]&%s" !ans (st (i*n+j) p) (tm (i*n+j+1) p)
+               if Zigzag.is_id p then Zigzag.to_string p else
+                 let l = Zigzag.length p in
+                 Printf.printf "zzlen: %d\n%!" l;
+                 let n = 2 in
+                 let ans = ref "" in
+                 for i = 0 to (l-1)/n do
+                   ans := !ans ^ (tm (i*n) p);
+                   for j = 0 to min n (l - i*n) - 1 do
+                     ans := Printf.sprintf "%s\\ar[r,%s]&%s" !ans (st (i*n+j) p) (tm (i*n+j+1) p)
+                   done;
+                   ans := !ans ^ "\\\\"
                  done;
-                 ans := !ans ^ "\\\\"
-               done;
-               !ans
-               (* Printf.sprintf "TODO: %d, %d" l1 l2 *)
+                 !ans
+                 (* Printf.sprintf "TODO: %d, %d" l1 l2 *)
            in
            print "\\noindent\n\\subsection*{%s}\n" c;
            print "\\[\n\\begin{tikzcd}\n%s\n\\end{tikzcd}\n\\]\n\n" cd
