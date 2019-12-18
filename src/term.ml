@@ -244,7 +244,7 @@ module Substitution = struct
   (** Equality of substitutions. *)
   let eq s1 s2 =
     let included (s1:t) (s2:t) =
-      List.for_all (fun (x,t) -> eq t (app s1 (Var x))) s1
+      List.for_all (fun (x,t) -> eq t (app s2 (Var x))) s1
     in
     included s1 s2 && included s2 s1
 
@@ -809,6 +809,7 @@ module RS = struct
 
     (** Concatenation of two paths. *)
     let comp p1 p2 =
+      (* Printf.printf "compose %s with %s\n%!" (to_string p1) (to_string p2); *)
       (* Printf.printf "%s vs %s\n%!" (string_of_term (target p1)) (string_of_term (source p2)); *)
       assert (eq (target p1) (source p2));
       Comp (p1, p2)
@@ -823,6 +824,8 @@ module RS = struct
 
     (** Inverse of a path. *)
     let inv p = Inv p
+
+    let globe p1 p2 = comp p1 (inv p2)
 
     (** Equality between paths. *)
     let rec eq p p' =
@@ -869,8 +872,19 @@ module RS = struct
       | Id _ -> 0
       | Inv p -> rule_occurences r p
 
+    (** Number of occurences of a given rule in a path, counted negatively when inverted. *)
+    let rec rule_algebraic_occurences r = function
+      | Step s -> if Step.has_rule r s then 1 else 0
+      | Comp (p, q) -> rule_algebraic_occurences r p + rule_algebraic_occurences r q
+      | Id _ -> 0
+      | Inv p -> - rule_algebraic_occurences r p
+
     let is_id = function
       | Id _ -> true
+      | _ -> false
+
+    let is_inv = function
+      | Inv _ -> true
       | _ -> false
 
     (** Whether a path contains a rule. *)
@@ -888,6 +902,7 @@ module RS = struct
           match canonize p with
           | Inv (Step s') when Step.eq s s' -> Id (Step.source s)
           | Comp (Inv (Step s'), p) when Step.eq s s' -> p
+          | Id _ -> Step s
           | p -> Comp (Step s, p)
         )
       | Comp (Inv (Step s), p) ->
@@ -895,6 +910,7 @@ module RS = struct
           match canonize p with
           | Step s' when Step.eq s s' -> Id (Step.target s')
           | Comp (Step s', p) when Step.eq s s' -> p
+          | Id _ -> Inv (Step s)
           | p -> Comp (Inv (Step s), p)
         )
       | Comp (p, q) -> canonize (Comp (canonize p, q))
@@ -906,22 +922,26 @@ module RS = struct
       | Step s -> Step s
 
     (** Express a rule as a zigzag in a cell. *)
-    let rec value r (p1,p2) =
-      assert (rule_occurences r p1 + rule_occurences r p2 = 1);
-      if not (has_rule r p1) then value r (p2,p1)
-      else
-        let rec aux prefix = function
-          | Comp (Step (RApp (r', s)), p) when Rule.eq r r'->
-            assert (not (has_rule r p));
-            assert (Subst.is_renaming s);
-            let prefix = concat (List.rev prefix) in
-            subst (Subst.inv s) (concat [inv prefix; p2; p])
-          | Comp (Step _ as s, p) | Comp (Inv (Step _) as s, p) -> aux (s::prefix) p
-          | Step _ | Inv (Step _) as s -> aux prefix (Comp (s, Id (target s)))
-          | Id _ -> assert false
-          | _ -> assert false
-        in
-        canonize (aux [Id (source p1)] (canonize p1))
+    let rec value r p =
+      let p = canonize p in
+      (* Printf.printf "value of %s in %s\n%!" (Rule.name r) (to_string p); *)
+      assert (rule_occurences r p = 1);
+      let p = if rule_algebraic_occurences r p = - 1 then canonize (inv p) else p in
+      let rec aux prefix = function
+        | Comp (Step (RApp (r', s)), p) when Rule.eq r r'->
+          assert (not (has_rule r p));
+          assert (Subst.is_renaming s);
+          let prefix = concat (List.rev prefix) in
+          subst (Subst.inv s) (concat [inv prefix; inv p])
+        | Comp (Step _ as s, p) | Comp (Inv (Step _) as s, p) -> aux (s::prefix) p
+        | Step _ | Inv (Step _) as s -> aux prefix (Comp (s, Id (target s)))
+        | Id _ -> assert false
+        | _ -> assert false
+      in
+      let v = canonize (aux [Id (source p)] p) in
+      assert (eq_term (source v) (Rule.source r));
+      assert (eq_term (target v) (Rule.target r));
+      v
 
     (** Replace a rule by a path in a path. *)
     let rec replace_rule r (pr:t) (p:t) =
@@ -959,6 +979,7 @@ module RS = struct
         if n = 0 then source p else nth_term (n-1) q
       | _ -> assert false
 
+    (** List.of_steps in a path. *)
     let rec to_list = function
       | Step s -> [Step s]
       | Comp (p, q) -> (to_list p)@(to_list q)
@@ -1013,7 +1034,7 @@ module RS = struct
     type t =
       {
         rs : rs;
-        coherence : (string * (Zigzag.t * Zigzag.t)) list;
+        coherence : (string * Zigzag.t) list;
       }
 
     (** Underlying rewriting system. *)
@@ -1028,11 +1049,10 @@ module RS = struct
     let to_string ?(var=Var.namer) crs =
       let coherence =
         List.map
-          (fun (c,(p1,p2)) ->
+          (fun (c,p) ->
              let var = var () in
-             let p1 = Zigzag.canonize p1 in
-             let p2 = Zigzag.canonize p2 in
-             Printf.sprintf "%s:\n%s\n%s\n" c (Zigzag.to_string ~var p1) (Zigzag.to_string ~var p2)
+             let p = Zigzag.canonize p in
+             Printf.sprintf "%s: %s\n" c (Zigzag.to_string ~var p)
           ) crs.coherence
       in
       let coherence = String.concat "\n" coherence in
@@ -1068,10 +1088,39 @@ module RS = struct
              \n" rules;
       print "\\section{Coherence}\n\n";
       List.iter
-        (fun (c,(p1,p2)) ->
-           let p1 = Zigzag.canonize p1 in
-           let p2 = Zigzag.canonize p2 in
-           let p1,p2 = if Zigzag.length p1 > Zigzag.length p2 then p2,p1 else p1,p2 in
+        (fun (c,p) ->
+           let p = Zigzag.canonize p in
+           Printf.printf "print %s: %s\n%!" c (Zigzag.to_string p);
+           let p1, p2 =
+             let l = Zigzag.to_list p in
+             if l <> [] then ignore (Zigzag.concat l); (* test *)
+             let n = List.length l in
+             Printf.printf "len: %d\n%!" n;
+             if n = 0 then p, p else
+               try
+                 (* Try to split forward / backward. *)
+                 let k = List.index Zigzag.is_inv l in
+                 if k = 0 then raise Exit;
+                 let l1 = List.sub l 0 k in
+                 let l2 = List.sub l k (n-k) in
+                 if not (List.for_all Zigzag.is_inv l2) then raise Exit;
+                 let p1 = Zigzag.concat l1 in
+                 let p2 = Zigzag.canonize (Zigzag.inv (Zigzag.concat l2)) in
+                 let p1, p2 =
+                   if List.length l1 > List.length l2 then
+                     p2, p1
+                   else
+                     p1, p2
+                 in
+                 Zigzag.canonize p1, Zigzag.canonize p2
+               with
+               | Exit | Not_found ->
+                 (* By default, split in k/k or k/k+1. *)
+                 let l1 = List.sub l 0 (n/2) in
+                 let l2 = List.sub l (n/2) (n-n/2) in
+                 Zigzag.concat l1, Zigzag.canonize (Zigzag.inv (Zigzag.concat l2))
+           in
+           Printf.printf "split: %s / %s\n%!" (Zigzag.to_string p1) (Zigzag.to_string p2);
            let var = var () in
            let st n p =
              let d, s = Zigzag.nth_step n p in
@@ -1154,8 +1203,20 @@ module RS = struct
                                &&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 8 p2) (st 8 p2) (tm 9 p2) (st 9 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
+             | 5, 6 ->
+               Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+                               %s\\ar[d,%s']&&%s\\ar[d,%s]\\\\\n\
+                               %s\\ar[d,%s']&&%s\\ar[d,%s]\\\\\n\
+                               %s\\ar[d,%s']&&%s\\ar[d,%s]\\\\\n\
+                               %s\\ar[rr,%s']&&%s"
+                 (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2)
+                 (tm 1 p1) (st 1 p1) (tm 3 p2) (st 3 p2)
+                 (tm 2 p1) (st 2 p1) (tm 4 p2) (st 4 p2)
+                 (tm 3 p1) (st 3 p1) (tm 5 p2) (st 5 p2)
+                 (tm 4 p1) (st 4 p1) (tm 6 p2)
              | l1, l2 ->
                let p = Zigzag.canonize (Zigzag.append p1 (Zigzag.inv p2)) in
+               Printf.printf "TODO: %d, %d\n" l1 l2;
                if Zigzag.is_id p then Zigzag.to_string p else
                  let l = Zigzag.length p in
                  Printf.printf "zzlen: %d\n%!" l;
@@ -1169,7 +1230,6 @@ module RS = struct
                    ans := !ans ^ "\\\\"
                  done;
                  !ans
-                 (* Printf.sprintf "TODO: %d, %d" l1 l2 *)
            in
            print "\\noindent\n\\subsection*{%s}\n" c;
            print "\\[\n\\begin{tikzcd}\n%s\n\\end{tikzcd}\n\\]\n\n" cd
@@ -1194,11 +1254,10 @@ module RS = struct
     let find rs crs =
       List.assoc crs rs.coherence
 
-    let add_coherence crs c (p1,p2) =
+    let add_coherence crs c p =
       (* Printf.printf "add_coherence: %s / %s\n%!" (Zigzag.to_string p1) (Zigzag.to_string p2); *)
-      assert (eq_term (Zigzag.source p1) (Zigzag.source p2));
-      assert (eq_term (Zigzag.target p1) (Zigzag.target p2));
-      let coherence = (coherence crs)@[c,(p1,p2)] in
+      assert (eq_term (Zigzag.source p) (Zigzag.target p));
+      let coherence = (coherence crs)@[c,p] in
       { crs with coherence }
 
     (** Eliminate a rule with a coherence. *)
@@ -1209,7 +1268,7 @@ module RS = struct
       let v = Zigzag.value r c in
       let var = Var.namer_natural () in Printf.printf "\nelim rule: [%s] => %s\n%!" (Rule.to_string ~var r) (Zigzag.to_string ~var v);
       let rules = List.filter (fun r' -> not (Rule.eq r r')) (rules crs) in
-      let coherence = List.map (fun (c,(p1,p2)) -> c, (Zigzag.replace_rule r v p1, Zigzag.replace_rule r v p2)) (coherence crs) in
+      let coherence = List.map (fun (c,p) -> c, Zigzag.replace_rule r v p) (coherence crs) in
       (* let coherence = List.filter (fun (c,_) -> c <> cname) coherence in *)
       { rs = { crs.rs with rules }; coherence }
   end

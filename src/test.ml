@@ -7,9 +7,9 @@ let ts_m a = Printf.sprintf "m(%s,%s)" (List.nth a 0) (List.nth a 1)
 let ts_e a = "e()"
 let ts_i a = Printf.sprintf "i(%s)" (List.hd a)
 
-(* let ts_m a = Printf.sprintf "(%s\\times %s)" (List.nth a 0) (List.nth a 1) *)
-(* let ts_e a = "1" *)
-(* let ts_i a = Printf.sprintf "\\overline{%s}" (List.hd a) *)
+let ts_m a = Printf.sprintf "(%s\\times %s)" (List.nth a 0) (List.nth a 1)
+let ts_e a = "1"
+let ts_i a = Printf.sprintf "\\overline{%s}" (List.hd a)
 
 let m = Op.make ~to_string:ts_m "m" 2
 let e = Op.make ~to_string:ts_e "e" 0
@@ -49,11 +49,11 @@ let groups =
       RS.Rule.make "L" (m e x) x;
       RS.Rule.make "R" (m x e) x;
       RS.Rule.make "E"  (i e) e;
-      RS.Rule.make "J" (m (i x) x) e;
-      RS.Rule.make "I" (m x (i x)) e;
-      RS.Rule.make "I_i" (i (i x)) x;
-      RS.Rule.make "I_1" (m (i x) (m x y)) y;
-      RS.Rule.make "I_2" (m x (m (i x) y)) y;
+      RS.Rule.make "I" (m (i x) x) e;
+      RS.Rule.make "J" (m x (i x)) e;
+      RS.Rule.make "N" (i (i x)) x;
+      RS.Rule.make "T" (m (i x) (m x y)) y;
+      RS.Rule.make "U" (m x (m (i x) y)) y;
       RS.Rule.make "H" (i (m x y)) (m (i y) (i x))
     ]
 
@@ -64,14 +64,14 @@ let hdef' = RS.Zigzag.parse groups "H(x,y)"
 let hdef =
   RS.Zigzag.parse groups
     "R(i(m(x,y)))-.\
-     m(i(m(x,y)),I(x))-.\
+     m(i(m(x,y)),J(x))-.\
      A(i(m(x,y)),x,i(x))-.\
      m(m(i(m(x,y)),x),L(i(x)))-.\
-     m(m(i(m(x,y)),x),m(I(y),i(x)))-.\
+     m(m(i(m(x,y)),x),m(J(y),i(x)))-.\
      A(m(i(m(x,y)),x),m(y,i(y)),i(x))-.\
      m(A(m(i(m(x,y)),x),y,i(y)),i(x))-.\
      m(m(A(i(m(x,y)),x,y),i(y)),i(x)).\
-     m(m(J(m(x,y)),i(y)),i(x)).\
+     m(m(I(m(x,y)),i(y)),i(x)).\
      m(L(i(y)),i(x))
 "
 
@@ -92,35 +92,33 @@ let () =
        Printf.printf "%02d: %s\n    %s\n\n%!" (n+1) s1 s2
     ) coherence
 
-let rule_name = Utils.namer (fun (s1,s2) (s1',s2') -> RS.Zigzag.eq s1 s1' && RS.Zigzag.eq s2 s2')
+let rule_name = Utils.namer RS.Zigzag.eq
 (* let rule_name = Utils.namer (=) *)
 
-let coherence = List.map (fun (p1,p2) -> RS.Zigzag.of_path p1, RS.Zigzag.of_path p2) coherence
+let coherence = List.map (fun (p1,p2) -> RS.Zigzag.globe (RS.Zigzag.of_path p1) (RS.Zigzag.of_path p2)) coherence
 
 let () =
   Printf.printf "\n****** zigzag *****\n\n%!";
   List.iter
-    (fun (p1,p2) ->
-       let n = rule_name (p1,p2) in
+    (fun p ->
+       let n = rule_name p in
        let var = Term.Var.namer_natural () in
-       let s1 = RS.Zigzag.to_string ~var p1 in
-       let s2 = RS.Zigzag.to_string ~var p2 in
-       Printf.printf "%02d: %s\n    %s\n\n%!" (n+1) s1 s2
+       let p = RS.Zigzag.to_string ~var p in
+       Printf.printf "%02d: %s\n\n%!" (n+1) p
     ) coherence
 
 let () =
   let cpres =
-    let coherence = List.mapi (fun i (p1,p2) -> "C"^string_of_int (i+1), (p1, p2)) coherence in
+    let coherence = List.mapi (fun i p -> "C"^string_of_int (i+1), p) coherence in
     RS.Coherent.make groups coherence
   in
-  let cpres = RS.Coherent.add_coherence cpres "CH" (hdef',hdef) in
-  (* RS.Coherent.view_pdf cpres; *)
-  let cpres = RS.Coherent.elim_rule cpres "E" "C12" in
   (* let cpres = RS.Coherent.elim_rule cpres "E_r" "C36" in *)
   (* let cpres = RS.Coherent.elim_rule cpres "I_r" "C16" in *)
-  let cpres = RS.Coherent.elim_rule cpres "I_i" "C28" in
-  let cpres = RS.Coherent.elim_rule cpres "I_1" "C5" in
-  let cpres = RS.Coherent.elim_rule cpres "I_2" "C7" in
+  let cpres = RS.Coherent.add_coherence cpres "CH" (RS.Zigzag.globe hdef' hdef) in
+  let cpres = RS.Coherent.elim_rule cpres "E" "C12" in
+  let cpres = RS.Coherent.elim_rule cpres "N" "C30" in
+  let cpres = RS.Coherent.elim_rule cpres "T" "C5" in
+  let cpres = RS.Coherent.elim_rule cpres "U" "C7" in
   let cpres = RS.Coherent.elim_rule cpres "H" "CH" in
   Printf.printf "================ eliminated:\n%s\n%!" (RS.Coherent.to_string ~var:Var.namer_natural cpres);
   RS.Coherent.view_pdf cpres
