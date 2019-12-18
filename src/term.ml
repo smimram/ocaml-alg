@@ -434,17 +434,27 @@ module RS = struct
   type rule = Rule.t
 
   (** A rewriting system. *)
-  type t = rule list
+  type t =
+    {
+      operations : Op.t list;
+      rules : rule list
+    }
+  type rs = t
+
+  let rules rs = rs.rules
+
+  let make operations rules =
+    { operations; rules }
 
   (** Empty rewriting system. *)
-  let empty : t = []
+  let empty ops = make ops []
 
   let to_string ?(var=Var.namer) rs =
-    String.concat "\n" (List.map (fun r -> Rule.to_string ~var:(var()) r) rs)
+    String.concat "\n" (List.map (fun r -> Rule.to_string ~var:(var()) r) (rules rs))
 
   (** Find the rule with given name. *)
-  let find_rule rs r =
-    List.find (fun r' -> Rule.name r' = r) rs
+  let find rs r =
+    List.find (fun r' -> Rule.name r' = r) (rules rs)
 
   (** Rewriting steps. *)
   module Step = struct
@@ -549,7 +559,7 @@ module RS = struct
          let s' = List.flatten s' in
          s' @ s
     in
-    List.flatten (List.map (fun r -> aux r id t) rs)
+    List.flatten (List.map (fun r -> aux r id t) (rules rs))
 
   (** Rewriting paths. *)
   module Path = struct    
@@ -677,7 +687,7 @@ module RS = struct
 
   (** Critical branchings. *)
   let critical (rs:t) =
-    let steps = List.flatten (List.flatten (List.map (fun r1 -> List.map (fun r2 -> critical_rules r1 r2) rs) rs)) in
+    let steps = List.flatten (List.flatten (List.map (fun r1 -> List.map (fun r2 -> critical_rules r1 r2) (rules rs)) (rules rs))) in
     (* Remove symmetric pairs. *)
     let rec sym = function
       | (s1,s2)::steps ->
@@ -690,41 +700,43 @@ module RS = struct
   (** Knuth-Bendix completion. [gt] is the strict order on terms, [callback] is
       a function which is called regularly with the current rewriting system as
       argument (useful to display during the completion). *)
-  let knuth_bendix?(gt=LPO.gt (>=)) ?(callback=fun _ -> ()) (rs:t) =
+  let knuth_bendix ?(gt=LPO.gt (>=)) ?(callback=fun _ -> ()) (rs:t) =
     (* Reorient the rules according to the order. *)
-    let rs = List.map (fun (n,t,u) -> if not (gt t u) then (n,u,t) else (n,t,u)) rs in
+    let rules = List.map (fun (n,t,u) -> if not (gt t u) then (n,u,t) else (n,t,u)) (rules rs) in
     (* Name for new rules. *)
     let name =
       let n = ref (-1) in
       fun () -> incr n; "K"^string_of_int !n
     in
     (* Rules to handle. *)
-    let queue = ref rs in
+    let queue = ref rules in
     (* Produced rewriting system. *)
-    let rs = ref rs in
+    let rules = ref rules in
     let add (r:Rule.t) =
       (* Printf.printf "add %s\n%!" (Rule.to_string r); *)
-      rs := r :: !rs;
+      rules := r :: !rules;
       (* Normalize the rules *)
-      rs :=
+      rules :=
         List.map
           (fun ((n,s,t) as r) ->
              (* TODO: proper recursive function instead of this filter *)
-             let rs = List.filter (fun r' -> not (Rule.eq r r')) !rs in
+             let rules = List.filter (fun r' -> not (Rule.eq r r')) !rules in
+             let rs = { rs with rules } in
              n, Path.target (normalize rs s), Path.target (normalize rs t)
-          ) !rs;
-      rs := List.filter (fun (n,s,t) -> not (eq s t)) !rs;
+          ) !rules;
+      rules := List.filter (fun (n,s,t) -> not (eq s t)) !rules;
       queue := !queue@[r]
       (* queue := r :: !queue *)
     in
     while !queue <> [] do
       let r = List.hd !queue in
       queue := List.tl !queue;
-      let cp = List.flatten (List.map (fun s -> (critical_rules r s)@(critical_rules s r)) !rs) in
+      let cp = List.flatten (List.map (fun s -> (critical_rules r s)@(critical_rules s r)) !rules) in
       List.iter
         (fun (s1, s2) ->
-           let p1 = Path.append (Path.step s1) (normalize !rs (Step.target s1)) in
-           let p2 = Path.append (Path.step s2) (normalize !rs (Step.target s2)) in
+           let rs = { rs with rules = !rules } in
+           let p1 = Path.append (Path.step s1) (normalize rs (Step.target s1)) in
+           let p2 = Path.append (Path.step s2) (normalize rs (Step.target s2)) in
            let t1 = Path.target p1 in
            let t2 = Path.target p2 in
            if not (eq t1 t2) then
@@ -733,9 +745,9 @@ module RS = struct
              Printf.printf "add %s\n%s\n%s\n\n%!" (Rule.to_string r) (Path.to_string p1) (Path.to_string p2);
              add r
         ) cp;
-      callback !rs
+      callback !rules
     done;
-    !rs
+    { rs with rules = !rules }
 
   (** Raised when the system is not confluent. *)
   exception Not_confluent
@@ -940,6 +952,13 @@ module RS = struct
       | Comp (p, q) -> (to_list p)@(to_list q)
       | Id _ -> []
       | Inv p -> List.map (fun p -> Inv p) (List.rev (to_list p))
+
+    (* let parse rs s = *)
+      (* let rec aux = function *)
+        (* | `App (f, a) -> *)
+        (* | `Var x -> *)
+      (* in *)
+      (* aux (parser s)       *)
   end
 
   (** Coherent presentations. *)
@@ -947,12 +966,20 @@ module RS = struct
     (** A coherent presentation. *)
     type t =
       {
-        operations : Op.t list;
-        rules : Rule.t list;
+        rs : rs;
         coherence : (string * (Zigzag.t * Zigzag.t)) list;
       }
 
-    let to_string ?(var=Var.namer) rs =
+    (** Underlying rewriting system. *)
+    let rs crs = crs.rs
+
+    let rules crs = rules (rs crs)
+
+    let coherence crs = crs.coherence
+
+    let set_rules crs rules = { crs with rs = { crs.rs with rules } }
+
+    let to_string ?(var=Var.namer) crs =
       let coherence =
         List.map
           (fun (c,(p1,p2)) ->
@@ -960,12 +987,12 @@ module RS = struct
              let p1 = Zigzag.canonize p1 in
              let p2 = Zigzag.canonize p2 in
              Printf.sprintf "%s:\n%s\n%s\n" c (Zigzag.to_string ~var p1) (Zigzag.to_string ~var p2)
-          ) rs.coherence
+          ) crs.coherence
       in
       let coherence = String.concat "\n" coherence in
       coherence
 
-    let to_tex ?(var=Var.namer_natural) rs =
+    let to_tex ?(var=Var.namer_natural) crs =
       let ans = ref "" in
       let print s = Printf.ksprintf (fun s -> ans := !ans ^ s) s; in
       print "\\documentclass{article}\n\
@@ -984,7 +1011,7 @@ module RS = struct
              let s = string_of_term ~var (Rule.source r) in
              let t = string_of_term ~var (Rule.target r) in
              Printf.sprintf "%s &: %s \\to %s\\\\" (Rule.name r) s t
-          ) rs.rules
+          ) (rules crs)
       in
       let rules = String.concat "\n" rules in
       print "\\section{Rules}\n\
@@ -1098,7 +1125,7 @@ module RS = struct
            in
            print "\\noindent\n\\subsection*{%s}\n" c;
            print "\\[\n\\begin{tikzcd}\n%s\n\\end{tikzcd}\n\\]\n\n" cd
-        ) rs.coherence;
+        ) (coherence crs);
       print "\\end{document}\n";
       !ans
 
@@ -1109,25 +1136,26 @@ module RS = struct
       let cmd = Printf.sprintf "cd %s && pdflatex %s && evince `basename %s .tex`.pdf" (Filename.get_temp_dir_name ()) fname fname in
       assert (Sys.command cmd = 0)
 
-    let make operations rules coherence =
-      { operations; rules; coherence }
+    let make rs coherence =
+      { rs; coherence }
 
-    let find_rule rs r =
-      find_rule rs.rules r
+    let find_rule crs r =
+      find (rs crs) r
 
-    let find_coherence rs c =
-      List.assoc c rs.coherence
+    (** Find coherence with given name. *)
+    let find rs crs =
+      List.assoc crs rs.coherence
 
     (** Eliminate a rule with a coherence. *)
-    let elim_rule rs r c =
-      let r = find_rule rs r in
+    let elim_rule crs r c =
+      let r = find_rule crs r in
       (* let cname = c in *)
-      let c = find_coherence rs c in
+      let c = find crs c in
       let v = Zigzag.value r c in
       let var = Var.namer_natural () in Printf.printf "\nelim rule: [%s] => %s\n%!" (Rule.to_string ~var r) (Zigzag.to_string ~var v);
-      let rules = List.filter (fun r' -> not (Rule.eq r r')) rs.rules in
-      let coherence = List.map (fun (c,(p1,p2)) -> c, (Zigzag.replace_rule r v p1, Zigzag.replace_rule r v p2)) rs.coherence in
+      let rules = List.filter (fun r' -> not (Rule.eq r r')) (rules crs) in
+      let coherence = List.map (fun (c,(p1,p2)) -> c, (Zigzag.replace_rule r v p1, Zigzag.replace_rule r v p2)) (coherence crs) in
       (* let coherence = List.filter (fun (c,_) -> c <> cname) coherence in *)
-      { rs with rules; coherence }
+      { rs = { crs.rs with rules }; coherence }
   end
 end

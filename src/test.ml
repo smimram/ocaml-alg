@@ -39,18 +39,20 @@ let () =
 
 let m x y = app m [x;y]
 let i x = app i [x]
-let groups = [
-  RS.Rule.make "A"  (m (m x y) z) (m x (m y z));
-  RS.Rule.make "L" (m e x) x;
-  RS.Rule.make "R" (m x e) x;
-  RS.Rule.make "E"  (i e) e;
-  RS.Rule.make "J" (m (i x) x) e;
-  RS.Rule.make "I" (m x (i x)) e;
-  RS.Rule.make "I_i" (i (i x)) x;
-  RS.Rule.make "I_1" (m (i x) (m x y)) y;
-  RS.Rule.make "I_2" (m x (m (i x) y)) y;
-  RS.Rule.make "H" (i (m x y)) (m (i y) (i x))
-]
+let groups =
+  RS.make ops
+    [
+      RS.Rule.make "A"  (m (m x y) z) (m x (m y z));
+      RS.Rule.make "L" (m e x) x;
+      RS.Rule.make "R" (m x e) x;
+      RS.Rule.make "E"  (i e) e;
+      RS.Rule.make "J" (m (i x) x) e;
+      RS.Rule.make "I" (m x (i x)) e;
+      RS.Rule.make "I_i" (i (i x)) x;
+      RS.Rule.make "I_1" (m (i x) (m x y)) y;
+      RS.Rule.make "I_2" (m x (m (i x) y)) y;
+      RS.Rule.make "H" (i (m x y)) (m (i y) (i x))
+    ]
 
 let () =
   Printf.printf "%s\n\n%!" (RS.to_string groups)
@@ -95,7 +97,7 @@ let () =
 let () =
   let cpres =
     let coherence = List.mapi (fun i (p1,p2) -> "C"^string_of_int (i+1), (p1, p2)) coherence in
-    RS.Coherent.make ops groups coherence
+    RS.Coherent.make groups coherence
   in
   (* RS.Coherent.view_pdf cpres; *)
   let cpres = RS.Coherent.elim_rule cpres "E" "C12" in
