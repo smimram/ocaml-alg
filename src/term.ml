@@ -1129,52 +1129,52 @@ module RS = struct
              d ^ "\"{" ^ s ^ "}\""
            in
            let tm n p = string_of_term ~var (Zigzag.nth_term n p) in
-           let cd =
+           let cd () =
              match Zigzag.length p1, Zigzag.length p2 with
              | 1, 1 ->
-               Printf.sprintf "%s\\ar[d,bend right,%s']\\ar[d,bend left,%s]\\\\\n%s"
+               print "%s\\ar[d,bend right,%s']\\ar[d,bend left,%s]\\\\\n%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p1)
              | 1, 2 ->
-               Printf.sprintf "%s\\ar[dr,%s']\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&%s"
+               print "%s\\ar[dr,%s']\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2)
              | 1, 3 ->
-               Printf.sprintf "%s\\ar[drr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s"
+               print "%s\\ar[drr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2)
              | 1, 4 ->
-               Printf.sprintf "%s\\ar[ddrr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s"
+               print "%s\\ar[ddrr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2)
              | 1, 5 ->
-               Printf.sprintf "%s\\ar[dddrr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s"
+               print "%s\\ar[dddrr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2)
              | 1, 6 ->
-               Printf.sprintf "%s\\ar[ddddrr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s"
+               print "%s\\ar[ddddrr,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s\\ar[d,%s]\\\\\n&&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2)
              | 2, 2 ->
-               Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[r,%s']&%s"
+               print "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
              | 2, 3 ->
-               Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[rr,%s']&&%s"
+               print "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[rr,%s']&&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
              | 2, 4 ->
-               Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[rrr,%s']&&&%s"
+               print "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[rrr,%s']&&&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
              | 3, 3 ->
-               Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+               print "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
              | 3, 4 ->
-               Printf.sprintf "%s\\ar[dd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+               print "%s\\ar[dd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
              | 3, 5 ->
-               Printf.sprintf "%s\\ar[ddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+               print "%s\\ar[ddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
              | 3, 8 ->
-               Printf.sprintf "%s\\ar[dddddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+               print "%s\\ar[dddddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
@@ -1183,7 +1183,7 @@ module RS = struct
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
              | 3, 9 ->
-               Printf.sprintf "%s\\ar[ddddddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+               print "%s\\ar[ddddddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
@@ -1193,7 +1193,7 @@ module RS = struct
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 8 p2) (st 8 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
              | 3, 10 ->
-               Printf.sprintf "%s\\ar[dddddddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+               print "%s\\ar[dddddddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
@@ -1204,7 +1204,7 @@ module RS = struct
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 8 p2) (st 8 p2) (tm 9 p2) (st 9 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
              | 5, 6 ->
-               Printf.sprintf "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
+               print "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[d,%s']&&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[d,%s']&&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[d,%s']&&%s\\ar[d,%s]\\\\\n\
@@ -1217,22 +1217,22 @@ module RS = struct
              | l1, l2 ->
                let p = Zigzag.canonize (Zigzag.append p1 (Zigzag.inv p2)) in
                Printf.printf "TODO: %d, %d\n" l1 l2;
-               if Zigzag.is_id p then Zigzag.to_string p else
+               if Zigzag.is_id p then print "%s" (Zigzag.to_string p) else
                  let l = Zigzag.length p in
                  Printf.printf "zzlen: %d\n%!" l;
                  let n = 2 in
-                 let ans = ref "" in
                  for i = 0 to (l-1)/n do
-                   ans := !ans ^ (tm (i*n) p);
+                   print "%s" (tm (i*n) p);
                    for j = 0 to min n (l - i*n) - 1 do
-                     ans := Printf.sprintf "%s\\ar[r,%s]&%s" !ans (st (i*n+j) p) (tm (i*n+j+1) p)
+                     print "\\ar[r,%s]&%s" (st (i*n+j) p) (tm (i*n+j+1) p)
                    done;
-                   ans := !ans ^ "\\\\"
-                 done;
-                 !ans
+                   print "\\\\"
+                 done
            in
            print "\\noindent\n\\subsection*{%s}\n" c;
-           print "\\[\n\\begin{tikzcd}\n%s\n\\end{tikzcd}\n\\]\n\n" cd
+           print "\\[\n\\begin{tikzcd}\n";
+           cd ();
+           print "\n\\end{tikzcd}\n\\]\n\n"
         ) (coherence crs);
       print "\\end{document}\n";
       !ans
