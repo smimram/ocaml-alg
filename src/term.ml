@@ -707,13 +707,16 @@ module RS = struct
   (** Knuth-Bendix completion. [gt] is the strict order on terms, [callback] is
       a function which is called regularly with the current rewriting system as
       argument (useful to display during the completion). *)
-  let knuth_bendix ?(gt=LPO.gt (>=)) ?(callback=fun _ -> ()) (rs:t) =
+  let knuth_bendix ?(gt=LPO.gt (>=)) ?namer ?(callback=fun _ -> ()) (rs:t) =
     (* Reorient the rules according to the order. *)
     let rules = List.map (fun (n,t,u) -> if not (gt t u) then (n,u,t) else (n,t,u)) (rules rs) in
     (* Name for new rules. *)
-    let name =
-      let n = ref (-1) in
-      fun () -> incr n; "K"^string_of_int !n
+    let namer =
+      match namer with
+      | Some namer -> namer
+      | None ->
+        let n = ref (-1) in
+        fun () -> incr n; "K"^string_of_int !n
     in
     (* Rules to handle. *)
     let queue = ref rules in
@@ -748,7 +751,7 @@ module RS = struct
            let t2 = Path.target p2 in
            if not (eq t1 t2) then
              let t1, t2 = if gt t1 t2 then t1, t2 else t2, t1 in
-             let r = (name (), t1, t2) in
+             let r = (namer (), t1, t2) in
              Printf.printf "add %s\n%s\n%s\n\n%!" (Rule.to_string r) (Path.to_string p1) (Path.to_string p2);
              add r
         ) cp;
