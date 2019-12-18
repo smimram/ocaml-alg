@@ -4,26 +4,29 @@ open Term
 
 let m = Op.make "m" 2
 let e = Op.make "e" 0
-let e = app e []
 let i = Op.make "i" 1
+let ops = [m; e; i]
 let x = var ()
 let y = var ()
 let z = var ()
 
 let m x y = app m [x;y]
+let e = app e []
 let i x = app i [x]
-let groups = [
-  RS.Rule.make "A"  (m (m x y) z) (m x (m y z));
-  RS.Rule.make "E_l" (m e x) x;
-  RS.Rule.make "E_r" (m x e) x;
-  RS.Rule.make "E"  (i e) e;
-  RS.Rule.make "I_l" (m (i x) x) e;
-  RS.Rule.make "I_r" (m x (i x)) e;
-  RS.Rule.make "I_i" (i (i x)) x;
-  RS.Rule.make "I_1" (m (i x) (m x y)) y;
-  RS.Rule.make "I_2" (m x (m (i x) y)) y;
-  RS.Rule.make "I_m" (i (m x y)) (m (i y) (i x))
-]
+let groups =
+  RS.make ops
+    [
+      RS.Rule.make "A"  (m (m x y) z) (m x (m y z));
+      RS.Rule.make "E_l" (m e x) x;
+      RS.Rule.make "E_r" (m x e) x;
+      RS.Rule.make "E"  (i e) e;
+      RS.Rule.make "I_l" (m (i x) x) e;
+      RS.Rule.make "I_r" (m x (i x)) e;
+      RS.Rule.make "I_i" (i (i x)) x;
+      RS.Rule.make "I_1" (m (i x) (m x y)) y;
+      RS.Rule.make "I_2" (m x (m (i x) y)) y;
+      RS.Rule.make "I_m" (i (m x y)) (m (i y) (i x))
+    ]
 
 let () =
   Printf.printf "%s\n\n%!" (RS.to_string ~var:Var.namer_natural groups)
@@ -63,7 +66,7 @@ let () =
     ) (RS.squier groups)
 *)
 
-let rules = groups
+let rs = groups
 
 let () =
   Printf.printf "\n***** LaTeX *****\n\n%!";
@@ -78,7 +81,7 @@ let () =
          let t = Term.to_string ~var (RS.Rule.target r) in
          Printf.sprintf "%s &: %s \\to %s\\\\"
            (RS.Rule.name r) s t
-      ) rules
+      ) (RS.rules rs)
   in
   let rules = String.concat "\n" rules in
   print "\\section{Rules}\n\n\\begin{align*}\n%s\n\\end{align*}\n\n" rules;
