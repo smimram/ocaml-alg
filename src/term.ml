@@ -1061,11 +1061,11 @@ module RS = struct
     let to_tex ?(var=Var.namer_natural) crs =
       let ans = ref "" in
       let print s = Printf.ksprintf (fun s -> ans := !ans ^ s) s; in
-      print "\\documentclass{article}\n\
+      print "\\documentclass[a4paper,8pt]{extarticle}\n\
              \\usepackage[utf8x]{inputenc}\n\
              \\usepackage{amsmath}\n\
              \\usepackage{tikz-cd}\n\
-             \\usepackage{a4wide}\n\n\
+             \\usepackage[margin=1cm,includefoot]{geometry}\n\
              \\title{Coherent presentation}\n\
              \\author{ocaml-alg}\n\n\
              \\begin{document}\n\
@@ -1095,7 +1095,6 @@ module RS = struct
              let l = Zigzag.to_list p in
              if l <> [] then ignore (Zigzag.concat l); (* test *)
              let n = List.length l in
-             Printf.printf "len: %d\n%!" n;
              if n = 0 then p, p else
                try
                  (* Try to split forward / backward. *)
@@ -1158,6 +1157,7 @@ module RS = struct
              | 2, 4 ->
                print "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n%s\\ar[rrr,%s']&&&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 1 p1) (st 1 p1) (tm 2 p1)
+             (*
              | 3, 3 ->
                print "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
@@ -1167,6 +1167,7 @@ module RS = struct
                                &&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
+             *)
              | 3, 5 ->
                print "%s\\ar[ddd,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
                                &&%s\\ar[d,%s]\\\\\n\
@@ -1203,6 +1204,7 @@ module RS = struct
                                &&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[r,%s']&%s\\ar[r,%s']&%s"
                  (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2) (tm 3 p2) (st 3 p2) (tm 4 p2) (st 4 p2) (tm 5 p2) (st 5 p2) (tm 6 p2) (st 6 p2) (tm 7 p2) (st 7 p2) (tm 8 p2) (st 8 p2) (tm 9 p2) (st 9 p2) (tm 1 p1) (st 1 p1) (tm 2 p1) (st 2 p1) (tm 3 p1)
+             (*
              | 5, 6 ->
                print "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n\
                                %s\\ar[d,%s']&&%s\\ar[d,%s]\\\\\n\
@@ -1214,10 +1216,25 @@ module RS = struct
                  (tm 2 p1) (st 2 p1) (tm 4 p2) (st 4 p2)
                  (tm 3 p1) (st 3 p1) (tm 5 p2) (st 5 p2)
                  (tm 4 p1) (st 4 p1) (tm 6 p2)
+             *)
+             | l1, l2 when l1 >= 2 && l2 = l1 + 1 ->
+               print "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n" (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2);
+               for i = 1 to l1 - 2 do
+                 print "%s\\ar[d,%s']&&%s\\ar[d,%s]\\\\\n" (tm i p1) (st i p1) (tm (i+2) p2) (st (i+2) p2)
+               done;
+               let i = l1 - 1 in
+               print "%s\\ar[rr,%s']&&%s" (tm i p1) (st i p1) (tm (i+2) p2)
+             | l1, l2 when l1 >= 3 && l2 = l1 ->
+               print "%s\\ar[d,%s']\\ar[r,%s]&%s\\ar[r,%s]&%s\\ar[d,%s]\\\\\n" (tm 0 p1) (st 0 p1) (st 0 p2) (tm 1 p2) (st 1 p2) (tm 2 p2) (st 2 p2);
+               for i = 1 to l1 - 3 do
+                 print "%s\\ar[d,%s']&&%s\\ar[d,%s]\\\\\n" (tm i p1) (st i p1) (tm (i+2) p2) (st (i+2) p2)
+               done;
+               let i = l1 - 2 in
+               print "%s\\ar[r,%s']&%s\\ar[r,%s']&%s" (tm i p1) (st i p1) (tm (i+1) p1) (st (i+1) p1) (tm (i+2) p2)
              | l1, l2 ->
                let p = Zigzag.canonize (Zigzag.append p1 (Zigzag.inv p2)) in
                Printf.printf "TODO: %d, %d\n" l1 l2;
-               if Zigzag.is_id p then print "%s" (Zigzag.to_string p) else
+               if Zigzag.is_id p then print "%s" (Zigzag.to_string ~var p) else
                  let l = Zigzag.length p in
                  Printf.printf "zzlen: %d\n%!" l;
                  let n = 2 in
@@ -1230,6 +1247,7 @@ module RS = struct
                  done
            in
            print "\\noindent\n\\subsection*{%s}\n" c;
+           (* print "\\vspace{-8ex}\n"; *)
            print "\\[\n\\begin{tikzcd}\n";
            cd ();
            print "\n\\end{tikzcd}\n\\]\n\n"

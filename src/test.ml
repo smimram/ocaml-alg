@@ -8,6 +8,7 @@ let ts_e a = "e()"
 let ts_i a = Printf.sprintf "i(%s)" (List.hd a)
 
 let ts_m a = Printf.sprintf "(%s\\times %s)" (List.nth a 0) (List.nth a 1)
+(* let ts_m a = Printf.sprintf "%s\\times %s" (List.nth a 0) (List.nth a 1) *)
 let ts_e a = "1"
 let ts_i a = Printf.sprintf "\\overline{%s}" (List.hd a)
 
