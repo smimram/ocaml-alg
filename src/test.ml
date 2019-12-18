@@ -3,9 +3,13 @@
 open Extlib
 open Term
 
-let ts_m a = Printf.sprintf "(%s\\times %s)" (List.nth a 0) (List.nth a 1)
-let ts_e a = "1"
-let ts_i a = Printf.sprintf "\\overline{%s}" (List.hd a)
+let ts_m a = Printf.sprintf "m(%s,%s)" (List.nth a 0) (List.nth a 1)
+let ts_e a = "e()"
+let ts_i a = Printf.sprintf "i(%s)" (List.hd a)
+
+(* let ts_m a = Printf.sprintf "(%s\\times %s)" (List.nth a 0) (List.nth a 1) *)
+(* let ts_e a = "1" *)
+(* let ts_i a = Printf.sprintf "\\overline{%s}" (List.hd a) *)
 
 let m = Op.make ~to_string:ts_m "m" 2
 let e = Op.make ~to_string:ts_e "e" 0
@@ -33,8 +37,7 @@ let () =
  *)
 
 let () =
-  let vars = ref [] in
-  let t = Term.parse ops vars "m(m(x,y),z)" in
+  let t = Term.parse ops "m(m(x,y),z)" in
   Printf.printf "term: %s\n%!" (Term.to_string t)
 
 let m x y = app m [x;y]
@@ -57,15 +60,27 @@ let groups =
 let () =
   Printf.printf "%s\n\n%!" (RS.to_string groups)
 
-(* let () = *)
-  (* let r = RS.Rule.make "r1" (m e x) x in *)
-  (* let r' = RS.Rule.refresh r in *)
-(* assert (RS.Rule.eq r r') *)
+(* m(m(m(m(i(m(x,y)),y),x),i(x)),i(y)) *)
+let hdef =
+  RS.Zigzag.parse groups
+    "R(i(m(x,y)))-.\
+     m(i(m(x,y)),I(x))-.\
+     A(i(m(x,y)),x,i(x))-.\
+     m(m(i(m(x,y)),x),L(i(x)))-.\
+     m(m(i(m(x,y)),x),m(I(y),i(x)))-.\
+     A(m(i(m(x,y)),x),m(y,i(y)),i(x))-.\
+     m(A(m(i(m(x,y)),x),y,i(y)),i(x))-.\
+     m(m(A(i(m(x,y)),x,y),i(y)),i(x)).\
+     m(m(J(m(x,y)),i(y)),i(x)).\
+     m(L(i(y)),i(x))
+"
+
+let () =
+  let var = Var.namer_natural() in
+  Printf.printf "H = %s : %s -> %s\n%!" (RS.Zigzag.to_string ~var hdef) (to_string ~var (RS.Zigzag.source hdef)) (to_string ~var (RS.Zigzag.target hdef));
+  exit 0
 
 let rule_name = Utils.namer (fun (s1,s2) (s1',s2') -> RS.Path.eq s1 s1' && RS.Path.eq s2 s2')
-(* TODO: equality does not seem to be working... *)
-(* let rule_name = Utils.namer (=) *)
-
 let coherence = RS.squier groups
 
 let () =

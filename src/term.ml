@@ -88,14 +88,15 @@ let parser s =
       assert (s.[String.length s - 1] = ')');
       let a = String.sub s (n+1) (String.length s - (n+1) - 1) in
       let a =
-        let k = ref 0 in
-        let p = function
-          | '(' -> incr k; false
-          | ')' -> decr k; false
-          | ',' -> !k = 0
-          | _ -> false
-        in
-        String.split_on_predicate p a
+        if a = "" then [] else
+          let k = ref 0 in
+          let p = function
+            | '(' -> incr k; false
+            | ')' -> decr k; false
+            | ',' -> !k = 0
+            | _ -> false
+          in
+          String.split_on_predicate p a
       in
       let a = List.map term a in
       `App (f, a)
@@ -108,20 +109,24 @@ let parser s =
     else term s
   in
   let l = String.split_on_char '.' s in
-  if List.length l = 1 then term (List.hd l)
+  if List.length l = 1 then step (List.hd l)
   else `Seq (List.map step l)
 
+let parse_var =
+  let vars = ref [] in
+  fun x ->
+    if not (List.mem_assoc x !vars) then vars := (x, Var.fresh ()) :: !vars;
+    List.assoc x !vars
+
 (** Parse a term. *)
-let parse ops vars s =
+let parse ops s =
   let rec aux = function
     | `App (f, a) ->
       let f = List.find (fun o -> Op.name o = f) ops in
       let a = List.map aux a in
       app f a
     | `Var x ->
-      if not (List.mem_assoc x !vars) then vars := (x, Var.fresh ()) :: !vars;
-      let x = List.assoc x !vars in
-      Var x
+      Var (parse_var x)
     | `Seq _ -> assert false
     | `Inv _ -> assert false
   in
@@ -384,9 +389,9 @@ module RS = struct
 
     let make r s t : t = (r,s,t)
 
-    let of_string ops vars r s t =
-      let s = parse ops vars s in
-      let t = parse ops vars t in
+    let of_string ops r s t =
+      let s = parse ops s in
+      let t = parse ops t in
       make r s t
 
     let name ((r,s,t):t) = r
@@ -440,6 +445,8 @@ module RS = struct
       rules : rule list
     }
   type rs = t
+
+  let operations rs = rs.operations
 
   let rules rs = rs.rules
 
@@ -802,6 +809,7 @@ module RS = struct
 
     (** Concatenation of two paths. *)
     let comp p1 p2 =
+      (* Printf.printf "%s vs %s\n%!" (string_of_term (target p1)) (string_of_term (source p2)); *)
       assert (eq (target p1) (source p2));
       Comp (p1, p2)
 
@@ -860,6 +868,10 @@ module RS = struct
       | Comp (p, q) -> rule_occurences r p + rule_occurences r q
       | Id _ -> 0
       | Inv p -> rule_occurences r p
+
+    let is_id = function
+      | Id _ -> true
+      | _ -> false
 
     (** Whether a path contains a rule. *)
     let rec has_rule r p = rule_occurences r p > 0
@@ -953,12 +965,46 @@ module RS = struct
       | Id _ -> []
       | Inv p -> List.map (fun p -> Inv p) (List.rev (to_list p))
 
-    (* let parse rs s = *)
-      (* let rec aux = function *)
-        (* | `App (f, a) -> *)
-        (* | `Var x -> *)
-      (* in *)
-      (* aux (parser s)       *)
+    let parse rs s =
+      let unid = function
+        | Id t -> t
+        | _ -> assert false
+      in
+      let rec aux = function
+        | `App (f, a) ->
+          (
+            let a = List.map aux a in
+            try
+              (* Printf.printf "op: %s\n%!" f; *)
+              let f = List.find (fun o -> Op.name o = f) (operations rs) in
+              (* List.iter (fun p -> Printf.printf "%s\n%!" (to_string p)) a; *)
+              if List.for_all is_id a then
+                let a = List.map unid a in
+                let t = app f a in
+                Id t
+              else
+                let n = try List.index (fun p -> not (is_id p)) a with Not_found -> assert false in
+                let t = List.nth a n in
+                let a1, a2 = list_remove_nth n a in
+                let a1 = List.map unid a1 in
+                let a2 = List.map unid a2 in
+                let tm_ctx t = app f (a1@[t]@a2) in
+                let rs_ctx t = Step.tapp f a1 t a2 in
+                map tm_ctx rs_ctx t
+            with
+            | Not_found ->
+              let r = find rs f in
+              let a = List.map unid a in
+              let s = List.map2 pair (Rule.vars r) a in
+              Step (Step.rapp r s)
+          )
+        | `Inv p -> inv (aux p)
+        | `Seq l -> concat (List.map aux l)
+        | `Var x ->
+          let x = parse_var x in
+          Id (Var x)
+      in
+      aux (parser s)
   end
 
   (** Coherent presentations. *)
