@@ -60,7 +60,7 @@ let groups =
 let () =
   Printf.printf "%s\n\n%!" (RS.to_string groups)
 
-(* m(m(m(m(i(m(x,y)),y),x),i(x)),i(y)) *)
+let hdef' = RS.Zigzag.parse groups "H(x,y)"
 let hdef =
   RS.Zigzag.parse groups
     "R(i(m(x,y)))-.\
@@ -77,8 +77,7 @@ let hdef =
 
 let () =
   let var = Var.namer_natural() in
-  Printf.printf "H = %s : %s -> %s\n%!" (RS.Zigzag.to_string ~var hdef) (to_string ~var (RS.Zigzag.source hdef)) (to_string ~var (RS.Zigzag.target hdef));
-  exit 0
+  Printf.printf "H = %s : %s -> %s\n%!" (RS.Zigzag.to_string ~var hdef) (to_string ~var (RS.Zigzag.source hdef)) (to_string ~var (RS.Zigzag.target hdef))
 
 let rule_name = Utils.namer (fun (s1,s2) (s1',s2') -> RS.Path.eq s1 s1' && RS.Path.eq s2 s2')
 let coherence = RS.squier groups
@@ -114,6 +113,7 @@ let () =
     let coherence = List.mapi (fun i (p1,p2) -> "C"^string_of_int (i+1), (p1, p2)) coherence in
     RS.Coherent.make groups coherence
   in
+  let cpres = RS.Coherent.add_coherence cpres "CH" (hdef',hdef) in
   (* RS.Coherent.view_pdf cpres; *)
   let cpres = RS.Coherent.elim_rule cpres "E" "C12" in
   (* let cpres = RS.Coherent.elim_rule cpres "E_r" "C36" in *)
@@ -121,6 +121,7 @@ let () =
   let cpres = RS.Coherent.elim_rule cpres "I_i" "C28" in
   let cpres = RS.Coherent.elim_rule cpres "I_1" "C5" in
   let cpres = RS.Coherent.elim_rule cpres "I_2" "C7" in
+  (* let cpres = RS.Coherent.elim_rule cpres "H" "CH" in *)
   Printf.printf "================ eliminated:\n%s\n%!" (RS.Coherent.to_string ~var:Var.namer_natural cpres);
   RS.Coherent.view_pdf cpres
 

@@ -1162,7 +1162,7 @@ module RS = struct
                for i = 0 to (l-1)/n do
                  ans := !ans ^ (tm (i*n) p);
                  for j = 0 to min n (l - i*n) - 1 do
-                   ans := Printf.sprintf "%s\\ar[r,%s]&%s" !ans (st i p) (tm (i*n+j+1) p)
+                   ans := Printf.sprintf "%s\\ar[r,%s]&%s" !ans (st (i*n+j) p) (tm (i*n+j+1) p)
                  done;
                  ans := !ans ^ "\\\\"
                done;
@@ -1191,6 +1191,13 @@ module RS = struct
     (** Find coherence with given name. *)
     let find rs crs =
       List.assoc crs rs.coherence
+
+    let add_coherence crs c (p1,p2) =
+      (* Printf.printf "add_coherence: %s / %s\n%!" (Zigzag.to_string p1) (Zigzag.to_string p2); *)
+      assert (eq_term (Zigzag.source p1) (Zigzag.source p2));
+      assert (eq_term (Zigzag.target p1) (Zigzag.target p2));
+      let coherence = (coherence crs)@[c,(p1,p2)] in
+      { crs with coherence }
 
     (** Eliminate a rule with a coherence. *)
     let elim_rule crs r c =
