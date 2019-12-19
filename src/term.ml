@@ -1068,14 +1068,45 @@ module RS = struct
       Zigzag.comp l2 l1
   end
 
+  (** Coherence cells. *)
+  module Coherence = struct
+    type t =
+      {
+        name : string;
+        loop : Loop.t;
+      }
+
+    let name c = c.name
+
+    let loop c = c.loop
+
+    let make name loop =
+      { name; loop }
+
+    let to_string ~var c =
+      let p = Loop.canonize (loop c) in
+      Printf.sprintf "%s: %s\n" (name c) (Loop.to_string ~var p)
+
+    let rotate n c =
+      { c with loop = Loop.rotate n (loop c) }
+
+    let value r c =
+      Loop.value r (loop c)
+
+    let replace_rule r v c =
+      { c with loop = Loop.replace_rule r v (loop c) }
+  end
+
   (** Coherent presentations. *)
   module Coherent = struct
     (** A coherent presentation. *)
     type t =
       {
         rs : rs;
-        coherence : (string * Loop.t) list;
+        coherence : Coherence.t list;
       }
+
+    type crs = t
 
     (** Underlying rewriting system. *)
     let rs crs = crs.rs
@@ -1089,10 +1120,8 @@ module RS = struct
     let to_string ?(var=Var.namer) crs =
       let coherence =
         List.map
-          (fun (c,p) ->
-             let var = var () in
-             let p = Loop.canonize p in
-             Printf.sprintf "%s: %s\n" c (Loop.to_string ~var p)
+          (fun c ->
+             Coherence.to_string ~var:(var ()) c
           ) crs.coherence
       in
       let coherence = String.concat "\n" coherence in
@@ -1128,9 +1157,9 @@ module RS = struct
              \n" rules;
       print "\\section{Coherence}\n\n";
       List.iter
-        (fun (c,p) ->
-           let p = Loop.canonize p in
-           Printf.printf "print %s: %s\n%!" c (Loop.to_string p);
+        (fun c ->
+           let p = Loop.canonize (Coherence.loop c) in
+           Printf.printf "print %s: %s\n%!" (Coherence.name c) (Loop.to_string p);
            let p1, p2 =
              let l = Zigzag.to_list p in
              if l <> [] then ignore (Zigzag.concat l); (* test *)
@@ -1286,7 +1315,7 @@ module RS = struct
                    print "\\\\"
                  done
            in
-           print "\\noindent\n\\subsection*{%s}\n" c;
+           print "\\noindent\n\\subsection*{%s}\n" (Coherence.name c);
            (* print "\\vspace{-8ex}\n"; *)
            print "\\[\n\\begin{tikzcd}\n";
            cd ();
@@ -1310,19 +1339,17 @@ module RS = struct
 
     (** Find coherence with given name. *)
     let find rs crs =
-      List.assoc crs rs.coherence
+      List.find (fun c -> Coherence.name c = crs) rs.coherence
 
     let add_coherence crs c p =
       (* Printf.printf "add_coherence: %s / %s\n%!" (Zigzag.to_string p1) (Zigzag.to_string p2); *)
       assert (eq_term (Zigzag.source p) (Zigzag.target p));
-      let coherence = (coherence crs)@[c,p] in
+      let coherence = (coherence crs)@[Coherence.make c p] in
       { crs with coherence }
 
     (** Rotate a coherence. *)
     let rotate crs cname n =
-      let c = find crs cname in
-      let c = Loop.rotate n c in
-      let coherence = List.replace_assoc cname c crs.coherence in
+      let coherence = List.map (fun c -> if Coherence.name c = cname then Coherence.rotate n c else c) crs.coherence in
       { crs with coherence }
 
     (** Eliminate a rule with a coherence. *)
@@ -1330,11 +1357,22 @@ module RS = struct
       let r = find_rule crs r in
       (* let cname = c in *)
       let c = find crs c in
-      let v = Loop.value r c in
+      let v = Coherence.value r c in
       let var = Var.namer_natural () in Printf.printf "\nelim rule: [%s] => %s\n%!" (Rule.to_string ~var r) (Zigzag.to_string ~var v);
       let rules = List.filter (fun r' -> not (Rule.eq r r')) (rules crs) in
-      let coherence = List.map (fun (c,p) -> c, Loop.replace_rule r v p) (coherence crs) in
+      let coherence = List.map (fun c -> Coherence.replace_rule r v c) (coherence crs) in
       (* let coherence = List.filter (fun (c,_) -> c <> cname) coherence in *)
       { rs = { crs.rs with rules }; coherence }
+
+    (** Morphisms between coherent presentations. *)
+    module Morphism = struct
+      type t =
+        {
+          source : crs;
+          target : crs;
+          mutable rules : (Rule.t * Zigzag.t) list;
+          (* mulable coherences : (Coherence.t * ) *)
+        }
+    end
   end
 end

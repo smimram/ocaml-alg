@@ -110,7 +110,7 @@ let () =
 
 let () =
   let cpres =
-    let coherence = List.mapi (fun i p -> "C"^string_of_int (i+1), p) coherence in
+    let coherence = List.mapi (fun i p -> RS.Coherence.make ("C"^string_of_int (i+1)) p) coherence in
     RS.Coherent.make groups coherence
   in
   (* let cpres = RS.Coherent.elim_rule cpres "E_r" "C36" in *)
