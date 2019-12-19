@@ -467,8 +467,8 @@ module RS = struct
   module Step = struct
     (** A rewriting step. *)
     type t =
-        | TApp of Op.t * term list * t * term list (** Term application. *)
-        | RApp of Rule.t * Subst.t (** Rule application. *)
+      | TApp of Op.t * term list * t * term list (** Term application. *)
+      | RApp of Rule.t * Subst.t (** Rule application. *)
 
     let of_term _ = assert false
 
@@ -828,8 +828,6 @@ module RS = struct
     (** Inverse of a path. *)
     let inv p = Inv p
 
-    let globe p1 p2 = comp p1 (inv p2)
-
     (** Equality between paths. *)
     let rec eq p p' =
       match p, p' with
@@ -1031,13 +1029,52 @@ module RS = struct
       aux (parser s)
   end
 
+  (** Loops. *)
+  module Loop = struct
+    (** A (pointed) loop. *)
+    type t = Zigzag.t
+
+    let make (p:Zigzag.t) : t =
+      assert (eq_term (Zigzag.source p) (Zigzag.target p));
+      p
+
+    let to_string = Zigzag.to_string
+
+    let comp = Zigzag.comp
+
+    let inv = Zigzag.inv
+
+    let of_cell p1 p2 =
+      assert (eq_term (Zigzag.source p1) (Zigzag.source p2));
+      assert (eq_term (Zigzag.target p1) (Zigzag.target p2));
+      comp p1 (inv p2)
+
+    let canonize = Zigzag.canonize
+
+    let value = Zigzag.value
+
+    let replace_rule = Zigzag.replace_rule
+
+    let length = Zigzag.length
+
+    let rotate k p =
+      let n = length p in
+      let k = Int.modulo k n in
+      let l = Zigzag.to_list p in
+      let l1 = List.sub l 0 k in
+      let l2 = List.sub l k (n-k) in
+      let l1 = Zigzag.concat l1 in
+      let l2 = Zigzag.concat l2 in
+      Zigzag.comp l2 l1
+  end
+
   (** Coherent presentations. *)
   module Coherent = struct
     (** A coherent presentation. *)
     type t =
       {
         rs : rs;
-        coherence : (string * Zigzag.t) list;
+        coherence : (string * Loop.t) list;
       }
 
     (** Underlying rewriting system. *)
@@ -1054,8 +1091,8 @@ module RS = struct
         List.map
           (fun (c,p) ->
              let var = var () in
-             let p = Zigzag.canonize p in
-             Printf.sprintf "%s: %s\n" c (Zigzag.to_string ~var p)
+             let p = Loop.canonize p in
+             Printf.sprintf "%s: %s\n" c (Loop.to_string ~var p)
           ) crs.coherence
       in
       let coherence = String.concat "\n" coherence in
@@ -1064,7 +1101,7 @@ module RS = struct
     let to_tex ?(var=Var.namer_natural) crs =
       let ans = ref "" in
       let print s = Printf.ksprintf (fun s -> ans := !ans ^ s) s; in
-      print "\\documentclass[a4paper,8pt]{extarticle}\n\
+      print "\\documentclass[a4paper,9pt]{extarticle}\n\
              \\usepackage[utf8x]{inputenc}\n\
              \\usepackage{amsmath}\n\
              \\usepackage{tikz-cd}\n\
@@ -1092,8 +1129,8 @@ module RS = struct
       print "\\section{Coherence}\n\n";
       List.iter
         (fun (c,p) ->
-           let p = Zigzag.canonize p in
-           Printf.printf "print %s: %s\n%!" c (Zigzag.to_string p);
+           let p = Loop.canonize p in
+           Printf.printf "print %s: %s\n%!" c (Loop.to_string p);
            let p1, p2 =
              let l = Zigzag.to_list p in
              if l <> [] then ignore (Zigzag.concat l); (* test *)
@@ -1281,15 +1318,22 @@ module RS = struct
       let coherence = (coherence crs)@[c,p] in
       { crs with coherence }
 
+    (** Rotate a coherence. *)
+    let rotate crs cname n =
+      let c = find crs cname in
+      let c = Loop.rotate n c in
+      let coherence = List.replace_assoc cname c crs.coherence in
+      { crs with coherence }
+
     (** Eliminate a rule with a coherence. *)
     let elim_rule crs r c =
       let r = find_rule crs r in
       (* let cname = c in *)
       let c = find crs c in
-      let v = Zigzag.value r c in
+      let v = Loop.value r c in
       let var = Var.namer_natural () in Printf.printf "\nelim rule: [%s] => %s\n%!" (Rule.to_string ~var r) (Zigzag.to_string ~var v);
       let rules = List.filter (fun r' -> not (Rule.eq r r')) (rules crs) in
-      let coherence = List.map (fun (c,p) -> c, Zigzag.replace_rule r v p) (coherence crs) in
+      let coherence = List.map (fun (c,p) -> c, Loop.replace_rule r v p) (coherence crs) in
       (* let coherence = List.filter (fun (c,_) -> c <> cname) coherence in *)
       { rs = { crs.rs with rules }; coherence }
   end

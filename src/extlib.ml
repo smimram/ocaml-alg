@@ -2,7 +2,16 @@ let id x = x
 
 let pair x y = x, y
 
+let unpair f (x,y) = f x y
+
 let (|>) x f = f x
+
+module Int = struct
+  let modulo x y =
+    let ans = x mod y in
+    if ans >= 0 then ans
+    else ans + y
+end
 
 module List = struct
   include List
@@ -24,6 +33,9 @@ module List = struct
       | [] -> raise Not_found
     in
     aux n id l
+
+  let replace_assoc k v l =
+    List.map (fun (k',v') -> if k = k' then k, v else k', v') l
 
   let rec sub l ofs len =
     if ofs = 0 && len = 0 then []

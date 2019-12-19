@@ -8,7 +8,7 @@ let ts_e a = "e()"
 let ts_i a = Printf.sprintf "i(%s)" (List.hd a)
 
 let ts_m a = Printf.sprintf "(%s\\times %s)" (List.nth a 0) (List.nth a 1)
-(* let ts_m a = Printf.sprintf "%s\\times %s" (List.nth a 0) (List.nth a 1) *)
+let ts_m a = Printf.sprintf "%s\\times %s" (List.nth a 0) (List.nth a 1)
 let ts_e a = "1"
 let ts_i a = Printf.sprintf "\\overline{%s}" (List.hd a)
 
@@ -96,7 +96,7 @@ let () =
 let rule_name = Utils.namer RS.Zigzag.eq
 (* let rule_name = Utils.namer (=) *)
 
-let coherence = List.map (fun (p1,p2) -> RS.Zigzag.globe (RS.Zigzag.of_path p1) (RS.Zigzag.of_path p2)) coherence
+let coherence = List.map (fun (p1,p2) -> RS.Loop.of_cell (RS.Zigzag.of_path p1) (RS.Zigzag.of_path p2)) coherence
 
 let () =
   Printf.printf "\n****** zigzag *****\n\n%!";
@@ -115,13 +115,15 @@ let () =
   in
   (* let cpres = RS.Coherent.elim_rule cpres "E_r" "C36" in *)
   (* let cpres = RS.Coherent.elim_rule cpres "I_r" "C16" in *)
-  let cpres = RS.Coherent.add_coherence cpres "CH" (RS.Zigzag.globe hdef' hdef) in
+  let cpres = RS.Coherent.add_coherence cpres "CH" (RS.Loop.of_cell hdef' hdef) in
   let cpres = RS.Coherent.elim_rule cpres "E" "C12" in
   let cpres = RS.Coherent.elim_rule cpres "N" "C30" in
   let cpres = RS.Coherent.elim_rule cpres "T" "C5" in
   let cpres = RS.Coherent.elim_rule cpres "U" "C7" in
   let cpres = RS.Coherent.elim_rule cpres "H" "CH" in
   Printf.printf "================ eliminated:\n%s\n%!" (RS.Coherent.to_string ~var:Var.namer_natural cpres);
+  let rotations = ["C6", 7; "C8", 1; "C9", 8; "C10", 1; "C17", -2; "C18", 9; "C19", 9; "C21", -2; "C22", 9; "C23", 1; "C25", -12; "C26", -7; "C32", -2; "C33", -2; "C35", -7; "C36", -7; "C38", 1; "C40", 1; "C41", 3; "C42", -2; "C44", 3; "C45", -7; "C47", 6; "C48", 5; "C49", 6; "C50", 6; "C51", 13; "C52", 10] in
+  let cpres = List.fold_left (fun cpres (c,n) -> RS.Coherent.rotate cpres c n) cpres rotations in
   RS.Coherent.view_pdf cpres
 
 (* for Im:
