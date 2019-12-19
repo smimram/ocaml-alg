@@ -5,7 +5,7 @@
 <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="Start" href="index.html">
-<link rel="previous" href="Term.RS.Zigzag.html">
+<link rel="previous" href="Term.RS.Loop.html">
 <link rel="Up" href="Term.RS.html">
 <link title="Index of types" rel=Appendix href="index_types.html">
 <link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
@@ -33,7 +33,7 @@
 <link title="Utils" rel="Chapter" href="Utils.html"><title>Term.RS.Coherent</title>
 </head>
 <body>
-<div class="navbar"><a class="pre" href="Term.RS.Zigzag.html" title="Term.RS.Zigzag">Previous</a>
+<div class="navbar"><a class="pre" href="Term.RS.Loop.html" title="Term.RS.Loop">Previous</a>
 &nbsp;<a class="up" href="Term.RS.html" title="Term.RS">Up</a>
 &nbsp;</div>
 <h1>Module <a href="type_Term.RS.Coherent.html">Term.RS.Coherent</a></h1>
@@ -57,7 +57,7 @@
 <td align="left" valign="top" >
 <code>&nbsp;&nbsp;</code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTt.coherence">coherence</span>&nbsp;: <code class="type">(string * <a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a>) list</code>;</code></td>
+<code><span id="TYPEELTt.coherence">coherence</span>&nbsp;: <code class="type">(string * <a href="Term.RS.Loop.html#TYPEt">Term.RS.Loop.t</a>) list</code>;</code></td>
 
 </tr></table>
 }
@@ -76,20 +76,26 @@
 </div>
 
 <pre><span id="VALrules"><span class="keyword">val</span> rules</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> <a href="Term.RS.html#TYPErule">Term.RS.rule</a> list</code></pre>
-<pre><span id="VALcoherence"><span class="keyword">val</span> coherence</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> (string * <a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a>) list</code></pre>
+<pre><span id="VALcoherence"><span class="keyword">val</span> coherence</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> (string * <a href="Term.RS.Loop.html#TYPEt">Term.RS.Loop.t</a>) list</code></pre>
 <pre><span id="VALset_rules"><span class="keyword">val</span> set_rules</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> <a href="Term.RS.html#TYPErule">Term.RS.rule</a> list -> <a href="Term.RS.Coherent.html#TYPEt">t</a></code></pre>
 <pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?var:(unit -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Coherent.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALto_tex"><span class="keyword">val</span> to_tex</span> : <code class="type">?var:(unit -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Coherent.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALview_pdf"><span class="keyword">val</span> view_pdf</span> : <code class="type">?var:(unit -> <a href="Term.Var.html#TYPEt">Term.Var.t</a> -> string) -> <a href="Term.RS.Coherent.html#TYPEt">t</a> -> unit</code></pre>
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type"><a href="Term.RS.html#TYPErs">Term.RS.rs</a> -> (string * <a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a>) list -> <a href="Term.RS.Coherent.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type"><a href="Term.RS.html#TYPErs">Term.RS.rs</a> -> (string * <a href="Term.RS.Loop.html#TYPEt">Term.RS.Loop.t</a>) list -> <a href="Term.RS.Coherent.html#TYPEt">t</a></code></pre>
 <pre><span id="VALfind_rule"><span class="keyword">val</span> find_rule</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> string -> <a href="Term.RS.Rule.html#TYPEt">Term.RS.Rule.t</a></code></pre>
-<pre><span id="VALfind"><span class="keyword">val</span> find</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> string -> <a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a></code></pre><div class="info ">
+<pre><span id="VALfind"><span class="keyword">val</span> find</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> string -> <a href="Term.RS.Loop.html#TYPEt">Term.RS.Loop.t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Find coherence with given name.</p>
 </div>
 </div>
 
-<pre><span id="VALadd_coherence"><span class="keyword">val</span> add_coherence</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> string -> <a href="Term.RS.Zigzag.html#TYPEt">Term.RS.Zigzag.t</a> -> <a href="Term.RS.Coherent.html#TYPEt">t</a></code></pre>
+<pre><span id="VALadd_coherence"><span class="keyword">val</span> add_coherence</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> string -> <a href="Term.RS.Loop.html#TYPEt">Term.RS.Loop.t</a> -> <a href="Term.RS.Coherent.html#TYPEt">t</a></code></pre>
+<pre><span id="VALrotate"><span class="keyword">val</span> rotate</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> string -> int -> <a href="Term.RS.Coherent.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Rotate a coherence.</p>
+</div>
+</div>
+
 <pre><span id="VALelim_rule"><span class="keyword">val</span> elim_rule</span> : <code class="type"><a href="Term.RS.Coherent.html#TYPEt">t</a> -> string -> string -> <a href="Term.RS.Coherent.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p>Eliminate a rule with a coherence.</p>
