@@ -6,6 +6,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install OCaml
-      run: sudo apt-get install ocaml-nox
+      run: sudo apt-get install ocaml-nox js-of-ocaml
     - name: Build
       run: make
