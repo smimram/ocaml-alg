@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Update to eoan
+      run: sudo sed -i s/bionic/eoan/ /etc/apt/sources.list && sudo apt-get update
     - name: Install OCaml
       run: sudo apt-get install ocaml-nox
     - name: Build
