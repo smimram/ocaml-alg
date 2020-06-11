@@ -17,7 +17,7 @@ let monoids =
   RS.make [mm; ee]
     [
       RS.Rule.make "El" (m e x) x;
-      RS.Rule.make "Er" (m e x) x;
+      RS.Rule.make "Er" (m x e) x;
       RS.Rule.make "A" (m (m x y) z) (m x (m y z));
     ]
 let () = Printf.printf "monoids\n\n%s\n\n%!" (RS.to_string monoids)
