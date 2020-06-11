@@ -113,9 +113,8 @@ let () =
     let coherence = List.mapi (fun i p -> RS.Coherence.make ("C"^string_of_int (i+1)) p) coherence in
     RS.Coherent.make groups coherence
   in
-  (* let cpres = RS.Coherent.elim_rule cpres "E_r" "C36" in *)
-  (* let cpres = RS.Coherent.elim_rule cpres "I_r" "C16" in *)
   let cpres = RS.Coherent.add_coherence cpres "CH" (RS.Loop.of_cell hdef' hdef) in
+  (*
   let cpres = RS.Coherent.elim_rule cpres "E" "C12" in
   let cpres = RS.Coherent.elim_rule cpres "N" "C30" in
   let cpres = RS.Coherent.elim_rule cpres "T" "C5" in
@@ -124,6 +123,7 @@ let () =
   Printf.printf "================ eliminated:\n%s\n%!" (RS.Coherent.to_string ~var:Var.namer_natural cpres);
   let rotations = ["C6", 7; "C8", 1; "C9", 8; "C10", 1; "C17", -2; "C18", 9; "C19", 9; "C21", -2; "C22", 9; "C23", 1; "C25", -12; "C26", -7; "C32", -2; "C33", -2; "C35", -7; "C36", -7; "C38", 1; "C40", 1; "C41", 3; "C42", -2; "C44", 3; "C45", -7; "C47", 6; "C48", 5; "C49", 6; "C50", 6; "C51", 13; "C52", 10] in
   let cpres = List.fold_left (fun cpres (c,n) -> RS.Coherent.rotate cpres c n) cpres rotations in
+  *)
   RS.Coherent.view_pdf cpres
 
 (* for Im:

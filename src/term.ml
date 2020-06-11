@@ -1095,6 +1095,9 @@ module RS = struct
 
     let replace_rule r v c =
       { c with loop = Loop.replace_rule r v (loop c) }
+
+    module Path = struct
+    end
   end
 
   (** Coherent presentations. *)
