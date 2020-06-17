@@ -45,25 +45,6 @@ let groups =
 let () =
   Printf.printf "%s\n\n%!" (RS.to_string groups)
 
-let hdef' = RS.Zigzag.parse groups "H(x,y)"
-let hdef =
-  RS.Zigzag.parse groups
-    "R(i(m(x,y)))-.\
-     m(i(m(x,y)),J(x))-.\
-     A(i(m(x,y)),x,i(x))-.\
-     m(m(i(m(x,y)),x),L(i(x)))-.\
-     m(m(i(m(x,y)),x),m(J(y),i(x)))-.\
-     A(m(i(m(x,y)),x),m(y,i(y)),i(x))-.\
-     m(A(m(i(m(x,y)),x),y,i(y)),i(x))-.\
-     m(m(A(i(m(x,y)),x,y),i(y)),i(x)).\
-     m(m(I(m(x,y)),i(y)),i(x)).\
-     m(L(i(y)),i(x))
-"
-
-let () =
-  let var = Var.namer_natural() in
-  Printf.printf "H = %s : %s -> %s\n%!" (RS.Zigzag.to_string ~var hdef) (to_string ~var (RS.Zigzag.source hdef)) (to_string ~var (RS.Zigzag.target hdef))
-
 let rule_name = Utils.namer (fun (s1,s2) (s1',s2') -> RS.Path.eq s1 s1' && RS.Path.eq s2 s2')
 let coherence = RS.squier groups
 
@@ -97,7 +78,6 @@ let () =
     let coherence = List.mapi (fun i p -> RS.Coherence.make ("C"^string_of_int (i+1)) p) coherence in
     RS.Coherent.make groups coherence
   in
-  let cpres = RS.Coherent.add_coherence cpres "CH" (RS.Loop.of_cell hdef' hdef) in
   (*
   let cpres = RS.Coherent.elim_rule cpres "E" "C12" in
   let cpres = RS.Coherent.elim_rule cpres "N" "C30" in

@@ -1,6 +1,8 @@
 OCAMLOPT = ocamlopt
 
-test: test.ml
+all: groups
+
+%: %.ml
 	$(MAKE) -C ../../src
-	$(OCAMLOPT) -bin-annot -I ../../src alg.cmxa test.ml -o test
-	OCAMLRUNPARAM=b ./test
+	$(OCAMLOPT) -bin-annot -I ../../src alg.cmxa $< -o $@
+	OCAMLRUNPARAM=b ./$@
