@@ -1,6 +1,6 @@
 OCAMLOPT = ocamlopt
 
-all: groups
+all: groups2
 
 %: %.ml
 	$(MAKE) -C ../../src

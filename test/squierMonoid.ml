@@ -1,4 +1,4 @@
-(** Squier's coherent completion of the theory of groups. *)
+(** Squier's coherent completion of the theory of monoids. *)
 
 open Term
 

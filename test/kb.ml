@@ -36,3 +36,36 @@ let () = Printf.printf "groups\n\n%s\n\n%!" (RS.to_string groups)
 let groups = RS.knuth_bendix groups
 let () = Printf.printf "completion\n\n%s\n\n%!" (RS.to_string groups)
 
+(* Tarski's presentations of groups with one rule. *)
+(*
+let dd = Op.make "d" 2
+let d x y = app dd [x;y]
+let x = var ()
+let y = var ()
+let z = var ()
+let groups =
+  RS.make [dd]
+    [
+      RS.Rule.make "D"
+        (d
+           x
+           (d
+              (d
+                 (d (d x x) y)
+                 z
+              )
+              (d
+                 (d
+                    (d x x)
+                    x
+                 )
+                 z
+              )
+           )
+        )
+        y
+    ]
+let () = Printf.printf "groups\n\n%s\n\n%!" (RS.to_string groups)
+let groups = RS.knuth_bendix groups
+let () = Printf.printf "completion\n\n%s\n\n%!" (RS.to_string groups)
+*)
