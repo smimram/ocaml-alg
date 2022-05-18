@@ -7,7 +7,7 @@ INCDIRS = $(ALGDIR)
 ANNOTATE = true
 
 all: alg dc
-	js_of_ocaml $(RESULT)
+	js_of_ocaml compile $(RESULT)
 
 alg:
 	@$(MAKE) -C $(ALGDIR) dcl INCDIRS=
