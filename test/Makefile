@@ -12,7 +12,7 @@ alg:
 	@$(MAKE) -C ../src
 
 clean:
-	rm -f $(PROG)
+	rm -f $(PROG) *.cm* *.o
 
 pdf: build
 	./squierGroup

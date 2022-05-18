@@ -704,12 +704,16 @@ module RS = struct
     in
     sym steps
 
+  (** Orient rules according to a particular order. *)
+  let orient ~gt rs =
+    let rules = List.map (fun (n,t,u) -> if not (gt t u) then (n,u,t) else (n,t,u)) (rules rs) in
+    { operations = rs.operations; rules }
+
   (** Knuth-Bendix completion. [gt] is the strict order on terms, [callback] is
       a function which is called regularly with the current rewriting system as
       argument (useful to display during the completion). *)
-  let knuth_bendix ?(gt=LPO.gt (>=)) ?namer ?(callback=fun _ -> ()) (rs:t) =
-    (* Reorient the rules according to the order. *)
-    let rules = List.map (fun (n,t,u) -> if not (gt t u) then (n,u,t) else (n,t,u)) (rules rs) in
+  let knuth_bendix ?(gt=LPO.gt (>=)) ?namer ?(callback=fun _ -> ()) rs =
+    let rs = orient ~gt rs in
     (* Name for new rules. *)
     let namer =
       match namer with
@@ -719,9 +723,9 @@ module RS = struct
         fun () -> incr n; "K"^string_of_int !n
     in
     (* Rules to handle. *)
-    let queue = ref rules in
+    let queue = ref rs.rules in
     (* Produced rewriting system. *)
-    let rules = ref rules in
+    let rules = ref rs.rules in
     let add (r:Rule.t) =
       (* Printf.printf "add %s\n%!" (Rule.to_string r); *)
       rules := r :: !rules;
