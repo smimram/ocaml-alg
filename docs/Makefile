@@ -1,6 +1,6 @@
 DOCS_DIR := $(shell pwd)
 
-all: alg bergman kb
+all: alg bergman kb index.html
 
 doc build:
 	$(MAKE) -C .. $@
@@ -21,5 +21,8 @@ kb: build
 
 ci: all
 	git ci . -m "Update documentation."
+
+%.html: %.md
+	pandoc -s $< -o $@
 
 .PHONY: alg bergman kb
