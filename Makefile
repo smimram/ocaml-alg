@@ -1,8 +1,15 @@
-all clean:
-	$(MAKE) -C src $@
-	$(MAKE) -C tools $@
+all: build
+
+build:
+	@dune build
+
+doc:
+	@dune build @doc
+
+clean:
+	@dune clean
 
 test:
-	$(MAKE) -C test
+	@dune runtest
 
 .PHONY: test

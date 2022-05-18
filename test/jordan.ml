@@ -1,5 +1,6 @@
 (* Testing non-commutative Jordan algebras. *)
 
+open Alg
 open Term
 
 let mm = Op.make "m" 2

@@ -1,3 +1,5 @@
+open Alg
+
 module M = struct
   include Monoid.Free(Alphabet.Char)
 
@@ -15,6 +17,7 @@ let () =
       (A.add (A.inj (M.s "xx")) (A.inj (M.s "xy")))
       (A.add (A.inj (M.s "yx")) (A.inj (M.s "yy")))
   ] in
+  ignore relations;
   (*
   let relations = [
     A.add (A.inj (M.s "xx"))

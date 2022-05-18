@@ -1,3 +1,5 @@
+open Alg
+
 module M = struct
   include Monoid.Free(Alphabet.Char)
 

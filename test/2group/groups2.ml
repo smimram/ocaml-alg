@@ -1,10 +1,11 @@
 (* Testing Squier completion *)
 
+open Alg
 open Extlib
 open Term
 
 let ts_m a = Printf.sprintf "m(%s,%s)" (List.nth a 0) (List.nth a 1)
-let ts_e a = "e()"
+let ts_e _ = "e()"
 let ts_i a = Printf.sprintf "i(%s)" (List.hd a)
 let ts_j a = Printf.sprintf "j(%s)" (List.hd a)
 

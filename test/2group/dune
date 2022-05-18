@@ -1,0 +1,5 @@
+(executable
+ (name groups2)
+ (modules groups2)
+ (libraries alg)
+)

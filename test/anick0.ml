@@ -1,3 +1,5 @@
+open Alg
+
 module X = struct
   include Alphabet.Int
   let to_string n = String.make 1 (char_of_int (int_of_char 'a' + n))

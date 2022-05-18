@@ -8,6 +8,7 @@ module Make (X : Alphabet.T) = struct
   type cell =
     | C of whisker * cell (** a composite *)
     | I of cell (** an identity *)
+
   (** A whiskered generator. *)
   and whisker =
     | G of X.t (** a generator *)

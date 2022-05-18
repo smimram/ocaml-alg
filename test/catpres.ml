@@ -1,3 +1,5 @@
+open Alg
+
 module X = Alphabet.String
 module CP = Category.Pres(X)(X)
 

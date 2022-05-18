@@ -1,29 +1,15 @@
 ML = $(wildcard *.ml)
 PROG = $(ML:.ml=)
 
-all: .gitignore test
+all:
+	@dune build
 
-test: build
-	@for p in $(PROG); do echo "\n\n##### Running $$p #####\n"; ./$$p || exit 1; done
+runtest:
+	@dune runtest
 
-build: alg $(PROG)
+test:
+	@for p in $(PROG); do echo "\n\n##### Running $$p #####\n"; dune exec ./$$p.exe || exit 1; done
 
-alg:
-	@$(MAKE) -C ../src
-
-clean:
-	rm -f $(PROG) *.cm* *.o
-
-pdf: build
-	./squierGroup
+pdf:
+	@dune exec ./squierGroup.exe
 	pdflatex squierGroupFull.tex
-
-%: %.ml
-	ocamlopt.opt -annot -I ../src alg.cmxa $< -o $@
-
-.gitignore: $(ML)
-	rm -f .gitignore
-	for p in $(PROG); do echo "$$p" >> $@; done
-	echo "squierGroup.tex" >> $@
-
-.PHONY: alg

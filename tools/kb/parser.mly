@@ -1,4 +1,5 @@
 %{
+open Alg
 open Term
 
 let vars = ref []
@@ -21,7 +22,7 @@ let app f args =
 %token EOF
 
 %start main
-%type <(Term.t * Term.t) list> main
+%type <(Alg.Term.t * Alg.Term.t) list> main
 %%
 
 main:

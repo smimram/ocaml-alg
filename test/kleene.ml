@@ -1,3 +1,5 @@
+open Alg
+
 module A = Automaton.Make(Alphabet.Char)
 module R = A.Regexp
 module S = A.Regexp.Series

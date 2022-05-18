@@ -1,3 +1,5 @@
+open Alg
+
 module M = struct
   include Monoid.Free(Alphabet.Char)
 
@@ -14,7 +16,7 @@ let () =
   let l = [M.s "aaa"] in
   let cc = M.Anick.singletons alphabet in
   let cc = ref cc in
-  for i = 0 to 6 do
+  for _ = 0 to 6 do
     Printf.printf "%s\n%!" (String.concat " " (List.map M.Anick.to_string !cc));
     cc := M.Anick.extend l !cc
   done

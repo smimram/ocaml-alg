@@ -1,5 +1,6 @@
 (** Squier's coherent completion of the theory of monoids. *)
 
+open Alg
 open Term
 
 let m = Op.make "m" 2

@@ -375,7 +375,7 @@ let equivalent ?(s=Subst.empty) (t1:t) (t2:t) =
 
 (** Rewriting systems. *)
 module RS = struct
-  let rec list_remove_nth n l =
+  let list_remove_nth n l =
     let rec aux n p = function
       | x::l -> if n = 0 then List.rev p, l else aux (n-1) (x::p) l
       | [] -> assert false
@@ -581,7 +581,7 @@ module RS = struct
       | Step (p,_) -> source p
       | Empty t -> t
 
-    let rec target = function
+    let target = function
       | Step (_,s) -> Step.target s
       | Empty t -> t
 
@@ -652,7 +652,7 @@ module RS = struct
   end
 
   (** Normalize a term. *)
-  let rec normalize rs t =
+  let normalize rs t =
     let rec aux p =
       let s = steps rs (Path.target p) in
       if s = [] then p else aux (Path.append_step p (List.hd s))
@@ -821,7 +821,7 @@ module RS = struct
       assert (eq (target p1) (source p2));
       Comp (p1, p2)
 
-    let rec append p1 p2 = comp p1 p2
+    let append p1 p2 = comp p1 p2
 
     (** Concatenation of a list of paths. *)
     let rec concat = function
@@ -893,7 +893,7 @@ module RS = struct
       | _ -> false
 
     (** Whether a path contains a rule. *)
-    let rec has_rule r p = rule_occurences r p > 0
+    let has_rule r p = rule_occurences r p > 0
 
     (** Put path in canonical form. *)
     let rec canonize p =
@@ -927,7 +927,7 @@ module RS = struct
       | Step s -> Step s
 
     (** Express a rule as a zigzag in a cell. *)
-    let rec value r p =
+    let value r p =
       let p = canonize p in
       (* Printf.printf "value of %s in %s\n%!" (Rule.name r) (to_string p); *)
       assert (rule_occurences r p = 1);

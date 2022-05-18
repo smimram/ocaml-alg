@@ -1,0 +1,5 @@
+(library
+ (name alg)
+ (public_name alg)
+ (flags (:standard -w -27))
+)

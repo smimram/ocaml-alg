@@ -1,0 +1,120 @@
+(executable
+ (name anick0)
+ (modules anick0)
+ (libraries alg)
+)
+
+(executable
+ (name anick1)
+ (modules anick1)
+ (libraries alg)
+)
+
+(executable
+ (name anick2)
+ (modules anick2)
+ (libraries alg)
+)
+
+(executable
+ (name anick3)
+ (modules anick3)
+ (libraries alg)
+)
+
+(executable
+ (name catpres)
+ (modules catpres)
+ (libraries alg)
+)
+
+(executable
+ (name jordan)
+ (modules jordan)
+ (libraries alg)
+)
+
+(executable
+ (name kb)
+ (modules kb)
+ (libraries alg)
+)
+
+(executable
+ (name kleene)
+ (modules kleene)
+ (libraries alg)
+)
+
+(executable
+ (name rig)
+ (modules rig)
+ (libraries alg)
+)
+
+(executable
+ (name squierGroup)
+ (modules squierGroup)
+ (libraries alg)
+)
+
+(executable
+ (name squierMonoid)
+ (modules squierMonoid)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./anick0.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./anick1.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./anick2.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./anick3.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./catpres.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./jordan.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./kb.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./kleene.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./rig.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./squierGroup.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./squierMonoid.exe))
+)

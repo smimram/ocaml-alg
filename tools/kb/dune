@@ -1,0 +1,10 @@
+(ocamlyacc parser)
+
+(ocamllex lexer)
+
+(executable
+ (name kb)
+ (modes js)
+ (preprocess (pps js_of_ocaml-ppx))
+ (libraries alg js_of_ocaml)
+)

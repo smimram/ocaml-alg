@@ -1,25 +1,23 @@
 DOCS_DIR := $(shell pwd)
-BERGMAN_DIR = ../tools/bergman
-BERGMAN_FILES = index.html bergman.js bergman.css
-KB_DIR = ../tools/kb
-KB_FILES = index.html kb.js kb.css
 
 all: alg bergman kb
 
-alg:
-	$(MAKE) -C ../src htdoc
-	cp ../src/doc/alg/html/* alg/
-	git add alg/*.html alg/*.css
+doc build:
+	$(MAKE) -C .. $@
 
-bergman:
-	$(MAKE) -C $(BERGMAN_DIR)
-	cd $(BERGMAN_DIR); cp $(BERGMAN_FILES) $(DOCS_DIR)/bergman
-	cd $(DOCS_DIR)/bergman; git add $(BERGMAN_FILES)
+alg: doc
+	rm -rf alg/alg
+	chmod +w alg/*
+	cp -r ../_build/default/_doc/_html/* alg/
+	cd alg; git add *.js *.css *.html alg
 
-kb:
-	$(MAKE) -C $(KB_DIR)
-	cd $(KB_DIR); cp $(KB_FILES) $(DOCS_DIR)/kb
-	cd $(DOCS_DIR)/kb; git add $(KB_FILES)
+bergman: build
+	cd ../_build/default/tools/bergman; mv bergman.bc.js bergman.js; cp index.html bergman.css bergman.js $(DOCS_DIR)/bergman
+	cd bergman; git add *
+
+kb: build
+	cd ../_build/default/tools/kb; mv kb.bc.js kb.js; cp index.html kb.css kb.js $(DOCS_DIR)/kb
+	cd kb; git add *
 
 ci: all
 	git ci . -m "Update documentation."

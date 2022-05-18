@@ -1,15 +1,5 @@
-*.a
-*.annot
-*.cma
-*.cmi
-*.cmo
-*.cmt
-*.cmx
-*.cmxa
-*.o
 *~
-._d
-._bcdi
 *.aux
 *.log
 *.pdf
+_build

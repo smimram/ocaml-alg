@@ -162,9 +162,9 @@ module Pres (K : Field.T) (X : Alphabet.T) = struct
 
     let nf = normalize P.presentation
 
-    let inj m = nf (inj m)
+    (* let inj m = nf (inj m) *)
 
-    let cinj c m = nf (cinj c m)
+    (* let cinj c m = nf (cinj c m) *)
 
     let mul p q = nf (mul p q)
   end
@@ -236,10 +236,11 @@ module Pres (K : Field.T) (X : Alphabet.T) = struct
       type t = AMod.t
       type r = K.t
       let cinj a c u = AMod.cinj c (A.cinj a u)
-      let inj c u = AMod.cmul c (A.inj u)
+      (* let inj c u = AMod.cmul c (A.inj u) *)
       let cmul a cu = AMod.cmul cu (A.cmul a A.one)
       let iter f (p:t) =
         AMod.iter (fun u c -> A.iter (fun a u -> f a c u) u) p
+
       (** Map a [K]-linear function. *)
       let map f p =
         let ans = ref AMod.zero in
