@@ -27,8 +27,8 @@ let rigs =
       RS.Rule.make "R+" (p x u) x;
       RS.Rule.make "D" (m x (p y z)) (p (m x y) (m x z));
       RS.Rule.make "D'" (m (p x y) z) (p (m x z) (m y z));
-      RS.Rule.make "N" (m u x) u;
-      RS.Rule.make "N'" (m x u) u;
+      RS.Rule.make "N" (m x u) u;
+      RS.Rule.make "N'" (m u x) u;
     ]
 
 let () = Printf.printf "# Theory\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs)
@@ -39,6 +39,6 @@ let rigs = RS.orient ~gt rigs
 
 let () = Printf.printf "# Oriented theory\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs)
 
-(* let rigs = RS.knuth_bendix ~gt ~callback:(fun rs -> Printf.printf "## KB\n\n%s\n\n" (RS.to_string ~var:Var.namer_natural rs)) rigs *)
+let rigs = RS.knuth_bendix ~gt ~callback:(fun rs -> Printf.printf "## KB\n\n%s\n\n" (RS.to_string ~var:Var.namer_natural rs)) rigs
 
-(* let () = Printf.printf "# Completion\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs) *)
+let () = Printf.printf "# Completion\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs)

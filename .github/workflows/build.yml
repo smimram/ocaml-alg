@@ -4,12 +4,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Update to eoan
-      run: sudo sed -i s/bionic/eoan/ /etc/apt/sources.list && sudo apt-get update
-    - name: Install OCaml
-      run: sudo apt-get install ocaml-nox
-    - name: Build
-      run: make -C src
-    - name: Test
-      run: make -C test
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Setup OCaml
+      uses: avsm/setup-ocaml@v2
+    - name: Pin locally
+      run: opam pin -y add -n .
+    - name: Build and test
+      run: opam install -y -t odoc alg
+    - name: Build doc
+      run: make doc
+    - name: Deploy doc
+      uses: JamesIves/github-pages-deploy-action@4.1.6
+      with:
+        branch: gh-pages
+        folder: docs
