@@ -2,8 +2,6 @@ ocaml-alg
 =========
 A library to manipulate and compute with algebraic structures in OCaml.
 
-[![Build Status](https://travis-ci.org/smimram/ocaml-alg.svg?branch=master)](https://travis-ci.org/smimram/ocaml-alg)
-
 Documentation
 -------------
 You can have a look at the [generated documentation for the modules](https://smimram.github.io/ocaml-alg/alg/).
