@@ -13,7 +13,7 @@ jobs:
     - name: Build and test
       run: opam install -y -t odoc alg
     - name: Build doc
-      run: make doc
+      run: eval $(opam env) && make doc
     - name: Deploy doc
       uses: JamesIves/github-pages-deploy-action@4.1.6
       with:
