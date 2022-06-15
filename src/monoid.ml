@@ -26,6 +26,8 @@ module type Abelian = sig
 
   val eq : t -> t -> bool
 
+  val compare : t -> t -> int
+
   (** Addition. *)
   val add : t -> t -> t
 
@@ -34,6 +36,15 @@ module type Abelian = sig
 
   (** String representation. *)
   val to_string : t -> string
+end
+
+module MonoidOfAbelian(M : Abelian) : T = struct
+  type t = M.t
+  let eq = M.eq
+  let compare = M.compare
+  let mul = M.add
+  let one = M.zero
+  let to_string = M.to_string
 end
 
 (** The free monoid on a set. *)
@@ -400,13 +411,34 @@ module Generate (X : Alphabet.T with type t = int) = struct
     aux 0
 end
 
-(* module FreeAbelian(X : Alphabet.T) = struct *)
-  (* type t = (X.t * int) list *)
+module FreeAbelian(X : Alphabet.T) = struct
+  type t = (X.t * int) list
 
-  (* let domain u = List.filter_map (fun (x,n) -> if n > 0 then Some x else None) u *)
-(* end *)
+  let to_string (u:t) =
+    List.fold_left (fun s (x,n) -> s ^ X.to_string x ^ "^" ^ string_of_int n) "" u
 
-(* module FreeAbelianMonoid(X : Alphabet.T) : Abelian = FreeAbelian(X) *)
+  let domain (u:t) = List.filter_map (fun (x,n) -> if n > 0 then Some x else None) u
+
+  let occurrences x (u:t) =
+    match List.assoc_opt x u with
+    | Some n -> n
+    | None -> 0
+
+  let zero : t = []
+
+  let add u v : t =
+    let d = (domain u)@(domain v) |> List.sort_uniq X.compare in
+    List.map (fun x -> x, occurrences x u + occurrences x v) d
+
+  let included (u:t) (v:t) =
+    List.for_all (fun (x,n) -> n <= occurrences x v) u
+
+  let eq u v = included u v && included v u
+
+  let compare (u:t) (v:t) = failwith "TODO"
+end
+
+module FreeAbelianMonoid(X : Alphabet.T) : Abelian = FreeAbelian(X)
 
 (** Underlying alphabet of a monoid. *)
 module Alphabet (M : T) : Alphabet.T = struct

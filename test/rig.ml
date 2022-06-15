@@ -43,11 +43,20 @@ let () =
     let x i = P.var x.(i) in
     match Op.name f with
     | "p" -> P.add (P.cmul 2 (x 0)) (x 1)
-    | "u" -> P.zero
+    | "u" -> P.one
+    | "m" -> P.mul (P.mul (x 0) (x 0)) (x 1)
+    | "e" -> P.one
     | _ -> assert false
   in
-  let p = P.interpretation op (p (p x y) z) in
-  Printf.printf "Interpretation: %s\n\n%!" (P.to_string p)
+  List.iter
+    (fun r ->
+       let s = RS.Rule.source r in
+       let t = RS.Rule.target r in
+       let s' = P.interpretation op s in
+       let t' = P.interpretation op t in
+       Printf.printf "%s => %s : %s => %s\n%!" (Term.to_string s) (Term.to_string t) (P.to_string s') (P.to_string t')
+    ) (RS.rules rigs);
+  Printf.printf "\n\n%!"
 
 let () = Printf.printf "# Theory\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs)
 
