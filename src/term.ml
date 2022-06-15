@@ -610,7 +610,7 @@ module RS = struct
          let s' = List.flatten s' in
          s' @ s
     in
-    List.flatten (List.map (fun r -> aux r id t) (rules rs))
+    List.flatten (List.map (fun r -> aux r Fun.id t) (rules rs))
 
   (** Rewriting paths. *)
   module Path = struct    
@@ -734,7 +734,7 @@ module RS = struct
         let s' = List.flatten s' in
         s @ s'
     in
-    aux id (Rule.source r1)
+    aux Fun.id (Rule.source r1)
 
   (** Critical branchings. *)
   let critical (rs:t) =
@@ -1003,7 +1003,7 @@ module RS = struct
         | RApp (r', s) when Rule.eq r r' -> map tm_ctx rs_ctx (subst s pr)
         | RApp (r, s) -> step (rs_ctx (Step.rapp r s))
       in
-      let replace_step = replace_step id id in
+      let replace_step = replace_step Fun.id Fun.id in
       match p with
       | Step s -> replace_step s
       | Comp (p, q) -> comp (replace_rule r pr p) (replace_rule r pr q)

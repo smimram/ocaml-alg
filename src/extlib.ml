@@ -1,5 +1,3 @@
-let id x = x
-
 let pair x y = x, y
 
 let unpair f (x,y) = f x y
@@ -32,7 +30,7 @@ module List = struct
         else aux (n-1) (fun l -> k (y::l)) l
       | [] -> raise Not_found
     in
-    aux n id l
+    aux n Fun.id l
 
   let replace_assoc k v l =
     List.map (fun (k',v') -> if k = k' then k, v else k', v') l

@@ -400,6 +400,14 @@ module Generate (X : Alphabet.T with type t = int) = struct
     aux 0
 end
 
+(* module FreeAbelian(X : Alphabet.T) = struct *)
+  (* type t = (X.t * int) list *)
+
+  (* let domain u = List.filter_map (fun (x,n) -> if n > 0 then Some x else None) u *)
+(* end *)
+
+(* module FreeAbelianMonoid(X : Alphabet.T) : Abelian = FreeAbelian(X) *)
+
 (** Underlying alphabet of a monoid. *)
 module Alphabet (M : T) : Alphabet.T = struct
   include M
