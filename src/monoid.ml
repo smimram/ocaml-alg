@@ -42,12 +42,16 @@ module Free (X : Alphabet.T) = struct
 
   type word = t
 
+  (** Multiplication, i.e. concatenation. *)
   let mul (u:t) (v:t) : t = Array.append u v
 
+  (** Unit of the monoid. *)
   let one : t = [||]
 
+  (** Canonical injection from the alphabet to the monoid. *)
   let inj a : t = [|a|]
 
+  (** Length of a word. *)
   let length (u:t) = Array.length u
 
   let sub (u:t) o l : t = Array.sub u o l
@@ -87,11 +91,30 @@ module Free (X : Alphabet.T) = struct
     with
     | Exit -> false
 
+  (** String representation of a word. *)
   let to_string (u:t) =
     if eq one u then "ε" else
     let u = Array.to_list u in
     let u = List.map X.to_string u in
     String.concat "" u
+
+  (** Maps from the free monoid to another monoid. *)
+  module Map(M : T) = struct
+    module E = Map.Make(X)
+
+    type map = M.t E.t
+
+    (** Create a map from an association list. *)
+    let of_list l : map = E.of_seq (List.to_seq l)
+
+    (** Apply the map to a letter. *)
+    let app (f:map) (x:X.t) =
+      E.find x f
+
+    (** Extension of the map to words. *)
+    let bind (f:map) (u:t) =
+      Array.fold_left (fun y x -> M.mul y (app f x)) M.one u
+  end
 
   let included u v =
     let ul = length u in

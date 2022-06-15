@@ -38,13 +38,20 @@ end
 (** Variables. *)
 module Var = struct
   (** A variable. *)
-  type t = unit ref
+  (* Note: the integer is only here to implement compare, and should not be used
+     otherwise. *)
+  type t = int ref
 
   (** Create a fresh variable. *)
-  let fresh () : t = ref ()
+  let fresh : unit -> t =
+    let n = ref (-1) in
+    fun () ->
+      incr n; ref !n
 
   (** Equality between variables. *)
   let eq (x:t) (y:t) = x == y
+
+  let compare (x:t) (y:t) = compare x y
 
   (** Create a function which will assign names to variables. *)
   let namer () =
@@ -288,6 +295,43 @@ end
 module Subst = Substitution
 
 type subst = Subst.t
+
+(** Interpretation of terms into cartesian categories. *)
+module Interpretation = struct
+  (** Polynomial interpretations. *)
+  module Polynomial = struct
+    (* Words. *)
+    module W = Monoid.Free(Var)
+    (* Polynomials. *)
+    module P = struct
+      include Algebra.FreeR(Ring.Int)(W)
+
+      (** Canonical injection of variables into polynomials. *)
+      let var x = inj (W.inj x)
+    end
+    (* Substitutions. *)
+    module S = struct
+      include W.Map(P)
+
+      (** Apply a substitution to a polynomial. *)
+      let bind (s : map) (p : P.t) =
+        P.map (fun u -> bind s u) p
+    end
+
+    include P
+
+    (** Extend an the interpretation of operations to terms. *)
+    let rec interpretation (op:Op.t -> Var.t array -> P.t) (t:term) : t =
+      match t with
+      | App (f, l) ->
+        (* Canonical name for variables. *)
+        let v = List.init (Op.arity f) (fun i -> Var.fresh ()) in
+        let s = List.map2 (fun x t -> x, interpretation op t) v l in
+        let s = S.of_list s in
+        S.bind s (op f (Array.of_list v))
+      | Var x -> P.var x
+  end
+end
 
 exception Not_unifiable
 

@@ -77,6 +77,8 @@ module FreeLeft (R : Ring.T) (X : Alphabet.T) = struct
   let eq x y =
     included x y && included y x
 
+  let compare _ _ = failwith "TODO"
+
   let add_monomial (p:t) (a:r) (x:X.t) : t =
     let a = R.add a (coeff p x) in
     E.add x a p
@@ -122,12 +124,14 @@ module FreeLeft (R : Ring.T) (X : Alphabet.T) = struct
     let set (f:map) (x:X.t) (p:t) : map =
       E.add x p f
 
+    (** Apply a map to a basis element (defaulting to 0.). *)
     let app (f:map) (x:X.t) =
       try
         E.find x f
       with
       | Not_found -> zero
 
+    (** Extension of the map to all elements of the free module. *)
     let bind f (p:t) =
       E.fold (fun (x:X.t) a q -> add q (cmul a (app f x))) p zero
 

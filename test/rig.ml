@@ -31,6 +31,24 @@ let rigs =
       RS.Rule.make "N'" (m u x) u;
     ]
 
+module X = struct
+  include Alphabet.Int
+  let to_string n = Printf.sprintf "x%d" n
+end
+module M = Algebra.Free(Field.Float)(Monoid.Free(X))
+
+let () =
+  let module P = Interpretation.Polynomial in
+  let op f x =
+    let x i = P.var x.(i) in
+    match Op.name f with
+    | "p" -> P.add (P.cmul 2 (x 0)) (x 1)
+    | "u" -> P.zero
+    | _ -> assert false
+  in
+  let p = P.interpretation op (p (p x y) z) in
+  Printf.printf "Interpretation: %s\n\n%!" (P.to_string p)
+
 let () = Printf.printf "# Theory\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs)
 
 let gt = LPO.gt (<=)

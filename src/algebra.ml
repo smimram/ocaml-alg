@@ -18,10 +18,8 @@ module type T = sig
 end
 
 (** Free algebra of a monoid over a ring. *)
-module Free (K : Field.T) (M : Monoid.T) = struct
+module FreeR (K : Ring.T) (M : Monoid.T) = struct
   include Module.FreeLeft(K)(M)
-
-  module Field = K
 
   let one = inj M.one
 
@@ -36,6 +34,13 @@ module Free (K : Field.T) (M : Monoid.T) = struct
     let u = ref M.one in
     iter (fun b v -> if leq !u v then (a := b; u := v)) p;
     !a, !u
+end
+
+(** Free algebra of a monoid over a field. *)
+module Free (K : Field.T) (M : Monoid.T) = struct
+  include FreeR(K)(M)
+
+  module Field = K
 end
 module FreeAlgebra (K : Field.T) (M : Monoid.T) = (Free(K)(M) : T)
 
