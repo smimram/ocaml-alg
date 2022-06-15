@@ -2,8 +2,6 @@ let pair x y = x, y
 
 let unpair f (x,y) = f x y
 
-let (|>) x f = f x
-
 module Int = struct
   let modulo x y =
     let ans = x mod y in
