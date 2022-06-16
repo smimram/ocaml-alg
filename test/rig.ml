@@ -41,22 +41,28 @@ let () =
   let module P = Interpretation.Polynomial in
   let op f x =
     let x i = P.var x.(i) in
+    let (+) = P.add in
+    let ( * ) = P.mul in
+    let ( *~ ) = P.cmul in
     match Op.name f with
-    | "p" -> P.add (P.cmul 2 (x 0)) (x 1)
+    | "p" -> P.add (2 *~ x 0 + x 1) P.one
     | "u" -> P.one
-    | "m" -> P.mul (P.mul (x 0) (x 0)) (x 1)
+    | "m" -> x 0 * x 1
     | "e" -> P.one
     | _ -> assert false
   in
+  Printf.printf "# Interpretation of generators\n\n%!";
+  List.iter (fun t -> Printf.printf "%s : %s\n%!" (Term.to_string t) (P.to_string (P.interpretation op t))) [m x y; e; p x y; u];
+  Printf.printf "\n# Interpretation of rules\n\n%!";
   List.iter
     (fun r ->
        let s = RS.Rule.source r in
        let t = RS.Rule.target r in
        let s' = P.interpretation op s in
        let t' = P.interpretation op t in
-       Printf.printf "%s => %s : %s => %s     %s\n%!" (Term.to_string s) (Term.to_string t) (P.to_string s') (P.to_string t') (P.to_string (P.sub s' t'))
+       Printf.printf "%s => %s : %s => %s\n  %s\n%!" (Term.to_string s) (Term.to_string t) (P.to_string s') (P.to_string t') (P.to_string (P.sub s' t'))
     ) (RS.rules rigs);
-  Printf.printf "\n\n%!"
+  Printf.printf "\n%!"
 
 let () = Printf.printf "# Theory\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs)
 

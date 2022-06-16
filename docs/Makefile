@@ -11,6 +11,7 @@ clean:
 alg: doc
 	mkdir -p $@
 	cp -r ../_build/default/_doc/_html/* alg/
+	chmod -R +w alg/*
 
 bergman: build
 	mkdir -p $@

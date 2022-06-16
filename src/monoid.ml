@@ -328,6 +328,8 @@ module Free (X : Alphabet.T) = struct
     let to_string (c:t) = "[" ^ String.concat "|" (List.map to_string (List.rev c)) ^ "]"
   end
 end
+
+(** The free monoid as a monoid. *)
 module FreeMonoid (X : Alphabet.T) : T = Free(X)
 
 (** Oriented presentation of a monoid. *)
@@ -526,6 +528,7 @@ module Multisets(X : Alphabet.T) = struct
   end
 end
 
+(** Multisets as a monoid. *)
 module MultisetsMonoid(X : Alphabet.T) : T = Multisets(X)
 
 (** Underlying alphabet of a monoid. *)
