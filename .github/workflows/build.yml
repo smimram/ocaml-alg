@@ -15,9 +15,9 @@ jobs:
     - name: Build and test
       run: opam install -y -t odoc js_of_ocaml js_of_ocaml-ppx alg
     - name: Build doc
-      run: eval $(opam env) && make -C docs
+      run: eval $(opam env) && make -C docs && cp -r docs website
     - name: Deploy doc
       uses: JamesIves/github-pages-deploy-action@4.1.6
       with:
         branch: gh-pages
-        folder: docs
+        folder: website
