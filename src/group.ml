@@ -8,8 +8,8 @@ module type T = sig
 end
 
 (** An abelian group (with additive conventions). *)
-module type Abelian = sig
-  include Monoid.Abelian
+module type Additive = sig
+  include Monoid.Additive
 
   val neg : t -> t
 end

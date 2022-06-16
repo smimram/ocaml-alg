@@ -301,13 +301,17 @@ module Interpretation = struct
   (** Polynomial interpretations. *)
   module Polynomial = struct
     (* Words. *)
-    module W = Monoid.Free(Var)
+    module W = Monoid.Multisets(Var)
     (* Polynomials. *)
     module P = struct
-      include Algebra.FreeR(Ring.Int)(W)
+      include Algebra.OverRing.Free(Ring.Int)(W)
+
+      let is_commutative = W.is_commutative
 
       (** Canonical injection of variables into polynomials. *)
       let var x = inj (W.inj x)
+
+      let pow (u:t) n = Monoid.simple_pow one mul u n
     end
     (* Substitutions. *)
     module S = struct

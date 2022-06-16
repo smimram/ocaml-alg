@@ -17,28 +17,31 @@ module type T = sig
   val cmul : r -> t -> t
 end
 
-(** Free algebra of a monoid over a ring. *)
-module FreeR (K : Ring.T) (M : Monoid.T) = struct
-  include Module.FreeLeft(K)(M)
+(** Algebras over rings (contarily to usual algebras which are over fields). *)
+module OverRing = struct
+  (** Free algebra of a monoid over a ring. *)
+  module Free (K : Ring.T) (M : Monoid.T) = struct
+    include Module.FreeLeft(K)(M)
 
-  let one = inj M.one
+    let one = inj M.one
 
-  let mul_monomial p v =
-    map (fun u -> inj (M.mul u v)) p
+    let mul_monomial p v =
+      map (fun u -> inj (M.mul u v)) p
 
-  let mul p q =
-    map (fun v -> mul_monomial p v) q
+    let mul p q =
+      map (fun v -> mul_monomial p v) q
 
-  let leading leq (p:t) : K.t * M.t =
-    let a = ref K.zero in
-    let u = ref M.one in
-    iter (fun b v -> if leq !u v then (a := b; u := v)) p;
-    !a, !u
+    let leading leq (p:t) : K.t * M.t =
+      let a = ref K.zero in
+      let u = ref M.one in
+      iter (fun b v -> if leq !u v then (a := b; u := v)) p;
+      !a, !u
+  end
 end
 
 (** Free algebra of a monoid over a field. *)
 module Free (K : Field.T) (M : Monoid.T) = struct
-  include FreeR(K)(M)
+  include OverRing.Free(K)(M)
 
   module Field = K
 end

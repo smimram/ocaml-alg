@@ -39,6 +39,14 @@ module M = Algebra.Free(Field.Float)(Monoid.Free(X))
 
 let () =
   let module P = Interpretation.Polynomial in
+  let () =
+    let p = P.var (Var.fresh ()) in
+    let p = P.add p p in
+    let q = P.var (Var.fresh ()) in
+    let p = P.add p q in
+    let p = P.mul p p in
+    Printf.printf "test: %s\n\n%!" (P.to_string p)
+  in
   let op f x =
     let x i = P.var x.(i) in
     match Op.name f with

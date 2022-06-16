@@ -12,7 +12,7 @@ module type Left = sig
     include Ring.T with type t := r
   end
 
-  include Group.Abelian with type t := t
+  include Group.Additive with type t := t
 
   (** Left action of the ring. *)
   val cmul : r -> t -> t
@@ -66,10 +66,8 @@ module FreeLeft (R : Ring.T) (X : Alphabet.T) = struct
 
   (** Coefficient of an element. *)
   let coeff (p:t) (x:X.t) =
-    try
-      E.find x p
-    with
-    | Not_found -> R.zero
+    try E.find x p
+    with Not_found -> R.zero
 
   let included x y =
     E.for_all (fun u a -> coeff y u = a) (x:t)
@@ -77,7 +75,7 @@ module FreeLeft (R : Ring.T) (X : Alphabet.T) = struct
   let eq x y =
     included x y && included y x
 
-  let compare _ _ = failwith "TODO"
+  let compare _ _ = failwith "TODO: Module.FreeLeft.compare"
 
   let add_monomial (p:t) (a:r) (x:X.t) : t =
     let a = R.add a (coeff p x) in

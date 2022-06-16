@@ -13,15 +13,21 @@ module type T = sig
   (** Unit. *)
   val one : t
 
+  (** An element expnentiated to a natural number of times. *)
+  val pow : t -> int -> t
+
   (** String representation. *)
   val to_string : t -> string
 
   (** Comparison. *)
   val compare : t -> t -> int
+
+  (** Whether we are guaranteed to be commutative. *)
+  val is_commutative : bool
 end
 
-(** A commutative monoid. *)
-module type Abelian = sig
+(** A commutative monoid with additive conventions. *)
+module type Additive = sig
   type t
 
   val eq : t -> t -> bool
@@ -38,14 +44,22 @@ module type Abelian = sig
   val to_string : t -> string
 end
 
-module MonoidOfAbelian(M : Abelian) : T = struct
+module ToAdditive (M : T) : Additive = struct
+  let () = assert M.is_commutative
   type t = M.t
   let eq = M.eq
   let compare = M.compare
-  let mul = M.add
-  let one = M.zero
+  let add = M.mul
+  let zero = M.one
   let to_string = M.to_string
 end
+
+let simple_pow one mul u n =
+  let ans = ref one in
+  for _ = 1 to n do
+    ans := mul !ans u
+  done;
+  !ans
 
 (** The free monoid on a set. *)
 module Free (X : Alphabet.T) = struct
@@ -53,11 +67,15 @@ module Free (X : Alphabet.T) = struct
 
   type word = t
 
+  let is_commutative = false
+
   (** Multiplication, i.e. concatenation. *)
   let mul (u:t) (v:t) : t = Array.append u v
 
   (** Unit of the monoid. *)
   let one : t = [||]
+
+  let pow (u:t) n : t = simple_pow one mul u n
 
   (** Canonical injection from the alphabet to the monoid. *)
   let inj a : t = [|a|]
@@ -388,9 +406,13 @@ module Pres (X : Alphabet.T) = struct
 
     type t = W.t
 
+    let is_commutative = false
+
     let mul = W.mul
 
     let one = W.one
+
+    let pow = W.pow
 
     let to_string = W.to_string
 
@@ -411,34 +433,93 @@ module Generate (X : Alphabet.T with type t = int) = struct
     aux 0
 end
 
-module FreeAbelian(X : Alphabet.T) = struct
+(** Multisets over a set, i.e. the free commutative monoid. *)
+module Multisets(X : Alphabet.T) = struct
   type t = (X.t * int) list
+
+  let is_commutative = true
 
   let to_string (u:t) =
     List.fold_left (fun s (x,n) -> s ^ X.to_string x ^ "^" ^ string_of_int n) "" u
 
-  let domain (u:t) = List.filter_map (fun (x,n) -> if n > 0 then Some x else None) u
+  (** Domain of an element. *)
+  module Domain = struct
+    type t = X.t list
+
+    let empty : t = []
+
+    let union (d:t) (d':t) : t =
+      d@d' |> List.sort_uniq X.compare
+  end
+
+  let domain (u:t) : Domain.t = List.filter_map (fun (x,n) -> if n > 0 then Some x else None) u
 
   let occurrences x (u:t) =
     match List.assoc_opt x u with
     | Some n -> n
     | None -> 0
 
-  let zero : t = []
+  let one : t = []
 
-  let add u v : t =
-    let d = (domain u)@(domain v) |> List.sort_uniq X.compare in
+  let mul u v : t =
+    let d = Domain.union (domain u) (domain v) in
     List.map (fun x -> x, occurrences x u + occurrences x v) d
+
+  let pow (u:t) n : t =
+    List.map (fun (x,m) -> x,m*n) u
 
   let included (u:t) (v:t) =
     List.for_all (fun (x,n) -> n <= occurrences x v) u
 
   let eq u v = included u v && included v u
 
-  let compare (u:t) (v:t) = failwith "TODO"
+  (* Put an element in canonical form. *)
+  let normalize u =
+    let u = List.filter (fun (x,n) -> n <> 0) u in
+    List.sort (fun (x,n) (y,m) ->
+        let c = X.compare x y in
+        if c <> 0 then c else n - m
+      ) u
+
+  let compare (u:t) (v:t) =
+    let u = normalize u in
+    let v = normalize v in
+    let rec aux u v =
+      match u, v with
+      | (x,n)::u, (y,m)::v ->
+        let c = X.compare x y in
+        if c <> 0 then c else
+          let c = n - m in
+          if c <> 0 then c else
+            aux u v
+      | _::_, [] -> 1
+      | [], _::_ -> -1
+      | [], [] -> 0
+    in
+    aux u v
+
+  let inj x : t = [x,1]
+
+  let cmul n u = List.map (fun (x,m) -> x,m*n) u
+
+  module Map(M:T) = struct
+    let () = assert M.is_commutative
+
+    module E = Map.Make(X)
+
+    type map = M.t E.t
+
+    let of_list l = E.of_seq (List.to_seq l)
+
+    let app (f:map) (x:X.t) : M.t =
+      E.find x f
+
+    let bind (f:map) (u:t) : M.t =
+      List.fold_left (fun v (x,n) -> M.mul v (M.pow (app f x) n)) M.one u
+  end
 end
 
-module FreeAbelianMonoid(X : Alphabet.T) : Abelian = FreeAbelian(X)
+module MultisetsMonoid(X : Alphabet.T) : T = Multisets(X)
 
 (** Underlying alphabet of a monoid. *)
 module Alphabet (M : T) : Alphabet.T = struct
