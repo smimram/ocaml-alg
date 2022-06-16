@@ -1,5 +1,7 @@
 (** Monoids. *)
 
+open Extlib
+
 (** A monoid. *)
 module type T = sig
   type t
@@ -440,7 +442,7 @@ module Multisets(X : Alphabet.T) = struct
   let is_commutative = true
 
   let to_string (u:t) =
-    List.fold_left (fun s (x,n) -> s ^ X.to_string x ^ "^" ^ string_of_int n) "" u
+    List.fold_left (fun s (x,n) -> s ^ X.to_string x ^ String.superscript (string_of_int n)) "" u
 
   (** Domain of an element. *)
   module Domain = struct

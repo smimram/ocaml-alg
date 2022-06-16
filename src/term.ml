@@ -56,7 +56,7 @@ module Var = struct
   (** Create a function which will assign names to variables. *)
   let namer () =
     let f = Utils.namer eq in
-    fun x -> "x" ^ string_of_int (f x)
+    fun x -> "x" ^ String.subscript (string_of_int (f x))
 
   let namer_natural () =
     let f = Utils.namer eq in
@@ -304,9 +304,24 @@ module Interpretation = struct
     module W = Monoid.Multisets(Var)
     (* Polynomials. *)
     module P = struct
-      include Algebra.OverRing.Free(Ring.Int)(W)
+      module R = Ring.Int
+      include Algebra.OverRing.Free(R)(W)
 
       let is_commutative = W.is_commutative
+
+      let to_string p =
+        let ans = ref "" in
+        let w s = ans := !ans ^ s in
+        iter (fun a u ->
+            if !ans <> "" then w "+";
+            if R.eq a R.one && W.eq u W.one then w "1"
+            else
+              (
+                if not (R.eq a R.one) then w (R.to_string a);
+                if not (W.eq u W.one) then w (W.to_string u)
+              )
+          ) p;
+        !ans
 
       (** Canonical injection of variables into polynomials. *)
       let var x = inj (W.inj x)
