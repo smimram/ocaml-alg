@@ -310,18 +310,22 @@ module Interpretation = struct
       let is_commutative = W.is_commutative
 
       let to_string p =
-        let ans = ref "" in
-        let w s = ans := !ans ^ s in
-        iter (fun a u ->
-            if !ans <> "" then w "+";
-            if R.eq a R.one && W.eq u W.one then w "1"
-            else
-              (
-                if not (R.eq a R.one) then w (R.to_string a);
-                if not (W.eq u W.one) then w (W.to_string u)
-              )
-          ) p;
-        !ans
+        if eq p zero then "0" else
+          let ans = ref "" in
+          let w s = ans := !ans ^ s in
+          iter (fun a u ->
+              let a =
+                if a < 0 then (w "-"; -a)
+                else if !ans <> "" then (w "+"; a) else a
+              in
+              if R.eq a R.one && W.eq u W.one then w "1"
+              else
+                (
+                  if not (R.eq a R.one) then w (R.to_string a);
+                  if not (W.eq u W.one) then w (W.to_string u)
+                )
+            ) p;
+          !ans
 
       (** Canonical injection of variables into polynomials. *)
       let var x = inj (W.inj x)

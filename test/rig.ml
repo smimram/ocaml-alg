@@ -39,14 +39,6 @@ module M = Algebra.Free(Field.Float)(Monoid.Free(X))
 
 let () =
   let module P = Interpretation.Polynomial in
-  let () =
-    let p = P.var (Var.fresh ()) in
-    let p = P.add p p in
-    let q = P.var (Var.fresh ()) in
-    let p = P.add p q in
-    let p = P.mul p p in
-    Printf.printf "test: %s\n\n%!" (P.to_string p)
-  in
   let op f x =
     let x i = P.var x.(i) in
     match Op.name f with
@@ -62,7 +54,7 @@ let () =
        let t = RS.Rule.target r in
        let s' = P.interpretation op s in
        let t' = P.interpretation op t in
-       Printf.printf "%s => %s : %s => %s\n%!" (Term.to_string s) (Term.to_string t) (P.to_string s') (P.to_string t')
+       Printf.printf "%s => %s : %s => %s     %s\n%!" (Term.to_string s) (Term.to_string t) (P.to_string s') (P.to_string t') (P.to_string (P.sub s' t'))
     ) (RS.rules rigs);
   Printf.printf "\n\n%!"
 
