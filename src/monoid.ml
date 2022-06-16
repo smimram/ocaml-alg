@@ -442,7 +442,12 @@ module Multisets(X : Alphabet.T) = struct
   let is_commutative = true
 
   let to_string (u:t) =
-    List.fold_left (fun s (x,n) -> s ^ X.to_string x ^ String.superscript (string_of_int n)) "" u
+    List.fold_left (fun s (x,n) ->
+        if n = 0 then s
+        else
+          let n = if n = 1 then "" else String.superscript (string_of_int n) in
+          s ^ X.to_string x ^ n
+      ) "" u
 
   (** Domain of an element. *)
   module Domain = struct
