@@ -14,6 +14,8 @@ implements structures such as
 - automata
 - and so on...
 
+It also features some free and presented such structures.
+
 Documentation
 -------------
 
