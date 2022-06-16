@@ -17,7 +17,7 @@ jobs:
     - name: Build doc
       run: eval $(opam env) && make -C docs && find docs
     - name: Deploy doc
-      uses: JamesIves/github-pages-deploy-action@4.1.6
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        branch: gh-pages
-        folder: docs
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs
