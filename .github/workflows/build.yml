@@ -11,7 +11,7 @@ jobs:
     - name: Pin locally
       run: opam pin -y add -n .
     - name: Build and test
-      run: opam install -y -t odoc alg
+      run: opam install -y -t odoc js_of_ocaml alg
     - name: Build doc
       run: eval $(opam env) && make -C docs
     - name: Deploy doc

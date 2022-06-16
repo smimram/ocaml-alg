@@ -46,6 +46,7 @@ module type Additive = sig
   val to_string : t -> string
 end
 
+(** Convert a monoid to additive conventions. *)
 module ToAdditive (M : T) : Additive = struct
   let () = assert M.is_commutative
   type t = M.t
@@ -56,6 +57,7 @@ module ToAdditive (M : T) : Additive = struct
   let to_string = M.to_string
 end
 
+(** Simple implementation of power. *)
 let simple_pow one mul u n =
   let ans = ref one in
   for _ = 1 to n do
