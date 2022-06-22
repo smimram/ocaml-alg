@@ -72,8 +72,11 @@ let rigs = RS.orient ~gt rigs
 
 let () = Printf.printf "# Oriented theory\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs)
 
-(*
+(* Now, semi-rigs *)
+
+let rigs = RS.filter (fun r -> RS.Rule.name r <> "D") rigs
+
 let rigs = RS.knuth_bendix ~gt ~callback:(fun rs -> Printf.printf "## KB\n\n%s\n\n" (RS.to_string ~var:Var.namer_natural rs)) rigs
 
 let () = Printf.printf "# Completion\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs)
-*)
+

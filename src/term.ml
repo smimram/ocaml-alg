@@ -517,6 +517,9 @@ module RS = struct
 
   let rules rs = rs.rules
 
+  (** Select rules satisfying a predicate. *)
+  let filter p rs = { operations = rs.operations; rules = List.filter p rs.rules }
+
   let make operations rules =
     { operations; rules }
 
