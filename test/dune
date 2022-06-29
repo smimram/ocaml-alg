@@ -46,6 +46,13 @@
  (libraries alg)
 )
 
+
+(executable
+ (name mon)
+ (modules mon)
+ (libraries alg)
+)
+
 (executable
  (name rig)
  (modules rig)
@@ -102,6 +109,11 @@
 (rule
  (alias runtest)
  (action (run ./kleene.exe))
+)
+
+(rule
+ (alias runtest)
+ (action (run ./mon.exe))
 )
 
 (rule
