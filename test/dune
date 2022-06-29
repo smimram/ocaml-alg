@@ -47,6 +47,12 @@
 )
 
 (executable
+ (name mon)
+ (modules mon)
+ (libraries alg)
+)
+
+(executable
  (name moni)
  (modules moni)
  (libraries alg)
