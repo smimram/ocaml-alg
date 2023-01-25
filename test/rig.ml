@@ -31,6 +31,8 @@ let rigs =
       RS.Rule.make "N'" (m u x) u;
     ]
 
+let com = RS.Rule .make "C" (p x y) (p y x)
+
 module X = struct
   include Alphabet.Int
   let to_string n = Printf.sprintf "x%d" n
@@ -61,7 +63,7 @@ let () =
        let s' = P.interpretation op s in
        let t' = P.interpretation op t in
        Printf.printf "%s => %s : %s => %s\n  %s\n%!" (Term.to_string s) (Term.to_string t) (P.to_string s') (P.to_string t') (P.to_string (P.sub s' t'))
-    ) (RS.rules rigs);
+    ) ((RS.rules rigs)@[com]);
   Printf.printf "\n%!"
 
 let () = Printf.printf "# Theory\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs)
@@ -80,3 +82,11 @@ let rigs = RS.knuth_bendix ~gt ~callback:(fun rs -> Printf.printf "## KB\n\n%s\n
 
 let () = Printf.printf "# Completion\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural rigs)
 
+let () =
+  let s = RS.squier rigs in
+  Printf.printf "# Coherence\n\n";
+  List.iter
+    (fun (p,q) ->
+       Printf.printf "%s\n%s\n\n" (RS.Path.to_string p) (RS.Path.to_string q)
+    ) s;
+  Printf.printf "\n"
