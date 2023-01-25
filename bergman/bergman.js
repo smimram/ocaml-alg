@@ -34725,7 +34725,7 @@
     var
      global_data=runtime.caml_get_global_data(),
      version=caml_string_of_jsbytes("5.0.1"),
-     git_version=caml_string_of_jsbytes("2a136db"),
+     git_version=caml_string_of_jsbytes("48747a7"),
      cst_Jsoo_runtime_Error_Exn=
       caml_string_of_jsbytes("Jsoo_runtime.Error.Exn"),
      cst_jsError=caml_string_of_jsbytes("jsError"),
@@ -35323,7 +35323,7 @@
       caml_string_of_jsbytes
        ("^([Ff][Ii][Ll][Ee])://([^\\?#]*)(\\?([^#]*))?(#(.*))?$"),
      s=caml_string_of_jsbytes("5.0.1"),
-     git_version=caml_string_of_jsbytes("2a136db"),
+     git_version=caml_string_of_jsbytes("48747a7"),
      cst$38=caml_string_of_jsbytes(""),
      cst$41=caml_string_of_jsbytes("+"),
      cst_Jstable_keys=caml_string_of_jsbytes("Jstable.keys"),
