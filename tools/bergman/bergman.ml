@@ -41,5 +41,6 @@ let () =
   in
   let pres = P.make order variables relations in
   Printf.printf "# Computing Gröbner basis\n\n%!";
-  let pres = P.reduce (P.buchberger pres) in
-  ignore pres
+  let pres = P.buchberger pres in
+  let pres = P.reduce pres in
+  Printf.printf "%s\n\n%!" (P.to_string pres)
