@@ -3,8 +3,15 @@
 (ocamllex lexer)
 
 (executable
- (name bergman)
+ (name bergmanjs)
  (modes js)
  (preprocess (pps js_of_ocaml-ppx))
  (libraries alg js_of_ocaml)
+ (modules pol lexer parser bergmanjs)
+)
+
+(executable
+ (name bergman)
+ (libraries alg)
+ (modules bergman)
 )

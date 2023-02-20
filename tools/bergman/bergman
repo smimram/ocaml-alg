@@ -1,0 +1,3 @@
+#!/bin/sh
+
+dune exec --display=quiet --no-print-directory ./bergman.exe -- $@
