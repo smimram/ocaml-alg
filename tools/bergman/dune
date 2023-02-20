@@ -2,16 +2,23 @@
 
 (ocamllex lexer)
 
+(library
+ (name bergmanlib)
+ (wrapped false)
+ (libraries alg)
+ (modules pol lexer parser)
+)
+
 (executable
  (name bergmanjs)
  (modes js)
  (preprocess (pps js_of_ocaml-ppx))
- (libraries alg js_of_ocaml)
- (modules pol lexer parser bergmanjs)
+ (libraries bergmanlib js_of_ocaml)
+ (modules bergmanjs)
 )
 
 (executable
  (name bergman)
- (libraries alg)
+ (libraries bergmanlib)
  (modules bergman)
 )
