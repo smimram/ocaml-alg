@@ -31,7 +31,7 @@ module M = struct
   let s s : t =
     Array.init (String.length s) (fun i -> s.[i])
 end
-module K = Field.Int
+module K = Field.Float
 module P = Algebra.Pres(K)(Alphabet.Char)
 module A = P.A
 
