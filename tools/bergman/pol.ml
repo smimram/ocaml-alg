@@ -19,5 +19,3 @@ let to_string p =
     | Neg p -> "-" ^ aux p
   in
   aux p
-
-
