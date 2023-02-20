@@ -15,7 +15,7 @@ alg: doc
 
 bergman: build
 	mkdir -p $@
-	cd ../_build/default/tools/bergman; mv bergman.bc.js bergman.js; cp index.html bergman.css bergman.js $(DOCS_DIR)/bergman
+	cd ../_build/default/tools/bergman; mv bergmanjs.bc.js bergman.js; cp index.html bergman.css bergman.js $(DOCS_DIR)/bergman
 
 kb: build
 	mkdir -p $@
