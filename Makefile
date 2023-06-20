@@ -6,7 +6,7 @@ doc build:
 	$(MAKE) -C .. $@
 
 clean:
-	rm -rf alg bergman kb
+	rm -rf alg bergman kb rewr2
 
 alg: doc
 	mkdir -p $@
