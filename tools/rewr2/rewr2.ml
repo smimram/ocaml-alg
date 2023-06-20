@@ -42,6 +42,8 @@ let debug s = Firebug.console##debug (Js.string s)
 let jsget x = Js.Opt.get x (fun () -> assert false)
 
 let run _ =
+  let generate = jsget (Html.CoerceTo.select (jsget (doc##getElementById(Js.string "generate")))) in
+  let generaten = jsget (Html.CoerceTo.input (jsget (doc##getElementById(Js.string "generaten")))) in
   let syms = jsget (Html.CoerceTo.textarea (jsget (doc##getElementById(Js.string "symbols")))) in
   let rules = jsget (Html.CoerceTo.textarea (jsget (doc##getElementById(Js.string "rules")))) in
   let completion = jsget (doc##getElementById(Js.string "completion")) in
@@ -105,6 +107,41 @@ let run _ =
            Js._false
       );
 
+    let generate_handler _ =
+    let set v r =
+      syms##.value := Js.string v;
+      rules##.value := Js.string r
+    in
+    let gen n = String.make 1 (char_of_int (n + int_of_char 'a')) in
+    let sym n =
+      let v = String.concat "," (List.init n gen) in
+      let rel = ref [] in
+      for i = 0 to n-2 do
+        rel := (gen i^gen (i+1)^gen i^"="^gen (i+1)^gen i^gen (i+1)) :: !rel
+      done;
+      for i = 0 to n-1 do
+        for j = i+2 to n-1 do
+          rel := (gen i^gen j^"="^gen j^gen i) :: !rel
+        done
+      done;
+      for i = 0 to n-1 do
+        rel := (gen i^gen i^"=1") :: !rel
+      done;
+
+      let rel = String.concat "," (List.rev !rel) in
+      set v rel
+    in
+    let n = int_of_string (Js.to_string generaten##.value) in
+    (
+      match Js.to_string generate##.value with
+      | "sym" -> sym n
+      | _ -> assert false
+    );
+    Js._true
+  in
+
+  generate##.oninput := Html.handler generate_handler;
+  generaten##.onchange := Html.handler generate_handler;
   Js._true
 
 let () =
