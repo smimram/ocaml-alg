@@ -347,6 +347,13 @@ module Pres (X : Alphabet.T) = struct
   let make generators rules =
     { generators; rules }
 
+  (** String representation of a presentation. *)
+  let to_string pres =
+    Printf.sprintf
+      "< %s | %s >"
+      (List.map X.to_string pres.generators |> String.concat ", ")
+      (List.map (fun (u,v) -> Printf.sprintf "%s -> %s" (W.to_string u) (W.to_string v)) pres.rules |> String.concat ", ")
+
   (** Orient rules according to a partial order. *)
   let orient leq pres =
     let rules = List.map (fun (u,v) -> if leq v u then u,v else v,u) pres.rules in
@@ -359,7 +366,7 @@ module Pres (X : Alphabet.T) = struct
       let i = W.unifier u v in
       let v1 = W.sub u 0 i in
       let v2 = W.sub u (i + W.length v) (W.length u - (i + W.length v)) in
-      normalize pres (W.mul v1 (W.mul v v2))
+      normalize pres (W.mul v1 (W.mul v' v2))
     with
     | Not_found -> u
 
@@ -387,19 +394,25 @@ module Pres (X : Alphabet.T) = struct
     let pres = ref pres in
     (* Add a relation *)
     let rel (u,v) =
-      (* Printf.printf "rel: %s\n%!" (A.to_string p); *)
-      let u,v = if leq v u then u,v else v,u in
-      pres := add_rule !pres (u,v);
-      Queue.push (u,v) todo
+      let u = normalize !pres u in
+      let v = normalize !pres v in
+      if not (W.eq u v) then
+        (
+          let u,v = if leq v u then u,v else v,u in
+          (* Printf.printf "rel: %s -> %s\n%!" (W.to_string u) (W.to_string v); *)
+          pres := add_rule !pres (u,v);
+          Queue.push (u,v) todo
+        )
     in
     while not (Queue.is_empty todo) do
       let u,u' = Queue.pop todo in
-      List.iter (fun (v,v') ->
-          List.iter (fun ((u1,u2),(v1,v2)) ->
-              let s1 = W.mul u1 (W.mul u' u2) in
-              let s2 = W.mul v1 (W.mul v' v2) in
-              rel (s1,s2)
-            ) (W.unifiers_bicontext u v)
+      List.iter
+        (fun (v,v') ->
+           List.iter (fun ((u1,u2),(v1,v2)) ->
+               let s1 = W.mul u1 (W.mul u' u2) in
+               let s2 = W.mul v1 (W.mul v' v2) in
+               rel (s1,s2)
+             ) (W.unifiers_bicontext u v)
         ) !pres.rules
     done;
     !pres

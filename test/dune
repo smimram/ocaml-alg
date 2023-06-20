@@ -135,3 +135,14 @@
  (alias runtest)
  (action (run ./squierMonoid.exe))
 )
+
+(executable
+ (name quaternion)
+ (modules quaternion)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./quaternion.exe))
+)
