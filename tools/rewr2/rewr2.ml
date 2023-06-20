@@ -107,33 +107,46 @@ let run _ =
            Js._false
       );
 
-    let generate_handler _ =
+  let generate_handler _ =
     let set v r =
+      let v = String.concat "," v in
+      let r = List.map (fun (u,v) -> u^"="^v) r |> String.concat "," in
       syms##.value := Js.string v;
       rules##.value := Js.string r
     in
     let gen n = String.make 1 (char_of_int (n + int_of_char 'a')) in
+    let quaternion n =
+      let v = ["a";"b"] in
+      let r =
+        [
+          String.make (1 lsl n) 'a',"1";
+          "bbbb","1";
+          String.make (1 lsl (n-1)) 'a',"bb";
+          "aba","b"
+        ]
+      in
+      set v r
+    in
     let sym n =
-      let v = String.concat "," (List.init n gen) in
+      let v = List.init n gen in
       let rel = ref [] in
       for i = 0 to n-2 do
-        rel := (gen i^gen (i+1)^gen i^"="^gen (i+1)^gen i^gen (i+1)) :: !rel
+        rel := (gen i^gen (i+1)^gen i, gen (i+1)^gen i^gen (i+1)) :: !rel
       done;
       for i = 0 to n-1 do
         for j = i+2 to n-1 do
-          rel := (gen i^gen j^"="^gen j^gen i) :: !rel
+          rel := (gen i^gen j, gen j^gen i) :: !rel
         done
       done;
       for i = 0 to n-1 do
-        rel := (gen i^gen i^"=1") :: !rel
+        rel := (gen i^gen i, "1") :: !rel
       done;
-
-      let rel = String.concat "," (List.rev !rel) in
-      set v rel
+      set v !rel
     in
     let n = int_of_string (Js.to_string generaten##.value) in
     (
       match Js.to_string generate##.value with
+      | "quaternion" -> quaternion n
       | "sym" -> sym n
       | _ -> assert false
     );
