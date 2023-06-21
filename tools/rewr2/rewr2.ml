@@ -4,12 +4,12 @@ open Alg
 module Array = struct
   include Array
 
-  let index x a =
-    let ans = ref 0 in
+  let index_opt x a =
+    let ans = ref (-1) in
     for i = 0 to Array.length a - 1 do
       if x = a.(i) then ans := i
     done;
-    !ans
+    if !ans = -1 then None else Some !ans
 end
 module String = struct
   include String
@@ -75,7 +75,10 @@ let run _ =
            let module X = struct
              include Alphabet.Int
              let to_string n = syms.(n)
-             let of_char c = Array.index (String.make 1 c) syms
+             let of_char c =
+               match Array.index_opt (String.make 1 c) syms with
+               | Some i -> i
+               | None -> failwith ("Unknown letter "^String.make 1 c)
            end in
            let module P = Monoid.Pres(X) in
            let string_of_rs rs =
@@ -87,7 +90,7 @@ let run _ =
 
            status "Parsing rewriting system...";
            let rules =
-             let word u = Array.init (String.length u) (fun i -> X.of_char u.[i]) in
+             let word u = if u = "1" then [||] else Array.init (String.length u) (fun i -> X.of_char u.[i]) in
              List.map (fun (u,v) -> word u, word v) rules
            in
            let rs = P.make (List.init (Array.length syms) Fun.id) rules in
