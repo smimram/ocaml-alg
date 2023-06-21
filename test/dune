@@ -146,3 +146,14 @@
  (alias runtest)
  (action (run ./quaternion.exe))
 )
+
+(executable
+ (name braids)
+ (modules braids)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./braids.exe))
+)
