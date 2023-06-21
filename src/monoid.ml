@@ -388,7 +388,6 @@ module Pres (X : Alphabet.T) = struct
   (** Knuth-Bendix completion wrt a total order. *)
   let complete leq pres =
     let pres = orient leq pres in
-    let pres = reduce pres in
     let todo = Queue.create () in
     List.iter (fun r -> Queue.add r todo) pres.rules;
     let pres = ref pres in
