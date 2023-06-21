@@ -27,6 +27,16 @@ module String = struct
     with Not_found -> s
 end
 
+module Str = struct
+  include Str
+
+  let split_first r s =
+    let i = Str.search_forward r s 0 in
+    let l = String.length (Str.matched_string s) in
+    String.sub s 0 i,
+    String.sub s (i+l) (String.length s - (i+l))
+end
+
 module Html = Dom_html
 
 let doc = Html.document
@@ -72,7 +82,7 @@ let run _ =
              |> List.flatten
              |> List.map String.trim
              |> List.filter (fun s -> s <> "")
-             |> List.map (String.split_on_first_char '=')
+             |> List.map (Str.split_first (Str.regexp "\\(=\\|→\\)"))
              |> List.map (fun (u,v) -> String.trim u, String.trim v)
            in
 
@@ -94,7 +104,7 @@ let run _ =
 
            status "Parsing rewriting system...";
            let rules =
-             let word u = if u = "1" then [||] else Array.init (String.length u) (fun i -> X.of_char u.[i]) in
+             let word u = if u = "1" || u = "ε" then [||] else Array.init (String.length u) (fun i -> X.of_char u.[i]) in
              List.map (fun (u,v) -> word u, word v) rules
            in
            let rs = P.make (List.init (Array.length syms) Fun.id) rules in
