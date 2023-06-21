@@ -46,7 +46,9 @@ let run _ =
   let generaten = jsget (Html.CoerceTo.input (jsget (doc##getElementById(Js.string "generaten")))) in
   let syms = jsget (Html.CoerceTo.textarea (jsget (doc##getElementById(Js.string "symbols")))) in
   let rules = jsget (Html.CoerceTo.textarea (jsget (doc##getElementById(Js.string "rules")))) in
+  let parsed_presentation = jsget (doc##getElementById(Js.string "presentation")) in
   let completion = jsget (doc##getElementById(Js.string "completion")) in
+  let reduced = jsget (doc##getElementById(Js.string "reduced")) in
   let go = jsget (doc##getElementById(Js.string "go")) in
   let status = jsget (doc##getElementById(Js.string "status")) in
   let status s = status##.innerHTML := Js.string s in
@@ -68,6 +70,8 @@ let run _ =
              |> String.split_on_char ','
              |> List.map (String.split_on_char '\n')
              |> List.flatten
+             |> List.map String.trim
+             |> List.filter (fun s -> s <> "")
              |> List.map (String.split_on_first_char '=')
              |> List.map (fun (u,v) -> String.trim u, String.trim v)
            in
@@ -94,14 +98,16 @@ let run _ =
              List.map (fun (u,v) -> word u, word v) rules
            in
            let rs = P.make (List.init (Array.length syms) Fun.id) rules in
+           parsed_presentation##.innerHTML := Js.string (string_of_rs rs);
            status ("Parsed: " ^ P.to_string rs);
 
            status "Computing Knuth-Bendix completion...";
-           let display rs =
-             completion##.innerHTML := Js.string (String.replace '\n' "<br/>" (string_of_rs rs))
-           in
            let rs = P.complete (P.W.Order.deglex X.leq) rs in
-           display rs;
+           completion##.innerHTML := Js.string (string_of_rs rs);
+
+           status "Reducing presentation...";
+           let rs = P.reduce rs in
+           reduced##.innerHTML := Js.string (string_of_rs rs);
 
            status "Done.";
            Js._true
