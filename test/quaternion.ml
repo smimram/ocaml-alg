@@ -35,3 +35,17 @@ let () =
   in
   let pres = P.complete (P.W.Order.deglex X.leq) pres in
   print_endline (P.to_string pres)
+
+let () =
+  let r = 0 in
+  let g = 1 in
+  let b = 2 in
+  let pres =
+    P.make [r;g;b] [
+      [|b|],[|r;g|];
+      [|b;g;r|],[||];
+      [|g;b|],[|r|];
+    ]
+  in
+  let pres = P.complete (P.W.Order.deglex X.leq) pres in
+  print_endline (P.to_string pres)
