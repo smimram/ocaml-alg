@@ -78,6 +78,12 @@ let run _ =
              let of_char c = Array.index (String.make 1 c) syms
            end in
            let module P = Monoid.Pres(X) in
+           let string_of_rs rs =
+             P.to_string rs
+             |> Str.global_replace (Str.regexp "->") "→"
+             |> Str.global_replace (Str.regexp "<") "⟨"
+             |> Str.global_replace (Str.regexp ">") "⟩"
+           in
 
            status "Parsing rewriting system...";
            let rules =
@@ -89,7 +95,7 @@ let run _ =
 
            status "Computing Knuth-Bendix completion...";
            let display rs =
-             completion##.innerHTML := Js.string (String.replace '\n' "<br/>" (P.to_string rs))
+             completion##.innerHTML := Js.string (String.replace '\n' "<br/>" (string_of_rs rs))
            in
            let rs = P.complete (P.W.Order.deglex X.leq) rs in
            display rs;

@@ -2,5 +2,5 @@
  (name rewr2)
  (modes js)
  (preprocess (pps js_of_ocaml-ppx))
- (libraries alg js_of_ocaml)
+ (libraries alg str js_of_ocaml)
 )
