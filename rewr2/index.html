@@ -41,11 +41,10 @@
       <input type="number" id="generaten" value="3"/>
     </p>
     <p>Generators:</p>
-    <textarea id="symbols">a,b</textarea>
+    <textarea id="symbols">a,b,c</textarea>
     <p>Rules:</p>
     <textarea id="rules" rows="5">aba=bab
-aa=1
-bb=1</textarea>
+ab=c</textarea>
     <p>
       <input id="go" type="submit" value="GO"/>
     </p>
@@ -53,7 +52,13 @@ bb=1</textarea>
     <h2 id="results">Results</h2>
     <p id="status" class="output"></p>
 
+    <h3>Parsed presentation</h3>
+    <p id="presentation" class="output"></p>
+
     <h3>Knuth-Bendix completion</h3>
     <p id="completion" class="output"></p>
+
+    <h3>Reduced completion</h3>
+    <p id="reduced" class="output"></p>
   </body>
 </html>
