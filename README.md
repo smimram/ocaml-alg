@@ -1,4 +1,4 @@
-ocaml-alg
+OCaml algebra
 =========
 
 A library to manipulate and compute with algebraic structures in OCaml. It
