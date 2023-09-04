@@ -31,3 +31,4 @@ Some online tools are implemented using this library:
   implementation for a Gröbner basis calculator
 - [KB](https://smimram.github.io/ocaml-alg/kb/) implements Knuth-Bendix and
   Squier completion on term rewriting systems
+- [Rewr 2](https://smimram.github.io/ocaml-alg/rewr2/) implements Knuth-Bendix completion for string rewriting systems
