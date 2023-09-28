@@ -5,12 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Setup OCaml
-      uses: avsm/setup-ocaml@v2
+      uses: ocaml/setup-ocaml@v2
       with:
         ocaml-compiler: 5.0.x
-        dune-cache: true
     - name: Install required packages
       run: sudo apt-get -y install pandoc
     - name: Pin locally
