@@ -119,6 +119,7 @@ module FreeLeft (R : Ring.T) (X : Alphabet.T) = struct
 
     type map = t E.t
 
+    (** Define a map on a generator. *)
     let set (f:map) (x:X.t) (p:t) : map =
       E.add x p f
 
@@ -133,6 +134,7 @@ module FreeLeft (R : Ring.T) (X : Alphabet.T) = struct
     let bind f (p:t) =
       E.fold (fun (x:X.t) a q -> add q (cmul a (app f x))) p zero
 
+    (** The null morphism. *)
     let zero : map = E.empty
 
     let to_string (f:map) =

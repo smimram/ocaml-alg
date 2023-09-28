@@ -157,3 +157,14 @@
  (alias runtest)
  (action (run ./braids.exe))
 )
+
+(executable
+ (name mirai)
+ (modules mirai)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./mirai.exe))
+)

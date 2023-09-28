@@ -266,18 +266,19 @@ module Pres (K : Field.T) (X : Alphabet.T) = struct
       done;
       cc
 
-    (** Compute the Anick resolution. *)
-    let resolution ?augmentation pres n =
+    (** Compute the Anick resolution together with the contracting homotopy. *)
+    let resolution_ch ?augmentation pres n =
       let debug = false in
       (* TODO: check that the RS is convergent and reduced *)
       let augmentation = match augmentation with Some augmentation -> augmentation | None -> Augmentation.graded pres in
       if debug then Printf.printf "Resolving...\n%!";
       (* The Anick chains. *)
       let cc = chains pres n in
-      (* The differential. *)
       let eps = augmentation in
       let eta a = A.cinj a M.one in
+      (* The differential. *)
       let d = Array.init n (fun _ -> AMod.Map.zero) in
+      (* The 0-th differential. *)
       List.iter (fun x ->
         d.(0) <- AMod.Map.set d.(0)
           (M.Anick.singleton x)
@@ -286,15 +287,17 @@ module Pres (K : Field.T) (X : Alphabet.T) = struct
              (let x = A.inj (M.inj x) in
               A.sub x (eta (eps x)))
           );
-        if debug then Printf.printf "d0(%s) = %s\n%!"
+        if debug then Printf.printf "∂₀(%s) = %s\n%!"
           (X.to_string x) (AMod.to_string (AMod.Map.app d.(0) (M.Anick.singleton x)))
       ) pres.generators;
       (* The contracting homotopy. *)
       let rec ch n p =
-        if debug then Printf.printf "i%d(%s) = ?\n%!" n (AMod.to_string p);
+        if debug then Printf.printf "η%d(%s) = ?\n%!" n (AMod.to_string p);
         AMod.iter (fun u c -> assert (M.Anick.length c = n)) p;
-        assert (n = 0 || AMod.eq AMod.zero (AMod.Map.bind pres d.(n-1) p));
-        if AMod.eq AMod.zero p then AMod.zero
+        (* The contracting homotopy is only defined on the kernel of d.(n-1). *)
+        (* assert (n = 0 || AMod.eq AMod.zero (AMod.Map.bind pres d.(n-1) p)); *)
+        if n <> 0 && not (AMod.eq AMod.zero (AMod.Map.bind pres d.(n-1) p)) then AMod.zero
+        else if AMod.eq AMod.zero p then AMod.zero
         else if n = 0 then
           (* Contract. *)
           let ans = ref AMod.zero in
@@ -373,7 +376,7 @@ module Pres (K : Field.T) (X : Alphabet.T) = struct
           let p' = AMod.normalize pres p' in
           let ans' = ch n p' in
           let ans = AMod.normalize pres (AMod.add ans ans') in
-          if debug then Printf.printf "i%d(%s) = %s\n%!" n (AMod.to_string p) (AMod.to_string ans);
+          if debug then Printf.printf "η%d(%s) = %s\n%!" n (AMod.to_string p) (AMod.to_string ans);
           ans
       in
       (* Fill in higher differentials. *)
@@ -393,9 +396,14 @@ module Pres (K : Field.T) (X : Alphabet.T) = struct
           d.(i) <- AMod.Map.set d.(i) c p
         ) cc.(i+1)
       done;
-      let cc = Array.map (fun l -> AMod.Pres.make (Array.of_list l)) cc in
+      let cc = Array.map (fun l -> l |> Array.of_list |> AMod.Pres.make) cc in
       let d = Array.mapi (fun i d -> AMod.Pres.Map.of_map d cc.(i+1) cc.(i)) d in
-      AMod.Pres.Complex.make cc d
+      let s = Array.init (n-2) (fun i -> ch i) in
+      AMod.Pres.Complex.make cc d, s
+
+    (** Compute the Anick resolution. *)
+    let resolution ?augmentation pres n =
+      resolution_ch ?augmentation pres n |> fst
 
     module KMod = Module.Free(K)(M.Anick)
     module MF = Matrix.Functor(A)(K)
