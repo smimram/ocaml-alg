@@ -2,6 +2,9 @@ DOCS_DIR := $(shell pwd)
 
 all: alg bergman kb rewr2 index.html
 
+index.html:
+	pandoc -s ../README.md -o $@
+
 doc build:
 	$(MAKE) -C .. $@
 
