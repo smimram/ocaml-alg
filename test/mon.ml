@@ -33,6 +33,12 @@ let mon = RS.knuth_bendix ~gt
 let () = Printf.printf "# Completion\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural mon)
 
 let () =
+  let branchings =
+    RS.critical mon |> List.map fst |> List.map RS.Step.source |> List.map Term.to_string |> String.concat "\n"
+  in
+  Printf.printf "# Branchings\n\n%s\n\n%!" branchings
+
+let () =
   Printf.printf "# Coherent completion\n\n%!";
   let coh = RS.squier mon in
   List.iter
