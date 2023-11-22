@@ -11,4 +11,5 @@
 (package
  (name alg)
  (synopsis "A library for manipulating various algebraic structures")
+ (description "A library to manipulate and compute with algebraic structures in OCaml. It implements structures such as monoids, groups, rings, modules, algebras, matrices, graphs, automata and so on. It also features some free and presented such structures.")
 )
