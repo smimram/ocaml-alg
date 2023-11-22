@@ -1,5 +1,5 @@
 (lang dune 2.8)
-(version 0.1.0)
+(version 0.2.0)
 (name alg)
 (source (github smimram/ocaml-alg))
 (license GPL-2.0)
