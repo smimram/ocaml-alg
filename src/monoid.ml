@@ -338,10 +338,19 @@ module FreeMonoid (X : Alphabet.T) : T = Free(X)
 module Pres (X : Alphabet.T) = struct
   module W = Free(X)
 
+  module Rule = struct
+    type t = W.t * W.t
+
+    let source (r : t) = fst r
+
+    let target (r : t) = snd r
+  end
+
+  (** A presentation. *)
   type t =
     {
       generators : X.t list;
-      rules : (W.t * W.t) list;
+      rules : Rule.t list;
     }
 
   let make generators rules =
@@ -415,6 +424,19 @@ module Pres (X : Alphabet.T) = struct
         ) !pres.rules
     done;
     !pres
+
+  (** Critical branchings. Returns pairs of rules with context. *)
+  let critical_branchings pres =
+    let rec map f = function
+      | [] -> []
+      | x::l -> (List.map (f x) l)@(map f l)
+    in
+    let f r s =
+      let u,u' = r in
+      let v,v' = s in
+      List.map (fun ((u1,u2),(v1,v2)) -> (u1,r,u2),(v1,s,v2)) (W.unifiers_bicontext u v)
+    in
+    map f pres.rules |> List.concat
 
   (** Make a monoid from a convergent presentation. *)
   module Make (P : sig val presentation : t end) : T = struct
