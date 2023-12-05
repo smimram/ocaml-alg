@@ -7,6 +7,9 @@ all:
 runtest:
 	@dune runtest
 
+quaternion:
+	@dune exec ./quaternion.exe
+
 rig:
 	@dune exec ./rig.exe
 

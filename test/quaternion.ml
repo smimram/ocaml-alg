@@ -6,6 +6,28 @@ module X = struct
 end
 module P = Monoid.Pres(X)
 
+let print fmt = Printf.printf fmt
+
+let string_of_branching (u1,((u,u'):P.Rule.t),u2) (v1,((_v,v'):P.Rule.t),v2) =
+  let u1 = P.W.to_string u1 in
+  let u = P.W.to_string u in
+  let u' = P.W.to_string u' in
+  let u2 = P.W.to_string u2 in
+  let v1 = P.W.to_string v1 in
+  let v' = P.W.to_string v' in
+  let v2 = P.W.to_string v2 in
+  Printf.sprintf "%s%s%s ←%s_%s- %s%s%s -%s_%s→ %s%s%s" u1 u' u2 u1 u2 u1 u u2 v1 v2 v1 v' v2
+
+let string_of_branching (r,s) = string_of_branching r s
+
+let study pres =
+  print "# Presentation\n\n";
+  print "Original:   %s\n\n" (P.to_string pres);
+  let pres = P.complete (P.W.Order.deglex X.leq) pres in
+  print "Completion: %s\n\n" (P.to_string pres);
+  let cb = P.critical_branchings pres in
+  print "Branchings (%d):\n- %s\n\n" (List.length cb) (cb |> List.map string_of_branching |> String.concat "\n- ")
+
 let () =
   let a = 0 in
   let b = 1 in
@@ -16,8 +38,18 @@ let () =
     [|a;b;a|],[|b|]
   ]
   in
-  let pres = P.complete (P.W.Order.deglex X.leq) pres in
-  print_endline (P.to_string pres)
+  study pres
+
+let () =
+  let i = 0 in
+  let j = 1 in
+  let pres =
+    P.make [i;j] [
+      [|i;j;i|],[|j|];
+      [|j;i;j|],[|i|]
+    ]
+  in
+  study pres
 
 let () =
   let i = 0 in
@@ -33,8 +65,7 @@ let () =
       [|e;e|],[||]
     ]
   in
-  let pres = P.complete (P.W.Order.deglex X.leq) pres in
-  print_endline (P.to_string pres)
+  study pres
 
 let () =
   let r = 0 in
@@ -47,5 +78,4 @@ let () =
       [|g;b|],[|r|];
     ]
   in
-  let pres = P.complete (P.W.Order.deglex X.leq) pres in
-  print_endline (P.to_string pres)
+  study pres
