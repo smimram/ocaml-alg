@@ -164,7 +164,8 @@ module Free (X : Alphabet.T) = struct
     with
     | Exit -> true
 
-  (** The leftmost unifier where [u] is on the left and [v] on the right *)
+  (** The leftmost unifier where [u] is on the left and [v] on the
+      right. Returns the offset of the position of [v] in [u]. *)
   let unifier ?(i=0) u v =
     let ul = length u in
     let vl = length v in
@@ -182,9 +183,9 @@ module Free (X : Alphabet.T) = struct
     | Exit -> (match !ans with Some ans -> ans | None -> assert false)
 
   (** All unifiers with first on the left. *)
-  let ordered_unifiers u v =
+  let ordered_unifiers ?(strict=false) u v =
     let ans = ref [] in
-    let i = ref 0 in
+    let i = ref (if strict then 1 else 0) in
     try
       while true do
         let j = unifier ~i:!i u v in
@@ -195,10 +196,11 @@ module Free (X : Alphabet.T) = struct
     with
     | Not_found -> !ans
 
-  let ordered_unifiers_bicontext u v =
+  (** Ordered unifiers with contexts. *)
+  let ordered_unifiers_bicontext ?strict u v =
     let lu = length u in
     let lv = length v in
-    let l = ordered_unifiers u v in
+    let l = ordered_unifiers ?strict u v in
     List.map (fun i ->
       if i + lv <= lu then
         (one, one),
@@ -443,7 +445,8 @@ module Pres (X : Alphabet.T) = struct
     let f r s =
       let u,u' = r in
       let v,v' = s in
-      W.unifiers_bicontext u v
+      (if Rule.eq r s then W.ordered_unifiers_bicontext ~strict:true else W.unifiers_bicontext) u v
+      (* Remove trivial branchings. *)
       |> List.filter (fun ((u1,u2),(v1,v2)) -> not (Rule.eq r s && W.is_one u1 && W.is_one u2 && W.is_one v1 && W.is_one v2))
       |> List.map (fun ((u1,u2),(v1,v2)) -> (u1,r,u2),(v1,s,v2))
     in
