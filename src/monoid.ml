@@ -79,6 +79,8 @@ module Free (X : Alphabet.T) = struct
   (** Unit of the monoid. *)
   let one : t = [||]
 
+  let mul_list = List.fold_left mul one
+
   let pow (u:t) n : t = simple_pow one mul u n
 
   (** Canonical injection from the alphabet to the monoid. *)
@@ -100,6 +102,8 @@ module Free (X : Alphabet.T) = struct
         true
       with
       | Exit -> false
+
+  let is_one = eq one
 
   let compare u v =
     let ul = length u in
@@ -338,12 +342,15 @@ module FreeMonoid (X : Alphabet.T) : T = Free(X)
 module Pres (X : Alphabet.T) = struct
   module W = Free(X)
 
+  (** Rules in the presentation. *)
   module Rule = struct
     type t = W.t * W.t
 
     let source (r : t) = fst r
 
     let target (r : t) = snd r
+
+    let eq ((u,v):t) ((u',v'):t) = W.eq u u' && W.eq v v'
   end
 
   (** A presentation. *)
@@ -382,7 +389,8 @@ module Pres (X : Alphabet.T) = struct
   let add_rule pres (u,v) =
     { pres with rules = (u,v)::pres.rules }
 
-  (** Reduce a presentation. *)
+  (** Reduce a presentation: normalize right members and remove inclusion
+      branchings. *)
   let reduce pres =
     let rules = List.map (fun (u,v) -> u, normalize pres v) pres.rules in
     let rec aux h = function
@@ -425,16 +433,19 @@ module Pres (X : Alphabet.T) = struct
     done;
     !pres
 
-  (** Critical branchings. Returns pairs of rules with context. *)
+  (** Critical branchings. Returns pairs of rules with context. This might
+      return redundant branchings unless the presentation is reduced. *)
   let critical_branchings pres =
     let rec map f = function
       | [] -> []
-      | x::l -> (List.map (f x) l)@(map f l)
+      | x::l -> (List.map (f x) (x::l))@(map f l)
     in
     let f r s =
       let u,u' = r in
       let v,v' = s in
-      List.map (fun ((u1,u2),(v1,v2)) -> (u1,r,u2),(v1,s,v2)) (W.unifiers_bicontext u v)
+      W.unifiers_bicontext u v
+      |> List.filter (fun ((u1,u2),(v1,v2)) -> not (Rule.eq r s && W.is_one u1 && W.is_one u2 && W.is_one v1 && W.is_one v2))
+      |> List.map (fun ((u1,u2),(v1,v2)) -> (u1,r,u2),(v1,s,v2))
     in
     map f pres.rules |> List.concat
 
