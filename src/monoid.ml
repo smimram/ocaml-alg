@@ -446,8 +446,6 @@ module Pres (X : Alphabet.T) = struct
       let u,u' = r in
       let v,v' = s in
       (if Rule.eq r s then W.ordered_unifiers_bicontext ~strict:true else W.unifiers_bicontext) u v
-      (* Remove trivial branchings. *)
-      |> List.filter (fun ((u1,u2),(v1,v2)) -> not (Rule.eq r s && W.is_one u1 && W.is_one u2 && W.is_one v1 && W.is_one v2))
       |> List.map (fun ((u1,u2),(v1,v2)) -> (u1,r,u2),(v1,s,v2))
     in
     map f pres.rules |> List.concat
