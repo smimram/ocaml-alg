@@ -3,6 +3,8 @@
 
 - monoids:
   - critical branchings
+- groups:
+  - add the quaternion group
 
 0.1.0 (22-11-2023)
 =====

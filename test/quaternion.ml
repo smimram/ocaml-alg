@@ -9,7 +9,7 @@ module P = Monoid.Pres(X)
 let print fmt = Printf.printf fmt
 
 let string_of_branching (u1,((u,u'):P.Rule.t),u2) (v1,((_v,v'):P.Rule.t),v2) =
-  let to_string u = if P.W.eq u P.W.one then "" else P.W.to_string u in
+  let to_string u = if P.W.is_one u then "" else P.W.to_string u in
   let u1 = to_string u1 in
   let u = to_string u in
   let u' = to_string u' in
@@ -27,9 +27,9 @@ let study pres =
   let pres = P.complete (P.W.Order.deglex X.leq) pres in
   print "Completion: %s\n\n" (P.to_string pres);
   let pres = P.reduce pres in
-  print "Reduction: %s\n\n" (P.to_string pres);
+  print "Reduction:  %s\n\n" (P.to_string pres);
   let cb = P.critical_branchings pres in
-  print "Branchings (%d):\n- %s\n\n" (List.length cb) (cb |> List.map string_of_branching |> String.concat "\n- ")
+  print "Branchings (%d):\n\n- %s\n\n" (List.length cb) (cb |> List.map string_of_branching |> String.concat "\n- ")
 
 let () =
   let a = 0 in
@@ -43,7 +43,6 @@ let () =
   in
   study pres
 
-(*
 let () =
   let i = 0 in
   let j = 1 in
@@ -83,4 +82,3 @@ let () =
     ]
   in
   study pres
-*)
