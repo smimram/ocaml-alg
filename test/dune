@@ -168,3 +168,14 @@
  (alias runtest)
  (action (run ./mirai.exe))
 )
+
+(executable
+ (name dihedral)
+ (modules dihedral)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./dihedral.exe))
+)
