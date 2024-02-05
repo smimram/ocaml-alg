@@ -15,7 +15,7 @@ module type Additive = sig
 end
 
 (** The quaternion group (Q8). *)
-module Quaternion : T = struct
+module Quaternion = struct
   type gen = E | I | J | K
 
   (* true means negated *)
@@ -27,6 +27,10 @@ module Quaternion : T = struct
     s ^ x
 
   let one : t = false, E
+
+  let i : t = false, I
+  let j : t = false, J
+  let k : t = false, K
 
   let neg ((s,x):t) : t = not s, x
 
@@ -59,3 +63,4 @@ module Quaternion : T = struct
 
   let inv x = neg x
 end
+module QuaternionGroup = (Quaternion : T)
