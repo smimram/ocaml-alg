@@ -20,12 +20,13 @@ let () =
       [|r;s|], W.mul (W.inj s) (W.pow (W.inj r) (n-1))
     ]
   in
-  let pres = presentation 4 in
+  let pres = presentation 6 in
   print_endline ("presentation: " ^ P.to_string pres);
   let pres = P.complete (P.W.Order.deglex X.leq) pres in
   print_endline ("completed: " ^ P.to_string pres);
   let pres = P.reduce pres in
   print_endline ("reduced: " ^ P.to_string pres);
+  print_endline ("branchings: " ^ (P.critical_branchings pres |> List.length |> string_of_int));
   print_newline ();
   for i = 1 to 10 do
     presentation i
