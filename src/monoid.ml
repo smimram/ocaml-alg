@@ -355,6 +355,16 @@ module Pres (X : Alphabet.T) = struct
     let eq ((u,v):t) ((u',v'):t) = W.eq u u' && W.eq v v'
   end
 
+  (** Rewriting steps. *)
+  module Step = struct
+    (** A rewriting step is a rule with a context. *)
+    type t = W.t * Rule.t * W.t
+
+    let source ((u,r,w):t) = W.mul_list [u; Rule.source r; w]
+
+    let target ((u,r,w):t) = W.mul_list [u; Rule.target r; w]
+  end
+
   (** A presentation. *)
   type t =
     {
@@ -437,7 +447,7 @@ module Pres (X : Alphabet.T) = struct
 
   (** Critical branchings. Returns pairs of rules with context. This might
       return redundant branchings unless the presentation is reduced. *)
-  let critical_branchings pres =
+  let critical_branchings pres : ((Step.t * Step.t) list) =
     let rec map f = function
       | [] -> []
       | x::l -> (List.map (f x) (x::l))@(map f l)
