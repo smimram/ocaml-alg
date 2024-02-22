@@ -412,6 +412,9 @@ module Pres (X : Alphabet.T) = struct
   (** Rewriting paths. *)
   module Path = ARS.Path
 
+  (** Rewriting zigzags. *)
+  module Zigzag = ARS.Zigzag
+
   (** A presentation. *)
   type t =
     {

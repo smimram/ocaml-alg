@@ -2,10 +2,11 @@
 =====
 
 - abstract rewriting systems:
-  - created
+  - added
 - monoids:
   - named rules
   - critical branchings
+  - rewriting paths and zigzags
   - coherence cells
 - groups:
   - add the quaternion group
