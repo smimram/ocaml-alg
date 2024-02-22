@@ -153,6 +153,7 @@ module Free (X : Alphabet.T) = struct
       Array.fold_left (fun y x -> M.mul y (app f x)) M.one u
   end
 
+  (** Whether a word is included in another. *)
   let included u v =
     let ul = length u in
     let vl = length v in
@@ -163,6 +164,23 @@ module Free (X : Alphabet.T) = struct
     false
     with
     | Exit -> true
+
+  (** Find an offset at which the first word is included in the second. *)
+  let inclusion_offset u v =
+    let ul = length u in
+    let vl = length v in
+    let ans = ref None in
+    try
+      for i = 0 to vl - ul do
+        if peq u 0 v i ul then
+          (
+            ans := Some i;
+            raise Exit
+          )
+      done;
+      !ans
+    with
+    | Exit -> !ans
 
   (** The leftmost unifier where [u] is on the left and [v] on the
       right. Returns the offset of the position of [v] in [u]. *)
@@ -263,6 +281,7 @@ module Free (X : Alphabet.T) = struct
 
     let weq = eq
 
+    (** Compare chains. *)
     let eq c d =
       let weq = eq in
       let rec aux c d =
@@ -274,6 +293,7 @@ module Free (X : Alphabet.T) = struct
       in
       aux c d
 
+    (** Compare chains. *)
     let compare c d =
       let wc = compare in
       let rec aux c d =
@@ -363,6 +383,41 @@ module Pres (X : Alphabet.T) = struct
     let source ((u,r,w):t) = W.mul_list [u; Rule.source r; w]
 
     let target ((u,r,w):t) = W.mul_list [u; Rule.target r; w]
+
+    let eq ((u,r,w):t) ((u',r',w'):t) = W.eq u u' && Rule.eq r r' && W.eq w w'
+  end
+
+  (** Rewriting paths. *)
+  module Path = struct
+    type t =
+      | Nil of W.t
+      | Cons of t * Step.t
+
+    let empty u = Nil u
+
+    let step s = Cons (Nil (Step.source s), s)
+
+    let rec source = function
+      | Nil u -> u
+      | Cons (p, _) -> source p
+
+    let target = function
+      | Nil u -> u
+      | Cons (_, r) -> Step.target r
+
+    let rec eq p q =
+      match p, q with
+      | Nil u, Nil u' -> W.eq u u'
+      | Cons (p, s), Cons (p', s') -> eq p p' && Step.eq s s'
+      | _ -> false
+
+    let concat p q =
+      assert (W.eq (target p) (source q));
+      let rec aux = function
+        | Nil _ -> p
+        | Cons (q, s) -> Cons (aux q, s)
+      in
+      aux q
   end
 
   (** A presentation. *)
@@ -390,14 +445,24 @@ module Pres (X : Alphabet.T) = struct
   (** Normalize a word. *)
   let rec normalize pres u =
     try
-      let v,v' = List.find (fun (v,_) -> W.included v u) pres.rules in
-      let i = W.unifier u v in
+      let i,v,v' = match List.find_map (fun (v,v') -> Option.map (fun i -> i,v,v') (W.inclusion_offset v u)) pres.rules with Some ans -> ans | None -> raise Exit in
       let v1 = W.sub u 0 i in
       let v2 = W.sub u (i + W.length v) (W.length u - (i + W.length v)) in
       normalize pres (W.mul v1 (W.mul v' v2))
-    with
-    | Not_found -> u
+    with Exit -> u
 
+  (** Compute a normalization path for a word. *)
+  let rec normalization pres u =
+    try
+      let i,r = match List.find_map (fun r -> Option.map (fun i -> i,r) (W.inclusion_offset (Rule.source r) u)) pres.rules with Some ans -> ans | None -> raise Exit in
+      let v = Rule.source r in
+      let v' = Rule.target r in
+      let v1 = W.sub u 0 i in
+      let v2 = W.sub u (i + W.length v) (W.length u - (i + W.length v)) in
+      Path.concat (Path.step (v1,r,v2)) (normalization pres (W.mul v1 (W.mul v' v2)))
+    with Exit -> Path.empty u
+
+  (** Add a rule to a presentation. *)
   let add_rule pres (u,v) =
     { pres with rules = (u,v)::pres.rules }
 
@@ -459,6 +524,14 @@ module Pres (X : Alphabet.T) = struct
       |> List.map (fun ((u1,u2),(v1,v2)) -> (u1,r,u2),(v1,s,v2))
     in
     map f pres.rules |> List.concat
+
+  (** Compute the coherence cells. *)
+  let coherence pres =
+    List.map
+      (fun (s1,s2) ->
+         Path.concat (Path.step s1) (normalization pres (Step.target s1)),
+         Path.concat (Path.step s2) (normalization pres (Step.target s2))
+      ) (critical_branchings pres)
 
   (** Make a monoid from a convergent presentation. *)
   module Make (P : sig val presentation : t end) : T = struct

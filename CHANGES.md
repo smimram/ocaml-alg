@@ -3,6 +3,7 @@
 
 - monoids:
   - critical branchings
+  - coherence cells
 - groups:
   - add the quaternion group
 
