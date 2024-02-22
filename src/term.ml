@@ -183,6 +183,17 @@ let rec occurs x = function
   | App (_, a) -> List.exists (occurs x) a
   | Var y -> Var.eq x y
 
+(** Terms as an alphabet. *)
+module TermAlphabet : Alphabet.T with type t = term = struct
+  type t = term
+  
+  let eq = eq
+
+  let compare _ _ = failwith "TODO"
+
+  let to_string t = to_string t
+end
+
 (** Lexicographic path order on terms. *)
 module LPO = struct
   let rec gt ge_op t u =
@@ -613,6 +624,15 @@ module RS = struct
 
   type step = Step.t
 
+  module StepSpan (* : ARS.Span *) = struct
+    include Step
+    type obj = term
+    let to_string s = to_string s
+  end
+
+  (** Underlying abstract rewriting system. *)
+  module ARS = ARS.Make(TermAlphabet)(StepSpan)
+
   (** All possible rewriting steps. *)
   let steps (rs:t) t : step list =
     let rec aux r ctx = function
@@ -639,29 +659,9 @@ module RS = struct
     List.flatten (List.map (fun r -> aux r Fun.id t) (rules rs))
 
   (** Rewriting paths. *)
-  module Path = struct    
-    (** A rewriting path. *)
-    type t =
-      | Empty of term
-      | Step of t * step
-
-    let empty t = Empty t
-
-    let rec source = function
-      | Step (p,_) -> source p
-      | Empty t -> t
-
-    let target = function
-      | Step (_,s) -> Step.target s
-      | Empty t -> t
-
-    let step s =
-      Step (Empty (Step.source s), s)
+  module Path = struct
+    include ARS.Path
  
-    let append_step p s =
-      assert (eq (target p) (Step.source s));
-      Step (p,s)
-
     let rec to_string ?var = function
       | Empty t -> string_of_term ?var t
       | Step (p,s) ->
@@ -670,22 +670,10 @@ module RS = struct
         let tgt = string_of_term ?var (Step.target s) in
         src ^ " -" ^ lbl ^ "-> " ^ tgt
 
-    let rec append p = function
-      | Step (q, s) -> Step (append p q, s)
-      | Empty t ->
-         assert (eq (target p) t);
-         p
-
     (** Rules which are used without context. *)
     let rec toplevel_rules = function
       | Empty t -> []
       | Step (p,s) -> (toplevel_rules p)@(if Step.has_context s then [] else [Step.rule s])
-
-    let rec eq p p' =
-      match p,p' with
-      | Step (p,s), Step (p',s') -> eq p p' && Step.eq s s'
-      | Empty t, Empty t' -> eq_term t t'
-      | _ -> false
 
     (** Rules occurring in a step. *)
     let rec rules = function
@@ -695,11 +683,6 @@ module RS = struct
         if List.exists (Rule.eq r) rr then rr
         else r::rr
       | Empty _ -> []
-
-    (** Length of a path. *)
-    let rec length = function
-      | Step (p, _) -> 1 + length p
-      | Empty _ -> 0
 
     (** nth step in a path. *)
     let nth_step n p =
@@ -854,12 +837,7 @@ module RS = struct
 
   (** Rewriting zigzags. *)
   module Zigzag = struct
-    (** A rewriting zigzag. *)
-    type t =
-      | Step of Step.t
-      | Comp of t * t
-      | Id of term
-      | Inv of t
+    include ARS.Zigzag
 
     (** String representation. *)
     let rec to_string ?(pa=false) ?var = function
@@ -869,69 +847,6 @@ module RS = struct
         if pa then "(" ^ s ^ ")" else s
       | Id t -> string_of_term ?var t
       | Inv p -> to_string ~pa:true ?var p ^ "-"
-
-    let rec source = function
-      | Step s -> Step.source s
-      | Comp (p, _) -> source p
-      | Id t -> t
-      | Inv p -> target p
-    and target = function
-      | Step s -> Step.target s
-      | Comp (_, p) -> target p
-      | Id t -> t
-      | Inv p -> source p
-
-    (** Path reduced to one step. *)
-    let step s = Step s
-
-    (** Concatenation of two paths. *)
-    let comp p1 p2 =
-      (* Printf.printf "compose %s with %s\n%!" (to_string p1) (to_string p2); *)
-      (* Printf.printf "%s vs %s\n%!" (string_of_term (target p1)) (string_of_term (source p2)); *)
-      assert (eq (target p1) (source p2));
-      Comp (p1, p2)
-
-    let append p1 p2 = comp p1 p2
-
-    (** Concatenation of a list of paths. *)
-    let rec concat = function
-      | [p] -> p
-      | p::l -> append p (concat l)
-      | [] -> assert false
-
-    (** Inverse of a path. *)
-    let inv p = Inv p
-
-    (** Equality between paths. *)
-    let rec eq p p' =
-      match p, p' with
-      | Step s, Step s' -> Step.eq s s'
-      | Comp (p, q), Comp (p', q') -> eq p p' && eq q q'
-      | Id t, Id t' -> eq_term t t'
-      | Inv p, Inv p' -> eq p p'
-      | _ -> false
-
-    (** Number of steps in a path. *)
-    let rec length = function
-      | Step _ -> 1
-      | Comp (p, q) -> length p + length q
-      | Id _ -> 0
-      | Inv p -> length p
-
-    (** Create a zigzag from a path. *)
-    let rec of_path p =
-      match p with
-      | Path.Empty t -> Id t
-      | Step (p, s) -> comp (of_path p) (step s)
-
-    (** Apply a context function to a path. In need to have two function because
-        of typing issues (variance and polymorphic variants...), but they will
-        always be the same in practice. *)
-    let rec map tm rs = function
-      | Step s -> Step (rs s)
-      | Comp (p, q) -> Comp (map tm rs p, map tm rs q)
-      | Id t -> Id (tm t)
-      | Inv p -> Inv (map tm rs p)
 
     (** Apply a substitution. *)
     let rec subst s = function
@@ -954,47 +869,8 @@ module RS = struct
       | Id _ -> 0
       | Inv p -> - rule_algebraic_occurences r p
 
-    let is_id = function
-      | Id _ -> true
-      | _ -> false
-
-    let is_inv = function
-      | Inv _ -> true
-      | _ -> false
-
     (** Whether a path contains a rule. *)
     let has_rule r p = rule_occurences r p > 0
-
-    (** Put path in canonical form. *)
-    let rec canonize p =
-      (* Printf.printf "canonize: %s\n%!" (to_string p); *)
-      match p with
-      | Comp (Id _, p) -> canonize p
-      | Comp (p, Id _) -> canonize p
-      | Comp (Comp (p, q), r) -> canonize (Comp (p, Comp (q, r)))
-      | Comp (Step s, p) ->
-        (
-          match canonize p with
-          | Inv (Step s') when Step.eq s s' -> Id (Step.source s)
-          | Comp (Inv (Step s'), p) when Step.eq s s' -> p
-          | Id _ -> Step s
-          | p -> Comp (Step s, p)
-        )
-      | Comp (Inv (Step s), p) ->
-        (
-          match canonize p with
-          | Step s' when Step.eq s s' -> Id (Step.target s')
-          | Comp (Step s', p) when Step.eq s s' -> p
-          | Id _ -> Inv (Step s)
-          | p -> Comp (Inv (Step s), p)
-        )
-      | Comp (p, q) -> canonize (Comp (canonize p, q))
-      | Inv (Inv p) -> canonize p
-      | Inv (Comp (p, q)) -> canonize (Comp (Inv q, Inv p))
-      | Inv (Id t) -> Id t
-      | Inv (Step s) -> Inv (Step s)
-      | Id t -> Id t
-      | Step s -> Step s
 
     (** Express a rule as a zigzag in a cell. *)
     let value r p =
@@ -1053,13 +929,6 @@ module RS = struct
       | Comp (Step _ as p, q) | Comp (Inv (Step _) as p, q) ->
         if n = 0 then source p else nth_term (n-1) q
       | _ -> assert false
-
-    (** List.of_steps in a path. *)
-    let rec to_list = function
-      | Step s -> [Step s]
-      | Comp (p, q) -> (to_list p)@(to_list q)
-      | Id _ -> []
-      | Inv p -> List.map (fun p -> Inv p) (List.rev (to_list p))
 
     let parse rs s =
       let unid = function

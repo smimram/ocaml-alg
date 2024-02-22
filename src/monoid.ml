@@ -392,6 +392,8 @@ module Pres (X : Alphabet.T) = struct
 
   (** Rewriting steps. *)
   module Step = struct
+    type obj = W.t
+    
     (** A rewriting step is a rule with a context. *)
     type t = W.t * Rule.t * W.t
 
@@ -404,42 +406,11 @@ module Pres (X : Alphabet.T) = struct
     let eq ((u,r,w):t) ((u',r',w'):t) = W.eq u u' && Rule.eq r r' && W.eq w w'
   end
 
+  (** The underlying abstract rewriting system. *)
+  module ARS = ARS.Make(W)(Step)
+
   (** Rewriting paths. *)
-  module Path = struct
-    type t =
-      | Nil of W.t
-      | Cons of t * Step.t
-
-    let empty u = Nil u
-
-    let step s = Cons (Nil (Step.source s), s)
-
-    let rec source = function
-      | Nil u -> u
-      | Cons (p, _) -> source p
-
-    let target = function
-      | Nil u -> u
-      | Cons (_, r) -> Step.target r
-
-    let rec to_string = function
-      | Nil u -> W.to_string u
-      | Cons (p, s) -> Printf.sprintf "%s -%s→ %s" (to_string p) (Step.to_string s) (W.to_string (target p))
-
-    let rec eq p q =
-      match p, q with
-      | Nil u, Nil u' -> W.eq u u'
-      | Cons (p, s), Cons (p', s') -> eq p p' && Step.eq s s'
-      | _ -> false
-
-    let concat p q =
-      assert (W.eq (target p) (source q));
-      let rec aux = function
-        | Nil _ -> p
-        | Cons (q, s) -> Cons (aux q, s)
-      in
-      aux q
-  end
+  module Path = ARS.Path
 
   (** A presentation. *)
   type t =
@@ -485,7 +456,7 @@ module Pres (X : Alphabet.T) = struct
       let v' = Rule.target r in
       let v1 = W.sub u 0 i in
       let v2 = W.sub u (i + W.length v) (W.length u - (i + W.length v)) in
-      Path.concat (Path.step (v1,r,v2)) (normalization pres (W.mul v1 (W.mul v' v2)))
+      Path.append (Path.step (v1,r,v2)) (normalization pres (W.mul v1 (W.mul v' v2)))
     with Exit -> Path.empty u
 
   (** Add a rule to a presentation. *)
@@ -560,8 +531,8 @@ module Pres (X : Alphabet.T) = struct
   let coherence pres =
     List.map
       (fun (s1,s2) ->
-         Path.concat (Path.step s1) (normalization pres (Step.target s1)),
-         Path.concat (Path.step s2) (normalization pres (Step.target s2))
+         Path.append (Path.step s1) (normalization pres (Step.target s1)),
+         Path.append (Path.step s2) (normalization pres (Step.target s2))
       ) (critical_branchings pres)
 
   (** Make a monoid from a convergent presentation. *)

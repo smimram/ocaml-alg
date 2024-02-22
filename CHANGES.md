@@ -1,6 +1,8 @@
 0.2.0 (unreleased)
 =====
 
+- abstract rewriting systems:
+  - created
 - monoids:
   - named rules
   - critical branchings

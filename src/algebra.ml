@@ -437,6 +437,7 @@ module Pres (K : Field.T) (X : Alphabet.T) = struct
   end
 end
 
+(** Generate various classical presentations of algebras. *)
 module Generate (K : Field.T) (X : Alphabet.T with type t = int) = struct
   module Pres = Pres(K)(X)
   open Pres
