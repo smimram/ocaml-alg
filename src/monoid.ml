@@ -401,7 +401,10 @@ module Pres (X : Alphabet.T) = struct
 
     let target ((u,r,w):t) = W.mul_list [u; Rule.target r; w]
 
-    let to_string (u,r,w) = W.to_string u ^ Rule.name r ^ W.to_string w
+    let to_string ((u,r,w):t) =
+      let r = Rule.name r in
+      let r = if r = "" then "_" else r in
+      W.to_string u ^ r ^ W.to_string w
 
     let eq ((u,r,w):t) ((u',r',w'):t) = W.eq u u' && Rule.eq r r' && W.eq w w'
   end

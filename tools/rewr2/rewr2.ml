@@ -59,6 +59,7 @@ let run _ =
   let parsed_presentation = jsget (doc##getElementById(Js.string "presentation")) in
   let completion = jsget (doc##getElementById(Js.string "completion")) in
   let reduced = jsget (doc##getElementById(Js.string "reduced")) in
+  let coherence = jsget (doc##getElementById(Js.string "coherence")) in
   let go = jsget (doc##getElementById(Js.string "go")) in
   let status = jsget (doc##getElementById(Js.string "status")) in
   let status s = status##.innerHTML := Js.string s in
@@ -101,6 +102,18 @@ let run _ =
              |> Str.global_replace (Str.regexp "<") "⟨"
              |> Str.global_replace (Str.regexp ">") "⟩"
            in
+           let string_of_coh coh =
+             List.map
+               (fun (p,q) ->
+                  "<li>" ^
+                  P.Path.to_string p ^
+                  "<br/>" ^
+                  P.Path.to_string q ^
+                  "</li>"
+               ) coh
+             |> String.concat "\n"
+             |> (fun s -> "<ul>" ^ s ^ "</ul>")
+           in
 
            status "Parsing rewriting system...";
            let rules =
@@ -118,6 +131,10 @@ let run _ =
            status "Reducing presentation...";
            let rs = P.reduce rs in
            reduced##.innerHTML := Js.string (string_of_rs rs);
+
+           status "Computing coherence cells...";
+           let coh = P.coherence rs in
+           coherence##.innerHTML := Js.string (string_of_coh coh);
 
            status "Done.";
            Js._true
