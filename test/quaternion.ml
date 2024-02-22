@@ -8,7 +8,7 @@ module P = Monoid.Pres(X)
 
 let print fmt = Printf.printf fmt
 
-let string_of_branching (u1,((u,u'):P.Rule.t),u2) (v1,((_v,v'):P.Rule.t),v2) =
+let string_of_branching (u1,((_,u,u'):P.Rule.t),u2) (v1,((_,_v,v'):P.Rule.t),v2) =
   let to_string u = if P.W.is_one u then "" else P.W.to_string u in
   let u1 = to_string u1 in
   let u = to_string u in
@@ -36,9 +36,9 @@ let () =
   let b = 1 in
   let pres =
     P.make [a;b] [
-    [|a;a;a;a|],[||];
-    [|a;a|],[|b;b|];
-    [|a;b;a|],[|b|]
+    "",[|a;a;a;a|],[||];
+    "",[|a;a|],[|b;b|];
+    "",[|a;b;a|],[|b|]
   ]
   in
   study pres
@@ -48,8 +48,8 @@ let () =
   let j = 1 in
   let pres =
     P.make [i;j] [
-      [|i;j;i|],[|j|];
-      [|j;i;j|],[|i|]
+      "",[|i;j;i|],[|j|];
+      "",[|j;i;j|],[|i|]
     ]
   in
   study pres
@@ -61,11 +61,11 @@ let () =
   let e = 3 in
   let pres =
     P.make [i;j;k;e] [
-      [|i;i|],[|e|];
-      [|j;j|],[|e|];
-      [|k;k|],[|e|];
-      [|i;j;k|],[|e|];
-      [|e;e|],[||]
+      "",[|i;i|],[|e|];
+      "",[|j;j|],[|e|];
+      "",[|k;k|],[|e|];
+      "",[|i;j;k|],[|e|];
+      "",[|e;e|],[||]
     ]
   in
   study pres
@@ -76,9 +76,9 @@ let () =
   let b = 2 in
   let pres =
     P.make [r;g;b] [
-      [|b|],[|r;g|];
-      [|b;g;r|],[||];
-      [|g;b|],[|r|];
+      "",[|b|],[|r;g|];
+      "",[|b;g;r|],[||];
+      "",[|g;b|],[|r|];
     ]
   in
   study pres

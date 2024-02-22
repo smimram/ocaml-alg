@@ -15,9 +15,9 @@ let () =
   let s = 1 in
   let presentation n =
     P.make [r;s] [
-      W.pow (W.inj r) n, W.one;
-      W.pow (W.inj s) 2, W.one;
-      [|r;s|], W.mul (W.inj s) (W.pow (W.inj r) (n-1))
+      "", W.pow (W.inj r) n, W.one;
+      "", W.pow (W.inj s) 2, W.one;
+      "", [|r;s|], W.mul (W.inj s) (W.pow (W.inj r) (n-1))
     ]
   in
   let pres = presentation 6 in

@@ -366,13 +366,16 @@ module Pres (X : Alphabet.T) = struct
 
   (** Rules in the presentation. *)
   module Rule = struct
-    type t = W.t * W.t
+    (** A rewriting rule (with given name, source and target). *)
+    type t = string * W.t * W.t
 
-    let source (r : t) = fst r
+    let name ((n,_,_) : t) = n
 
-    let target (r : t) = snd r
+    let source ((_,s,_) : t) = s
 
-    let eq ((u,v):t) ((u',v'):t) = W.eq u u' && W.eq v v'
+    let target ((_,_,t) : t) = t
+
+    let eq ((n,u,v):t) ((n',u',v'):t) = String.equal n n' && W.eq u u' && W.eq v v'
   end
 
   (** Rewriting steps. *)
@@ -435,17 +438,22 @@ module Pres (X : Alphabet.T) = struct
     Printf.sprintf
       "< %s | %s >"
       (List.map X.to_string pres.generators |> String.concat ", ")
-      (List.map (fun (u,v) -> Printf.sprintf "%s -> %s" (W.to_string u) (W.to_string v)) pres.rules |> String.concat ", ")
+      (List.map (fun (n,u,v) ->
+           let n = if n = "" then "" else n ^ " : " in
+           Printf.sprintf "%s%s -> %s" n (W.to_string u) (W.to_string v)
+         ) pres.rules |> String.concat ", ")
 
   (** Orient rules according to a partial order. *)
   let orient leq pres =
-    let rules = List.map (fun (u,v) -> if leq v u then u,v else v,u) pres.rules in
+    let rules = List.map (fun (n,u,v) -> if leq v u then n,u,v else n,v,u) pres.rules in
     { pres with rules }
 
   (** Normalize a word. *)
   let rec normalize pres u =
     try
-      let i,v,v' = match List.find_map (fun (v,v') -> Option.map (fun i -> i,v,v') (W.inclusion_offset v u)) pres.rules with Some ans -> ans | None -> raise Exit in
+      let i,r = match List.find_map (fun r -> Option.map (fun i -> i,r) (W.inclusion_offset (Rule.source r) u)) pres.rules with Some ans -> ans | None -> raise Exit in
+      let v = Rule.source r in
+      let v' = Rule.target r in
       let v1 = W.sub u 0 i in
       let v2 = W.sub u (i + W.length v) (W.length u - (i + W.length v)) in
       normalize pres (W.mul v1 (W.mul v' v2))
@@ -463,17 +471,17 @@ module Pres (X : Alphabet.T) = struct
     with Exit -> Path.empty u
 
   (** Add a rule to a presentation. *)
-  let add_rule pres (u,v) =
-    { pres with rules = (u,v)::pres.rules }
+  let add_rule pres r =
+    { pres with rules = r::pres.rules }
 
   (** Reduce a presentation: normalize right members and remove inclusion
       branchings. *)
   let reduce pres =
-    let rules = List.map (fun (u,v) -> u, normalize pres v) pres.rules in
+    let rules = List.map (fun (n,u,v) -> n, u, normalize pres v) pres.rules in
     let rec aux h = function
-      | (u,v)::t ->
-         let f l = List.exists (fun (u',v') -> W.included u' u) l in
-         if f h || f t then aux h t else aux ((u,v)::h) t
+      | r::t ->
+         let f l = List.exists (fun r' -> W.included (Rule.source r') (Rule.source r)) l in
+         if f h || f t then aux h t else aux (r::h) t
       | [] -> List.rev h
     in
     let rules = aux [] rules in
@@ -486,26 +494,26 @@ module Pres (X : Alphabet.T) = struct
     List.iter (fun r -> Queue.add r todo) pres.rules;
     let pres = ref pres in
     (* Add a relation *)
-    let rel (u,v) =
-      let u = normalize !pres u in
-      let v = normalize !pres v in
+    let rel r =
+      let u = normalize !pres (Rule.source r) in
+      let v = normalize !pres (Rule.target r) in
       if not (W.eq u v) then
         (
           let u,v = if leq v u then u,v else v,u in
           (* Printf.printf "rel: %s -> %s\n%!" (W.to_string u) (W.to_string v); *)
-          pres := add_rule !pres (u,v);
-          Queue.push (u,v) todo
+          pres := add_rule !pres ("",u,v);
+          Queue.push r todo
         )
     in
     while not (Queue.is_empty todo) do
-      let u,u' = Queue.pop todo in
+      let r = Queue.pop todo in
       List.iter
-        (fun (v,v') ->
+        (fun r' ->
            List.iter (fun ((u1,u2),(v1,v2)) ->
-               let s1 = W.mul u1 (W.mul u' u2) in
-               let s2 = W.mul v1 (W.mul v' v2) in
-               rel (s1,s2)
-             ) (W.unifiers_bicontext u v)
+               let s1 = W.mul u1 (W.mul (Rule.target r) u2) in
+               let s2 = W.mul v1 (W.mul (Rule.target r') v2) in
+               rel ("",s1,s2)
+             ) (W.unifiers_bicontext (Rule.source r) (Rule.source r'))
         ) !pres.rules
     done;
     !pres
@@ -518,9 +526,11 @@ module Pres (X : Alphabet.T) = struct
       | x::l -> (List.map (f x) (x::l))@(map f l)
     in
     let f r s =
-      let u,u' = r in
-      let v,v' = s in
-      (if Rule.eq r s then W.ordered_unifiers_bicontext ~strict:true else W.unifiers_bicontext) u v
+      (if Rule.eq r s
+       then W.ordered_unifiers_bicontext ~strict:true
+       else W.unifiers_bicontext)
+        (Rule.source r)
+        (Rule.source s)
       |> List.map (fun ((u1,u2),(v1,v2)) -> (u1,r,u2),(v1,s,v2))
     in
     map f pres.rules |> List.concat

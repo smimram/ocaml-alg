@@ -2,6 +2,7 @@
 =====
 
 - monoids:
+  - named rules
   - critical branchings
   - coherence cells
 - groups:

@@ -12,8 +12,8 @@ let () =
   let c = 2 in
   let pres =
     P.make [a;b;c] [
-    [|a;b;a|],[|b;a;b|];
-    [|a;b|],[|c|];
+    "",[|a;b;a|],[|b;a;b|];
+    "",[|a;b|],[|c|];
   ]
   in
   print_endline ("presentation: " ^ P.to_string pres);
