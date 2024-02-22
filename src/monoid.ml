@@ -376,6 +376,18 @@ module Pres (X : Alphabet.T) = struct
     let target ((_,_,t) : t) = t
 
     let eq ((n,u,v):t) ((n',u',v'):t) = String.equal n n' && W.eq u u' && W.eq v v'
+
+    (** Functions to generate rule names (those are used by completion
+        procedures to generate rule names). *)
+    module Namer = struct
+      let none = fun () -> ""
+
+      let simple id =
+        let n = ref (-1) in
+        fun () ->
+          incr n;
+          id ^ string_of_int !n
+    end
   end
 
   (** Rewriting steps. *)
@@ -386,6 +398,8 @@ module Pres (X : Alphabet.T) = struct
     let source ((u,r,w):t) = W.mul_list [u; Rule.source r; w]
 
     let target ((u,r,w):t) = W.mul_list [u; Rule.target r; w]
+
+    let to_string (u,r,w) = W.to_string u ^ Rule.name r ^ W.to_string w
 
     let eq ((u,r,w):t) ((u',r',w'):t) = W.eq u u' && Rule.eq r r' && W.eq w w'
   end
@@ -407,6 +421,10 @@ module Pres (X : Alphabet.T) = struct
     let target = function
       | Nil u -> u
       | Cons (_, r) -> Step.target r
+
+    let rec to_string = function
+      | Nil u -> W.to_string u
+      | Cons (p, s) -> Printf.sprintf "%s -%s→ %s" (to_string p) (Step.to_string s) (W.to_string (target p))
 
     let rec eq p q =
       match p, q with
@@ -487,9 +505,11 @@ module Pres (X : Alphabet.T) = struct
     let rules = aux [] rules in
     { pres with rules }
 
+  let global_namer = Rule.Namer.simple "K"
+
   (** Knuth-Bendix completion wrt a total order. *)
   let complete ?namer leq pres =
-    let namer = Option.value namer ~default:(fun () -> "") in
+    let namer = Option.value namer ~default:global_namer in
     let pres = orient leq pres in
     let todo = Queue.create () in
     List.iter (fun r -> Queue.add r todo) pres.rules;

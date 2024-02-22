@@ -15,9 +15,9 @@ let () =
   let s = 1 in
   let presentation n =
     P.make [r;s] [
-      "", W.pow (W.inj r) n, W.one;
-      "", W.pow (W.inj s) 2, W.one;
-      "", [|r;s|], W.mul (W.inj s) (W.pow (W.inj r) (n-1))
+      "R", W.pow (W.inj r) n, W.one;
+      "S", W.pow (W.inj s) 2, W.one;
+      "T", [|r;s|], W.mul (W.inj s) (W.pow (W.inj r) (n-1))
     ]
   in
   let pres = presentation 6 in
@@ -27,6 +27,11 @@ let () =
   let pres = P.reduce pres in
   print_endline ("reduced: " ^ P.to_string pres);
   print_endline ("branchings: " ^ (P.critical_branchings pres |> List.length |> string_of_int));
+  List.iter
+    (fun (p,q) ->
+       print_endline (" - " ^ P.Path.to_string p);
+       print_endline ("   " ^ P.Path.to_string q)
+    ) (P.coherence pres);
   print_newline ();
   for i = 1 to 10 do
     presentation i
@@ -35,4 +40,3 @@ let () =
     |> P.to_string
     |> Printf.printf "D%02d: %s\n%!" i
   done
-      
