@@ -13,7 +13,7 @@ module G = Monoid.Generate(X)
 
 let () =
   let presentation = G.dihedral in
-  let pres = presentation 6 in
+  let pres = presentation 2 in
   print_endline ("presentation: " ^ P.to_string pres);
   let pres = P.complete (P.W.Order.deglex X.leq) pres in
   print_endline ("completed: " ^ P.to_string pres);

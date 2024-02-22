@@ -38,7 +38,7 @@ module Make (Obj : Alphabet.T) (Step : Span with type obj = Obj.t) = struct
 
     let rec to_string = function
       | Empty u -> Obj.to_string u
-      | Step (p, s) -> Printf.sprintf "%s -%s→ %s" (to_string p) (Step.to_string s) (Obj.to_string (target p))
+      | Step (p, s) -> Printf.sprintf "%s -%s→ %s" (to_string p) (Step.to_string s) (Obj.to_string (Step.target s))
 
     let rec eq p q =
       match p, q with
