@@ -105,14 +105,14 @@ let run _ =
            status "Parsing rewriting system...";
            let rules =
              let word u = if u = "1" || u = "ε" then [||] else Array.init (String.length u) (fun i -> X.of_char u.[i]) in
-             List.map (fun (u,v) -> word u, word v) rules
+             List.map (fun (u,v) -> "", word u, word v) rules
            in
            let rs = P.make (List.init (Array.length syms) Fun.id) rules in
            parsed_presentation##.innerHTML := Js.string (string_of_rs rs);
            status ("Parsed: " ^ P.to_string rs);
 
            status "Computing Knuth-Bendix completion...";
-           let rs = P.complete (P.W.Order.deglex X.leq) rs in
+           let rs = P.complete ~namer:P.Rule.Namer.none (P.W.Order.deglex X.leq) rs in
            completion##.innerHTML := Js.string (string_of_rs rs);
 
            status "Reducing presentation...";
