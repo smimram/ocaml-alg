@@ -140,6 +140,17 @@ let run _ =
       rules##.value := Js.string r
     in
     let gen n = String.make 1 (char_of_int (n + int_of_char 'a')) in
+    let dihedral n =
+      let v = ["r";"s"] in
+      let r =
+        [
+          String.make n 'r', "1";
+          "ss", "1";
+          "rs", "s" ^ String.make (n-1) 'r'
+        ]
+      in
+      set v r
+    in
     let quaternion n =
       let v = ["a";"b"] in
       let r =
@@ -171,6 +182,7 @@ let run _ =
     let n = int_of_string (Js.to_string generaten##.value) in
     (
       match Js.to_string generate##.value with
+      | "dihedral" -> dihedral n
       | "quaternion" -> quaternion n
       | "sym" -> sym n
       | _ -> assert false

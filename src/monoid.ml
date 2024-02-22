@@ -565,12 +565,24 @@ end
 module Generate (X : Alphabet.T with type t = int) = struct
   module Pres = Pres(X)
 
+  module W = Pres.W
+
   let intset n =
     let rec aux k =
       if k >= n then [] else
         k::(aux (k+1))
     in
     aux 0
+
+  (** Dihedral group of order n. *)
+  let dihedral n =
+    let r = 0 in
+    let s = 1 in
+    Pres.make [r;s] [
+      "R", W.pow (W.inj r) n, W.one;
+      "S", W.pow (W.inj s) 2, W.one;
+      "T", [|r;s|], W.mul (W.inj s) (W.pow (W.inj r) (n-1))
+    ]
 end
 
 (** Multisets over a set, i.e. the free commutative monoid. *)

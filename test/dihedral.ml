@@ -9,17 +9,10 @@ module X = struct
 end
 module P = Monoid.Pres(X)
 module W = P.W
+module G = Monoid.Generate(X)
 
 let () =
-  let r = 0 in
-  let s = 1 in
-  let presentation n =
-    P.make [r;s] [
-      "R", W.pow (W.inj r) n, W.one;
-      "S", W.pow (W.inj s) 2, W.one;
-      "T", [|r;s|], W.mul (W.inj s) (W.pow (W.inj r) (n-1))
-    ]
-  in
+  let presentation = G.dihedral in
   let pres = presentation 6 in
   print_endline ("presentation: " ^ P.to_string pres);
   let pres = P.complete (P.W.Order.deglex X.leq) pres in
