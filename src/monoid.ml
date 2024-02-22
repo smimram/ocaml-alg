@@ -488,7 +488,8 @@ module Pres (X : Alphabet.T) = struct
     { pres with rules }
 
   (** Knuth-Bendix completion wrt a total order. *)
-  let complete leq pres =
+  let complete ?namer leq pres =
+    let namer = Option.value namer ~default:(fun () -> "") in
     let pres = orient leq pres in
     let todo = Queue.create () in
     List.iter (fun r -> Queue.add r todo) pres.rules;
@@ -501,7 +502,7 @@ module Pres (X : Alphabet.T) = struct
         (
           let u,v = if leq v u then u,v else v,u in
           (* Printf.printf "rel: %s -> %s\n%!" (W.to_string u) (W.to_string v); *)
-          pres := add_rule !pres ("",u,v);
+          pres := add_rule !pres (namer (),u,v);
           Queue.push r todo
         )
     in
