@@ -112,7 +112,7 @@ let run _ =
                   "</li>"
                ) coh
              |> String.concat "\n"
-             |> (fun s -> "<ul>" ^ s ^ "</ul>")
+             |> (fun s -> "<ol>" ^ s ^ "</ol>")
            in
 
            status "Parsing rewriting system...";
