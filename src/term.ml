@@ -13,10 +13,13 @@ module Op = struct
       to_string : string list -> string;
     }
 
+  (** Name of an operation. *)
   let name f = f.name
 
+  (** Weight of an operation. *)
   let weight f = f.weight
 
+  (** Arity of an operation. *)
   let arity f = f.arity
 
   (** Create an operation with given name and arity. *)

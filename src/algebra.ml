@@ -14,6 +14,7 @@ module type T = sig
     include Field.T with type t := r
   end
 
+  (** Multiplication by a scalar. *)
   val cmul : r -> t -> t
 end
 
