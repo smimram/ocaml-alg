@@ -7,6 +7,9 @@ all:
 runtest:
 	@dune runtest
 
+braids:
+	@dune exec ./braids.exe
+
 quaternion:
 	@dune exec ./quaternion.exe
 
@@ -15,6 +18,9 @@ rig:
 
 dihedral:
 	@dune exec ./dihedral.exe
+
+monoid:
+	@dune exec ./squierMonoid.exe
 
 test:
 	@for p in $(PROG); do echo "\n\n##### Running $$p #####\n"; dune exec ./$$p.exe || exit 1; done

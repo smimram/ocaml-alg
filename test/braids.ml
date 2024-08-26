@@ -16,8 +16,11 @@ let () =
     "",[|a;b|],[|c|];
   ]
   in
+  let leq = P.W.Order.deglex X.geq in
   print_endline ("presentation: " ^ P.to_string pres);
-  let pres = P.complete (P.W.Order.deglex X.leq) pres in
+  let pres = P.orient leq pres in
+  print_endline ("oriented presentation: " ^ P.to_string pres);
+  let pres = P.complete leq pres in
   print_endline ("completed: " ^ P.to_string pres);
   let pres = P.reduce pres in
   print_endline ("reduced: " ^ P.to_string pres);
