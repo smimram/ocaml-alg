@@ -13,7 +13,7 @@ let () =
   let pres =
     P.make [a;b;c] [
     "",[|a;b;a|],[|b;a;b|];
-    "",[|a;b|],[|c|];
+    "",[|b;a|],[|c|];
   ]
   in
   let leq = P.W.Order.deglex X.geq in
