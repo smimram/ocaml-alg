@@ -185,3 +185,8 @@
  (alias runtest)
  (action (run ./dihedral.exe))
 )
+
+(rule
+ (alias runtest)
+ (action (run ./stl.exe))
+)

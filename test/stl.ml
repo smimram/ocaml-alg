@@ -20,11 +20,13 @@ let stl =
       RS.Rule.make "R" (a x (p y z)) (p (a x y) (a x z));
     ]
 
-let gt = LPO.gt (<=)
+let () = Printf.printf "# Theory\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural stl)
+
+let gt = LPO.gt (>=)
 
 let stl = RS.orient ~gt stl
 
-let () = Printf.printf "# Theory\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural stl)
+let () = Printf.printf "# Oriented\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural stl)
 
 let stl = RS.knuth_bendix ~gt
     (* ~callback:(fun rs -> Printf.printf "## KB\n\n%s\n\n" (RS.to_string ~var:Var.namer_natural rs)) *)
