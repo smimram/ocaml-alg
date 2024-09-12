@@ -85,7 +85,7 @@ let var () = Var (Var.fresh ())
 
 (** Create an application. *)
 let app f a =
-  assert (List.length a = Op.arity f);
+  if (List.length a <> Op.arity f) then failwith (Printf.sprintf "%s expects %d arguments but %d provided" (Op.name f) (Op.arity f) (List.length a));
   App (f,a)
 
 (** Simple parser for terms and applications. *)
