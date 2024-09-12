@@ -76,6 +76,12 @@
  (libraries alg)
 )
 
+(executable
+ (name stl)
+ (modules stl)
+ (libraries alg)
+)
+
 (rule
  (alias runtest)
  (action (run ./anick0.exe))

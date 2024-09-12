@@ -22,6 +22,9 @@ dihedral:
 monoid:
 	@dune exec ./squierMonoid.exe
 
+stl:
+	@dune exec ./stl.exe
+
 test:
 	@for p in $(PROG); do echo "\n\n##### Running $$p #####\n"; dune exec ./$$p.exe || exit 1; done
 
