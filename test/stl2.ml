@@ -1,4 +1,4 @@
-(** Normalization of types in simply typed lambda-calculus, without associativity and unitality. *)
+(** Normalization of types in simply typed lambda-calculus, with associativity and unitality. *)
 
 open Alg
 open Term
@@ -22,6 +22,9 @@ let stl =
       RS.Rule.make "R" (a x (p y z)) (p (a x y) (a x z));
       RS.Rule.make "L1" (a e x) x;
       RS.Rule.make "R1" (a x e) e;
+      RS.Rule.make "A" (p (p x y) z) (p x (p y z));
+      RS.Rule.make "PL" (p e x) x;
+      RS.Rule.make "PR" (p x e) x;
     ]
 
 let () = Printf.printf "# Theory\n\n%s\n\n%!" (RS.to_string ~var:Var.namer_natural stl)

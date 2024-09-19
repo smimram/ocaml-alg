@@ -76,12 +76,6 @@
  (libraries alg)
 )
 
-(executable
- (name stl)
- (modules stl)
- (libraries alg)
-)
-
 (rule
  (alias runtest)
  (action (run ./anick0.exe))
@@ -186,7 +180,24 @@
  (action (run ./dihedral.exe))
 )
 
+(executable
+ (name stl)
+ (modules stl)
+ (libraries alg)
+)
+
 (rule
  (alias runtest)
  (action (run ./stl.exe))
+)
+
+(executable
+ (name stl2)
+ (modules stl2)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./stl2.exe))
 )
