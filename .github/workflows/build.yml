@@ -6,18 +6,14 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    - name: Setup OCaml
-      uses: ocaml/setup-ocaml@v2
-      with:
-        ocaml-compiler: 5.0.x
     - name: Install required packages
-      run: sudo apt-get -y install pandoc
-    - name: Pin locally
-      run: opam pin -y add -n .
-    - name: Build and test
-      run: opam install -y -t odoc js_of_ocaml js_of_ocaml-ppx alg
+      run: sudo apt-get -y install ocaml ocaml-dune pandoc
+    - name: Build
+      run: dune build
+    - nmae: Test
+      run: dune runtest
     - name: Build doc
-      run: eval $(opam env) && make -C docs && rm -f docs/.gitignore
+      run: make -C docs && rm -f docs/.gitignore
     - name: Upload website artifact
       uses: actions/upload-pages-artifact@v2
       with:
