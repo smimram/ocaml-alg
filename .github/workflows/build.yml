@@ -7,7 +7,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Install required packages
-      run: sudo apt-get -y install ocaml ocaml-dune js-of-ocaml pandoc
+      run: sudo apt-get -y install ocaml ocaml-dune ocaml-odoc js-of-ocaml pandoc
     - name: Build
       run: dune build
     - name: Test
