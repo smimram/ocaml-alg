@@ -10,7 +10,7 @@ jobs:
       run: sudo apt-get -y install ocaml ocaml-dune pandoc
     - name: Build
       run: dune build
-    - nmae: Test
+    - name: Test
       run: dune runtest
     - name: Build doc
       run: make -C docs && rm -f docs/.gitignore
