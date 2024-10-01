@@ -218,6 +218,7 @@ module LPO = struct
       else if ge_op f g then List.for_all (fun u -> gt ge_op t u) b
       else false
     | _ -> false
+
   and ge ge_op t u =
     eq t u || gt ge_op t u
 end
@@ -765,9 +766,7 @@ module RS = struct
     let rules = List.map (fun (n,t,u) -> if not (gt t u) then (n,u,t) else (n,t,u)) (rules rs) in
     { operations = rs.operations; rules }
 
-  (** Knuth-Bendix completion. [gt] is the strict order on terms, [callback] is
-      a function which is called regularly with the current rewriting system as
-      argument (useful to display during the completion). *)
+  (** Knuth-Bendix completion. [gt] is the strict order on terms, [callback] is a function which is called regularly with the current rewriting system as argument (useful to display during the completion). *)
   let knuth_bendix ?(gt=LPO.gt (>=)) ?namer ?(callback=fun _ -> ()) rs =
     let rs = orient ~gt rs in
     (* Name for new rules. *)

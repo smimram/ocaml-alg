@@ -201,3 +201,14 @@
  (alias runtest)
  (action (run ./stl2.exe))
 )
+
+(executable
+ (name uatao)
+ (modules uatao)
+ (libraries alg)
+)
+
+; (rule
+ ; (alias runtest)
+ ; (action (run ./stl2.exe))
+; )
