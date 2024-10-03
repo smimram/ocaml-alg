@@ -1,3 +1,5 @@
+(** Try generating terms. *)
+
 open Alg
 open Term
 
