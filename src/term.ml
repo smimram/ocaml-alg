@@ -381,7 +381,7 @@ module Renaming = struct
       (
         match find_opt s x with
         | Some y' -> if Var.eq y y' then s else raise Unification
-        | None -> add s x y
+        | None -> if List.exists (fun (_, y') -> Var.eq y y') s then raise Unification; add s x y
       )
     | App (f,l), App (f',l') ->
       if not (Op.eq f f' && List.length l = List.length l') then raise Unification else
