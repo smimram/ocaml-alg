@@ -171,15 +171,25 @@ let get_var = function
   | _ -> raise Not_found
 
 (** Variables in a term. *)
-let vars t =
+let vars ?(multiplicity=false) t =
   let rec aux vars = function
     | App (_, a) ->
-      List.fold_left (fun vars t -> aux vars t) vars a
+      List.fold_left aux vars a
     | Var x ->
-      if List.exists (Var.eq x) vars then vars
+      if not multiplicity && List.exists (Var.eq x) vars then vars
       else x::vars
   in
   List.rev (aux [] t)
+
+(** Operations in a term. *)
+let ops ?(multiplicity=false) t =
+  let rec aux ops = function
+    | App (f, l) ->
+      let ops = if not multiplicity && List.exists (Op.eq f) ops then ops else f::ops in
+      List.fold_left aux ops l
+    | Var _ -> []
+  in
+  aux [] t |> List.rev
 
 (** Whether a variable occurs in a term. *)
 let rec occurs x = function
@@ -187,7 +197,7 @@ let rec occurs x = function
   | Var y -> Var.eq x y
 
 (** Generate all terms with given number of operations. *)
-let generate_ops ?(vars=[]) ?(at_most=false) ops n =
+let generate_ops ?(vars=[]) ops n =
   (* Perform the generation of all cases, given a list of already used vars, returning the terms along with known variables. *)
   let rec aux vars n =
     if n = 0 then
@@ -203,7 +213,7 @@ let generate_ops ?(vars=[]) ?(at_most=false) ops n =
     (* Printf.printf "args: %d in %d\n%!" n k; *)
     if n < 0 then []
     else if k = 0 then
-      if n > 0 && not at_most then []
+      if n > 0 then []
       else [[], vars]
     else
       List.init (n+1)
@@ -593,6 +603,12 @@ module RS = struct
         | Not_unifiable -> false
     *)
     let eq r1 r2 = name r1 = name r2
+
+    (** Whether two rules are the same up to α-conversion. *)
+    let convertible r1 r2 =
+      match Renaming.unify_opt [] (source r1) (source r2) with
+      | None -> false
+      | Some s -> Renaming.unify_opt s (target r1) (target r2) <> None
   end
 
   type rule = Rule.t
