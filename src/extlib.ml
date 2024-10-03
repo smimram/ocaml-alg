@@ -3,6 +3,8 @@ let pair x y = x, y
 let unpair f (x,y) = f x y
 
 module Int = struct
+  include Int
+
   let modulo x y =
     let ans = x mod y in
     if ans >= 0 then ans
@@ -41,6 +43,12 @@ module List = struct
         if ofs = 0 then x::(sub l ofs (len-1))
         else sub l (ofs-1) len
       | [] -> invalid_arg "List.sub"
+
+  (** Product of a list of lists (returns the list of all combinations of elements). *)
+  let rec products = function
+    | l::ll -> List.map (fun x -> List.map (fun l -> x::l) (products ll)) l |> List.flatten
+    | [] -> [[]]
+
 end
 
 module String = struct
