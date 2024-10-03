@@ -187,12 +187,12 @@ let rec occurs x = function
   | Var y -> Var.eq x y
 
 (** Generate all terms with given number of operations. *)
-let generate_ops ?(vars=[]) ops n =
+let generate_ops ?(vars=[]) ?(at_most=false) ops n =
   (* Perform the generation of all cases, given a list of already used vars, returning the terms along with known variables. *)
   let rec aux vars n =
     if n = 0 then
       let x = Var.fresh () in
-      (Var x, x::vars)::(List.map (fun x -> Var x, vars) (x::vars))
+      (Var x, x::vars)::(List.map (fun x -> Var x, vars) vars)
     else
       List.map
         (fun f ->
@@ -200,9 +200,10 @@ let generate_ops ?(vars=[]) ops n =
         ) ops |> List.flatten
   (* Genrate k arguments, totaling n operations, with given vars. Also returns the used variables. *)
   and args vars n k =
+    (* Printf.printf "args: %d in %d\n%!" n k; *)
     if n < 0 then []
     else if k = 0 then
-      if n > 0 then []
+      if n > 0 && not at_most then []
       else [[], vars]
     else
       List.init (n+1)
@@ -382,6 +383,9 @@ module Renaming = struct
   let unify_opt s t u =
     try Some (unify s t u)
     with Unification -> None
+
+  (** Whether two terms are convertible. *)
+  let unifiable t u = unify_opt [] t u <> None
 end
 
 (** Interpretation of terms into cartesian categories. *)
