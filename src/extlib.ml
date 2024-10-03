@@ -9,6 +9,12 @@ module Int = struct
     let ans = x mod y in
     if ans >= 0 then ans
     else ans + y
+
+  (** Split n in k parts (whose sum is n). *)
+  let rec splits n k : int list list =
+    if (n < 0 || k < 0) || (k = 0 && n > 0) then []
+    else if k = 0 then [[]]
+    else List.init (n+1) (fun i -> List.map (fun l -> i::l) (splits (n-i) (k-1))) |> List.flatten
 end
 
 module List = struct

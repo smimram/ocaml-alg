@@ -186,6 +186,35 @@ let rec occurs x = function
   | App (_, a) -> List.exists (occurs x) a
   | Var y -> Var.eq x y
 
+(** Generate all terms with given number of operations. *)
+let generate_ops ?(vars=[]) ops n =
+  (* Perform the generation of all cases, given a list of already used vars, returning the terms along with known variables. *)
+  let rec aux vars n =
+    if n = 0 then
+      let x = Var.fresh () in
+      (Var x, x::vars)::(List.map (fun x -> Var x, vars) (x::vars))
+    else
+      List.map
+        (fun f ->
+           List.map (fun (l, vars) -> App (f,l), vars) (args vars (n-1) (Op.arity f))
+        ) ops |> List.flatten
+  (* Genrate k arguments, totaling n operations, with given vars. Also returns the used variables. *)
+  and args vars n k =
+    if n < 0 then []
+    else if k = 0 then
+      if n > 0 then []
+      else [[], vars]
+    else
+      List.init (n+1)
+        (fun i ->
+           List.map
+             (fun (t, vars) ->
+                List.map (fun (l, vars) -> t::l, vars) (args vars (n-i) (k-1))
+             ) (aux vars i) |> List.flatten
+        ) |> List.flatten
+  in
+  aux vars n |> List.map fst
+
 (** Terms as an alphabet. *)
 module TermAlphabet : Alphabet.T with type t = term = struct
   type t = term
@@ -244,7 +273,7 @@ module Substitution = struct
 
   let simple x t : t = [x,t]
 
-  let add s x t : t = (x,t)::s
+  let add (s:t) x t : t = (x,t)::s
 
   (** Find the value associated to a variable. *)
   let rec find (s:t) x =
@@ -310,6 +339,50 @@ end
 module Subst = Substitution
 
 type subst = Subst.t
+
+(** Renamings of variables. *)
+module Renaming = struct
+  (** A renaming. *)
+  type t = (var * var) list
+
+  (** Empty renaming. *)
+  let empty : t = []
+
+  let add (s:t) x y = (x,y)::s
+
+  (** Convert to subtitution. *)
+  let to_substitution (s : t) : Substitution.t =
+    List.map (fun (x,y) -> x, Var y) s
+
+  (** Find the renaming of a variable. *)
+  let rec find_opt (s:t) x =
+    match s with
+    | (x',y)::s -> if Var.eq x x' then Some y else find_opt s x
+    | [] -> None
+
+  (** Raised when unification fails. *)
+  exception Unification
+
+  (** Unify two terms given a partial renaming, returning the extended renaming. *)
+  let rec unify (s:t) t u =
+    match t, u with
+    | Var x, Var y ->
+      (
+        match find_opt s x with
+        | Some y' -> if Var.eq y y' then s else raise Unification
+        | None -> add s x y
+      )
+    | App (f,l), App (f',l') ->
+      if not (Op.eq f f' && List.length l = List.length l') then raise Unification else
+        List.fold_left2 unify s l l'
+    | Var _, App _
+    | App _, Var _ -> raise Unification
+
+  (** Same a [unify] but returning an option instead of raising an error. *)
+  let unify_opt s t u =
+    try Some (unify s t u)
+    with Unification -> None
+end
 
 (** Interpretation of terms into cartesian categories. *)
 module Interpretation = struct

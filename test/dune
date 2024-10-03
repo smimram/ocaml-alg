@@ -208,7 +208,19 @@
  (libraries alg)
 )
 
-; (rule
- ; (alias runtest)
- ; (action (run ./stl2.exe))
-; )
+(executable
+ (name uatao2)
+ (modules uatao2)
+ (libraries alg)
+)
+
+(executable
+ (name gen)
+ (modules gen)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./gen.exe))
+)
