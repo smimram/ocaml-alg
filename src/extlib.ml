@@ -112,4 +112,28 @@ module String = struct
       let n = find p s in
       (String.sub s 0 n)::(split_on_predicate p (String.sub s (n+1) (String.length s - (n+1))))
     with Not_found -> [s]
+
+  let find_index_from p s i =
+    let ans = ref (-1) in
+    try
+      for i = i to String.length s - 1 do
+        if p s.[i] then (
+          ans := i;
+          raise Exit
+        )
+      done;
+      raise Not_found
+    with Exit -> !ans
+
+  (** Find the matching closing parenthesis of an opening parenthesis. *)
+  let matching_parenthesis s i =
+    assert (s.[i] = '(');
+    let n = ref 0 in
+    find_index_from
+      (fun c ->
+         if c = '(' then incr n
+         else if c = ')' then decr n;
+         assert (!n >= 0);
+         !n = 0
+      ) s i
 end
