@@ -187,9 +187,12 @@ let ops ?(multiplicity=false) t =
     | App (f, l) ->
       let ops = if not multiplicity && List.exists (Op.eq f) ops then ops else f::ops in
       List.fold_left aux ops l
-    | Var _ -> []
+    | Var _ -> ops
   in
   aux [] t |> List.rev
+
+(** Number of operations in a terms. *)
+let count_ops t = List.length (ops ~multiplicity:true t)
 
 (** Whether a variable occurs in a term. *)
 let rec occurs x = function
@@ -801,13 +804,18 @@ module RS = struct
       aux (length p - n) p
   end
 
+  exception Abort
+
   (** Normalize a term. *)
-  let normalize rs t =
-    let rec aux p =
+  let normalize ?limit rs t =
+    let rec aux k p =
+      (match limit with
+       | Some limit when k > limit -> raise Abort
+       | _ -> ());
       let s = steps rs (Path.target p) in
-      if s = [] then p else aux (Path.append_step p (List.hd s))
+      if s = [] then p else aux (k+1) (Path.append_step p (List.hd s))
     in
-    aux (Path.empty t)
+    aux 0 (Path.empty t)
 
   (** Unify the source of [r2] with a subterm of the source of [r1]. *)
   let critical_rules r1 r2 =
@@ -860,7 +868,7 @@ module RS = struct
     { operations = rs.operations; rules }
 
   (** Knuth-Bendix completion. [gt] is the strict order on terms, [callback] is a function which is called regularly with the current rewriting system as argument (useful to display during the completion). *)
-  let knuth_bendix ?(gt=LPO.gt (>=)) ?namer ?(callback=fun _ -> ()) rs =
+  let knuth_bendix ?(gt=LPO.gt (>=)) ?namer ?limit ?(callback=fun _ -> ()) ?(callback_add=fun _ -> ()) rs =
     let rs = orient ~gt rs in
     (* Name for new rules. *)
     let namer =
@@ -884,7 +892,7 @@ module RS = struct
              (* TODO: proper recursive function instead of this filter *)
              let rules = List.filter (fun r' -> not (Rule.eq r r')) !rules in
              let rs = { rs with rules } in
-             n, Path.target (normalize rs s), Path.target (normalize rs t)
+             n, Path.target (normalize ?limit rs s), Path.target (normalize ?limit rs t)
           ) !rules;
       rules := List.filter (fun (n,s,t) -> not (eq s t)) !rules;
       queue := !queue@[r]
@@ -904,6 +912,7 @@ module RS = struct
            if not (eq t1 t2) then
              let t1, t2 = if gt t1 t2 then t1, t2 else t2, t1 in
              let r = (namer (), t1, t2) in
+             callback_add r;
              Printf.printf "add %s\n%s\n%s\n\n%!" (Rule.to_string r) (Path.to_string p1) (Path.to_string p2);
              add r
         ) cp;

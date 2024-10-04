@@ -7,7 +7,7 @@ open Term
 
 let m = Op.make "m" 2
 let ops = [m]
-let nops = 1
+let nops = 3
 let r =
   List.init (nops+1)
     (fun i ->
@@ -38,15 +38,44 @@ let r =
       r::(filter l)
     | [] -> []
   in
+  let r = List.filter (fun (t,u) -> not (Term.eq t u)) r in
   filter r
 
 let () =
-  print_endline "\n# Filtered\n";
+  Printf.printf "\n# Filtered\n\n";
   List.iter
     (fun (t,u) ->
        let var = Var.namer_natural () in
        Printf.printf "%s = %s\n%!" (Term.to_string ~var t) (Term.to_string ~var u)
-    ) r
+    ) r;
+  Printf.printf "\n%d equations\n%!" (List.length r)
+
+let r = Array.of_list r
+
+let () =
+  let completed = ref 0 in
+  for i = 0 to Array.length r - 1 do
+    try
+      Printf.printf "\n# Try %d\n\n%!" i;
+      let a = r.(i) in
+      (* let b = r.(j) in *)
+      let rs = RS.make ops [RS.Rule.make "A" (fst a) (snd a)] in
+      Printf.printf "- rs : %s\n%!" (RS.to_string ~var:Var.namer_natural rs);
+      let gt = LPO.gt (>=) in
+      let rs = RS.orient ~gt rs in
+      Printf.printf "- oriented : %s\n%!" (RS.to_string ~var:Var.namer_natural rs);
+      let callback_add r =
+        let t = RS.Rule.source r in
+        let u = RS.Rule.target r in
+        let n = count_ops t + count_ops u in
+        if n > 20 then raise RS.Abort
+      in
+      let rs = RS.knuth_bendix ~limit:100 ~callback_add ~gt rs in
+      incr completed;
+      Printf.printf "- completed %d : %s\n%!" !completed (RS.to_string ~var:Var.namer_natural rs);
+    with
+    | RS.Abort -> Printf.printf "aborted\n"
+  done
 
 (*
 
