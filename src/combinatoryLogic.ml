@@ -36,12 +36,41 @@ let rec of_string s =
     App (t, u)
 
 (** Normalize combinator. *)
+(*
 let rec normalize t =
   match t with
   | I | K | S -> t
   | App (t, v) ->
     match normalize t with
-    | I -> v
+    | I -> normalize v
     | App (K, t) -> normalize t
     | App (App (S, t), u) -> normalize (App (App (t, v), App (u, v)))
     | t -> App (t, normalize v)
+*)
+
+let rec normalize t =
+  let rec aux env = function
+    | I ->
+      (
+        match env with
+        | t::env -> aux env t
+        | [] -> I
+      )
+    | K ->
+      (
+        match env with
+        | t::u::env -> aux env t
+        | [t] -> App (K, normalize t)
+        | [] -> K
+      )
+    | S ->
+      (
+        match env with
+        | t::u::v::env -> aux env (App (App (t,v), App (u,v)))
+        | [t;u] -> App (App (S, normalize t), normalize u)
+        | [t] -> App (S, normalize t)
+        | [] -> S
+      )
+    | App (t, u) -> aux (u::env) t
+  in
+  aux [] t
