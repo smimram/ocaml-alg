@@ -12,4 +12,5 @@ let () =
   test "S (K I)";
   let normalize s = s |> of_string |> normalize |> to_string |> print_endline in
   normalize "S I I I";
-  normalize "S(S(K S) I)(K I)"
+  normalize "S(S(K S) I)(K I)";
+  normalize "S(K(S(K S)(S(K K)(S(K S) K)))) K"
