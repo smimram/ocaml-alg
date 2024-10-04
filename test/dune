@@ -224,3 +224,14 @@
  (alias runtest)
  (action (run ./gen.exe))
 )
+
+(executable
+ (name cl)
+ (modules cl)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./cl.exe))
+)

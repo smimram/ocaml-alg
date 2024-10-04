@@ -127,13 +127,34 @@ module String = struct
 
   (** Find the matching closing parenthesis of an opening parenthesis. *)
   let matching_parenthesis s i =
-    assert (s.[i] = '(');
-    let n = ref 0 in
-    find_index_from
-      (fun c ->
-         if c = '(' then incr n
-         else if c = ')' then decr n;
-         assert (!n >= 0);
-         !n = 0
-      ) s i
+    let find_closing a b =
+      let n = ref 0 in
+      find_index_from
+        (fun c ->
+           if c = a then incr n
+           else if c = b then decr n;
+           assert (!n >= 0);
+           !n = 0
+        ) s i
+    in
+    let find_opening a b =
+      let n = ref 0 in
+      let ans = ref (-1) in
+      try
+        for i = i downto 0 do
+          if s.[i] = b then incr n
+          else if s.[i] = a then decr n;
+          assert (!n >= 0);
+          if !n = 0 then (
+            ans := i;
+            raise Exit
+          )
+        done;
+        raise Not_found
+      with Exit -> !ans
+    in
+    match s.[i] with
+    | '(' -> find_closing '(' ')'
+    | ')' -> find_opening '(' ')'
+    | _ -> assert false
 end
