@@ -52,9 +52,20 @@
  (libraries alg)
 )
 
+(rule
+ (alias runtest)
+ (action (run ./mon.exe))
+)
+
 (executable
  (name moni)
  (modules moni)
+ (libraries alg)
+)
+
+(executable
+ (name mone)
+ (modules mone)
  (libraries alg)
 )
 
@@ -114,11 +125,6 @@
 (rule
  (alias runtest)
  (action (run ./kleene.exe))
-)
-
-(rule
- (alias runtest)
- (action (run ./mon.exe))
 )
 
 (rule
