@@ -56,6 +56,7 @@ let run _ =
   let generaten = jsget (Html.CoerceTo.input (jsget (doc##getElementById(Js.string "generaten")))) in
   let syms = jsget (Html.CoerceTo.textarea (jsget (doc##getElementById(Js.string "symbols")))) in
   let rules = jsget (Html.CoerceTo.textarea (jsget (doc##getElementById(Js.string "rules")))) in
+  let order = jsget (Html.CoerceTo.select (jsget (doc##getElementById (Js.string "order")))) in
   let parsed_presentation = jsget (doc##getElementById(Js.string "presentation")) in
   let completion = jsget (doc##getElementById(Js.string "completion")) in
   let reduced = jsget (doc##getElementById(Js.string "reduced")) in
@@ -125,7 +126,13 @@ let run _ =
            status ("Parsed: " ^ P.to_string rs);
 
            status "Computing Knuth-Bendix completion...";
-           let rs = P.complete ~namer:P.Rule.Namer.none (P.W.Order.deglex X.leq) rs in
+           let leq =
+             match Js.to_string order##.value with
+             | "deglex" -> P.W.Order.deglex X.leq
+             | "revdeglex" -> P.W.Order.deglex X.geq
+             | _ -> assert false
+           in
+           let rs = P.complete ~namer:P.Rule.Namer.none leq rs in
            completion##.innerHTML := Js.string (string_of_rs rs);
 
            status "Reducing presentation...";
