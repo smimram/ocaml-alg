@@ -52,17 +52,18 @@ let debug s = Firebug.console##debug (Js.string s)
 let jsget x = Js.Opt.get x (fun () -> assert false)
 
 let run _ =
-  let generate = jsget (Html.CoerceTo.select (jsget (doc##getElementById(Js.string "generate")))) in
-  let generaten = jsget (Html.CoerceTo.input (jsget (doc##getElementById(Js.string "generaten")))) in
-  let syms = jsget (Html.CoerceTo.textarea (jsget (doc##getElementById(Js.string "symbols")))) in
-  let rules = jsget (Html.CoerceTo.textarea (jsget (doc##getElementById(Js.string "rules")))) in
-  let order = jsget (Html.CoerceTo.select (jsget (doc##getElementById (Js.string "order")))) in
-  let parsed_presentation = jsget (doc##getElementById(Js.string "presentation")) in
-  let completion = jsget (doc##getElementById(Js.string "completion")) in
-  let reduced = jsget (doc##getElementById(Js.string "reduced")) in
-  let coherence = jsget (doc##getElementById(Js.string "coherence")) in
-  let go = jsget (doc##getElementById(Js.string "go")) in
-  let status = jsget (doc##getElementById(Js.string "status")) in
+  let get_element_by_id x = doc##getElementById (Js.string x) |> jsget in
+  let generate = get_element_by_id "generate" |> Html.CoerceTo.select |> jsget in
+  let generaten = get_element_by_id "generaten" |> Html.CoerceTo.input |> jsget in
+  let syms = get_element_by_id "symbols" |> Html.CoerceTo.textarea |> jsget in
+  let rules = get_element_by_id "rules" |> Html.CoerceTo.textarea |> jsget in
+  let order = get_element_by_id "order" |> Html.CoerceTo.select |> jsget in
+  let parsed_presentation = get_element_by_id "presentation" in
+  let completion = get_element_by_id "completion" in
+  let reduced = get_element_by_id "reduced" in
+  let coherence = get_element_by_id "coherence" in
+  let go = get_element_by_id "go" in
+  let status = get_element_by_id "status" in
   let status s = status##.innerHTML := Js.string s in
   let error s = status ("<em style=\"color:red\">" ^ s ^ "</em>") in
 
