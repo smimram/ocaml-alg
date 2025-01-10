@@ -13,6 +13,9 @@ braids:
 quaternion:
 	@dune exec ./quaternion.exe
 
+qgroup:
+	@dune exec ./qgroup.exe
+
 rig:
 	@dune exec ./rig.exe
 

@@ -31,8 +31,11 @@ module Quaternion = struct
   let i : t = false, I
   let j : t = false, J
   let k : t = false, K
-
+  
   let neg ((s,x):t) : t = not s, x
+
+  (** All the elements of the group. *)
+  let elements = [one;i;j;k;neg one;neg i;neg j;neg k]
 
   let may_neg b x = if b then neg x else x
 

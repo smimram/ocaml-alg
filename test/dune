@@ -241,3 +241,14 @@
  (alias runtest)
  (action (run ./cl.exe))
 )
+
+(executable
+ (name qgroup)
+ (modules qgroup)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./qgroup.exe))
+)
