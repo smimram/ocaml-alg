@@ -1,8 +1,6 @@
 (** The quaternion group. *)
 
 open Alg
-module Q = Group.Quaternion
-
 module List = struct
   include List
 
@@ -11,6 +9,7 @@ module List = struct
 end
 
 let () =
+  let module Q = Group.Quaternion in
   Q.elements
   |> List.map Q.to_string
   |> String.concat " "
@@ -19,6 +18,13 @@ let () =
   |> String.concat "\n"
   |> Printf.printf "- products:\n%s\n%!";
   print_newline ()
+
+module Q = struct
+  include Group.Quaternion
+
+  let to_string x =
+    if is_negative x then to_string (neg x) ^ "^-" else to_string x
+end
 
 module Edge = struct
   type t = X | Y | Z | W
@@ -56,4 +62,66 @@ let () =
             ;
             print_newline ()
          ) Edge.elements
-    ) [Q.one;Q.i;Q.j;Q.k]
+    ) [Q.one;Q.i;Q.j;Q.k];
+  print_newline ()
+
+(*
+let () =
+  List.iter
+    (fun q ->
+       Printf.printf {|\begin{tikzcd}[sep=small]
+(b,%s)&\ar[l,"{(z,%s)}"']\ar[d,"{(w,%s)}"](a,%s)\\
+(a,%s)\ar[u,"{(y,%s)}"]\ar[r,"{(x,%s)}"']&(b,%s)
+\end{tikzcd}
+\qquad
+|}
+         (Q.to_string (Q.mul q Q.j))
+         (Q.to_string (Q.mul q Q.i))
+         (Q.to_string (Q.mul q Q.i))
+         (Q.to_string (Q.mul q Q.i))
+         (Q.to_string q)
+         (Q.to_string q)
+         (Q.to_string q)
+         (Q.to_string (Q.mul q Q.i))
+    ) Q.elements
+*)
+
+(*
+let () =
+  List.iter
+    (fun q ->
+       Printf.printf {|\begin{tikzcd}[sep=small]
+(b,%s)&\ar[l,"{(w,%s)}"']\ar[d,"{(x,%s)}"](a,%s)\\
+(a,%s)\ar[u,"{(y,%s)}"]\ar[r,"{(z,%s)}"']&(b,%s)
+\end{tikzcd}
+\qquad
+|}
+         (Q.to_string (Q.mul q Q.j))
+         (Q.to_string (Q.mul q Q.j))
+         (Q.to_string (Q.mul q Q.j))
+         (Q.to_string (Q.mul (Q.mul q (Q.neg Q.k)) (Q.neg Q.i)))
+         (Q.to_string q)
+         (Q.to_string q)
+         (Q.to_string q)
+         (Q.to_string (Q.mul q (Q.neg Q.k)))
+    ) Q.elements
+*)
+
+let () =
+  List.iter
+    (fun q ->
+       Printf.printf {|\begin{tikzcd}[sep=small]
+(b,%s)&\ar[l,"{(w,%s)}"']\ar[d,"{(y,%s)}"](a,%s)\\
+(a,%s)\ar[u,"{(z,%s)}"]\ar[r,"{(x,%s)}"']&(b,%s)
+\end{tikzcd}
+\qquad
+|}
+         (Q.to_string (Q.mul q (Q.neg Q.k)))
+         (Q.to_string (Q.mul q (Q.neg Q.k)))
+         (Q.to_string (Q.mul q (Q.neg Q.k)))
+         (Q.to_string (Q.mul q (Q.neg Q.k)))
+         (Q.to_string q)
+         (Q.to_string q)
+         (Q.to_string q)
+         (Q.to_string (Q.mul q Q.i))
+    ) Q.elements

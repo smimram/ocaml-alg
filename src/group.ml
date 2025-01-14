@@ -31,6 +31,8 @@ module Quaternion = struct
   let i : t = false, I
   let j : t = false, J
   let k : t = false, K
+
+  let is_negative (s,_) = s
   
   let neg ((s,x):t) : t = not s, x
 
