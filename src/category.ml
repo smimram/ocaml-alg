@@ -101,12 +101,17 @@ module Simplicial = struct
   let id n : E.t = List.init n (fun _ -> 1)
 
   (** Degeneracies. *)
-  let degeneracy n i : E.t = id i @ [2] @ id (n-i)
+  let degeneracy n i : E.t =
+    assert (0 <= i && i <= n);
+    id i @ [2] @ id (n-i)
 
   (** Faces. *)
-  let face n i : E.t = id i @ [0] @ id (n-i)
+  let face n i : E.t =
+    assert (0 <= i && i <= n);
+    id i @ [0] @ id (n-i)
 
   let comp f g =
+    assert (tgt f = src g);
     let f, g = List.fold_left_map (fun f n -> List.drop n f, List.take n f) f g in
     assert (f = []);
     List.map (List.fold_left (+) 0) g
