@@ -40,4 +40,21 @@ let () =
           )
       )
     done
+  done;
+  (*
+  for i = 0 to n+1 do
+    for j = 0 to n do
+      Printf.printf "testing d%d/s%d\n%!" i j;
+      assert (
+        S.E.eq
+          (S.comp (S.face (n+1) i) (S.degeneracy n j))
+          (
+            if i < j
+            then S.comp (S.degeneracy n (j-1)) (S.face n i)
+            else if i = j || i = j+1 then S.id (n+1)
+            else assert false
+          )
+      )
+    done
   done
+  *)()
