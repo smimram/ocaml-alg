@@ -4,7 +4,7 @@
 module type T = sig
   include Graph.T
 
-  (** Composition of morphisms. *)
+  (** Sequential composition of morphisms. *)
   val comp : E.t -> E.t -> E.t
 
   (** Identity morphism. *)
@@ -77,6 +77,65 @@ module Monoid (M : Monoid.T) : T = struct
   let comp = M.mul
   let id () = M.one
 end
+
+(** The (augmented) simplicial category. *)
+module Simplicial = struct
+  module V = Alphabet.Nat
+  module E = struct
+    type nat = int
+
+    (* We encode a morphism as the number of preimages for each number in the target. *)
+    type t = nat list
+
+    let eq = (=)
+
+    let compare = compare
+
+    let to_string f = String.concat "|" @@ List.map string_of_int f
+  end
+
+  let src f = List.fold_left (+) 0 f
+
+  let tgt f = List.length f
+
+  let id n : E.t = List.init n (fun _ -> 1)
+
+  (** Degeneracies. *)
+  let degeneracy n i : E.t = id i @ [2] @ id (n-i-1)
+
+  (** Faces. *)
+  let face n i : E.t = id i @ [0] @ id (n-i)
+
+  let comp f g =
+    let f, g = List.fold_left_map (fun f n -> List.drop n f, List.take n f) f g in
+    assert (f = []);
+    List.map (List.fold_left (+) 0) g
+end
+
+module SimplicialCategory : T = Simplicial
+
+(*
+(** Joyal's theta category. *)
+module Theta : T = struct
+
+  (** Pasting schemes. *)
+  module PS = struct
+    type t = PS of t list
+    let eq = (=)
+    let compare = compare
+    let rec to_string (PS l) = "[" ^ (String.concat "," @@ List.map to_string l) ^ "]"
+  end
+  module V = PS
+
+  module E = struct
+    type t = F of Simplicial.E.t * t list
+  end
+  let src _ = _
+  let tgt _ = _
+  let comp = _
+  let id () = _
+end
+*)
 
 (** Underlying graph of a category. *)
 module Graph (C : T) : Graph.T = struct

@@ -13,7 +13,7 @@ module type T = sig
   (** Dimension of a simplex. *)
   val dim : t -> int
 
-  (** Faces of a cube. *)
+  (** Immdiate face of a cube. *)
   val face : t -> int -> dir -> t
 end
 

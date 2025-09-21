@@ -58,6 +58,12 @@ module Int = struct
 end
 module IntAlphabet : (T with type t = int) = Int
 
+(** Natural numbers. *)
+module Nat = struct
+  (* TODO: enforce positivity *)
+  include Int
+end
+
 (** The alphabet with one element. *)
 module Unit : T with type t = unit = struct
   type t = unit
