@@ -27,19 +27,17 @@ let () =
       ) 
     done
   done;
-  (*
   for i = 0 to n do
     for j = 0 to n+1 do
-      Printf.printf "testing d%d/d%d\n%!" i j;
+      (* Printf.printf "testing d%d/d%d\n%!" i j; *)
       assert (
         S.E.eq
-          (S.comp (S.face n i) (S.face (n+1) (i+1)))
+          (S.comp (S.face n i) (S.face (n+1) j))
           (
-            if j <= i
-            then S.comp (S.degeneracy n (j+1)) (S.degeneracy (n+1) i)
-            else S.comp (S.degeneracy n j) (S.degeneracy (n+1) (i-1))
+            if i < j
+            then S.comp (S.face n (j-1)) (S.face (n+1) i)
+            else S.comp (S.face n j) (S.face (n+1) (i+1))
           )
       )
     done
   done
-*)()
