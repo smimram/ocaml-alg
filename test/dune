@@ -252,3 +252,25 @@
  (alias runtest)
  (action (run ./qgroup.exe))
 )
+
+(executable
+ (name ccc)
+ (modules ccc)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./ccc.exe))
+)
+
+(executable
+ (name simpl)
+ (modules simpl)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./simpl.exe))
+)
