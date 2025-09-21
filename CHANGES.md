@@ -10,6 +10,8 @@
   - coherence cells
 - groups:
   - add the quaternion group
+- categories:
+  - add simplicial and Θ categories
 - precubical sets
 
 0.1.0 (22-11-2023)
