@@ -11,7 +11,7 @@
 - groups:
   - add the quaternion group
 - categories:
-  - add simplicial and Θ categories
+  - add the simplicial category
 - precubical sets
 
 0.1.0 (22-11-2023)
