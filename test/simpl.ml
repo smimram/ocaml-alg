@@ -65,4 +65,10 @@ let () =
       S.ap f i =
       if i <= k then i else i-1
     )
-  done
+  done;
+  (* From fun. *)
+  let f i = if i <= k then i else i-1 in
+  let f = S.from_fun (n+2) (n+1) f in
+  assert (S.src f = (n+2));
+  assert (S.tgt f = (n+1));
+  assert (S.E.eq f (S.degeneracy n k))

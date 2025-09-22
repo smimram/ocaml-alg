@@ -101,14 +101,21 @@ module Simplicial = struct
     let compare (f:t) (g:t) = compare f g
 
     let to_string f = String.concat "|" @@ List.map string_of_int f
-
-    (* (\** Every simplicial morphism m → n induces an "interval" map n+1 → m+1. *\) *)
-    (* let interval (f:t) = *)
   end
 
   let src = E.src
 
   let tgt = E.tgt
+
+  (** Create a morphism from a function. *)
+  let from_fun m n f : E.t =
+    let rec aux i j k =
+      assert (j <= n);
+      if i > n then k::[]
+      else if f i = j then aux (i+1) j (k+1)
+      else k::(aux i (j+1) 0)
+    in
+    aux 0 0 0
 
   (** Apply a morphism as a function. *)
   let ap f i =
@@ -119,6 +126,8 @@ module Simplicial = struct
       | [] -> assert false
     in
     aux 0 0 f i
+
+  let to_fun = ap
 
   let id n : E.t = List.init n (fun _ -> 1)
 
@@ -138,6 +147,9 @@ module Simplicial = struct
     let f, g = List.fold_left_map (fun f n -> List.drop n f, List.take n f) f g in
     assert (f = []);
     List.map (List.fold_left (+) 0) g
+
+  (* (\** Every simplicial morphism m → n induces an "interval" map n+1 → m+1. *\) *)
+  (* let interval (f:E.t) = *)
 end
 
 module SimplicialCategory : T = Simplicial
