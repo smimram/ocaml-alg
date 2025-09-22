@@ -87,16 +87,22 @@ module Simplicial = struct
     (* We encode a morphism as the number of preimages for each number in the target. *)
     type t = nat list
 
-    let eq = (=)
+    let src (f:t) = List.fold_left (+) 0 f
+
+    let tgt (f:t) = List.length f
+
+    let eq f g =
+      assert (src f = src g);
+      assert (tgt f = tgt g);
+      f = g
 
     let compare = compare
 
     let to_string f = String.concat "|" @@ List.map string_of_int f
   end
 
-  let src f = List.fold_left (+) 0 f
-
-  let tgt f = List.length f
+  let src = E.src
+  let tgt = E.tgt
 
   let id n : E.t = List.init n (fun _ -> 1)
 
