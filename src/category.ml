@@ -93,14 +93,26 @@ module Simplicial = struct
 
     let tgt (f:t) = List.length f
 
+    let ap f i =
+      assert (0 <= i && i <= src f);
+      let rec aux j from f i =
+        match f with
+        | k::f -> if i < from+k then j else aux (j+1) (from+k) f i
+        | [] -> assert false
+      in
+      aux 0 0 f i
+
     let eq f g =
       assert (src f = src g);
       assert (tgt f = tgt g);
       f = g
 
-    let compare = compare
+    let compare (f:t) (g:t) = compare f g
 
     let to_string f = String.concat "|" @@ List.map string_of_int f
+
+    (* (\** Every simplicial morphism m → n induces an "interval" map n+1 → m+1. *\) *)
+    (* let interval (f:t) = *)
   end
 
   let src = E.src
@@ -134,22 +146,50 @@ module Theta : T = struct
   (** Pasting schemes. *)
   module PS = struct
     type t = PS of t list
+
+    let width (PS l) = List.length l
+
     let eq = (=)
+
     let compare = compare
+
     let rec to_string (PS l) = "[" ^ (String.concat "," @@ List.map to_string l) ^ "]"
   end
   module V = PS
 
   module E = struct
-    type t = F of Simplicial.E.t * t list
+    type t =
+      {
+        src : PS.t;
+        tgt : PS.t;
+        simplicial : Simplicial.E.t;
+        maps : t list;
+      }
+
+    let make src tgt simplicial maps =
+      assert (PS.width src = Simplicial.src simplicial);
+      assert (PS.width tgt = Simplicial.tgt simplicial);
+      List.iteri (fun n p -> if );
+      { src; tgt; simplicial; maps }
+
+    let rec to_string f =
+      "[" ^ Simplicial.E.to_string f.simplicial ^ "]:[" ^ (String.concat "|" @@ List.map to_string f.maps) ^ "]"
+
+    let rec eq f g =
+      Simplicial.E.eq f.simplicial g.simplicial && List.for_all2 eq f.maps g.maps
+
+    let compare (f:t) (g:t) = compare f g
   end
-  let src _ = _
-  let tgt _ = _
+
+  let src f = f.E.src
+
+  let tgt f = f.E.tgt
+
   let comp = _
   let id () = _
 end
 *)
-
+  
 (** Underlying graph of a category. *)
 module Graph (C : T) : Graph.T = struct
   include C

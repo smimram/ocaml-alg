@@ -55,4 +55,11 @@ let () =
           )
       )
     done
+  done;
+  let f = S.degeneracy n i in
+  for j = 0 to n do
+    assert (
+      S.E.ap f j =
+      if j <= i then j else j-1
+    )
   done
