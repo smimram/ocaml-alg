@@ -80,7 +80,7 @@ module Monoid (M : Monoid.T) : T = struct
   let id () = M.one
 end
 
-(** The simplicial category. *)
+(** The (augmented or not) simplicial category. *)
 module Simplicial = struct
   module V = Alphabet.Nat
   module E = struct
@@ -162,15 +162,16 @@ end
 
 module SimplicialCategory : T = Simplicial
 
-(*
 (** Joyal's theta category. *)
-module Theta : T = struct
+module Theta = struct
 
   (** Pasting schemes. *)
   module PS = struct
     type t = PS of t list
 
     let to_list (PS l) = l
+
+    let point = PS []
 
     let width p = List.length @@ to_list p
 
@@ -194,15 +195,18 @@ module Theta : T = struct
     let make src tgt simplicial maps =
       assert (PS.width src = Simplicial.src simplicial);
       assert (PS.width tgt = Simplicial.tgt simplicial);
-      let f' = Simplicial.to_fun @@ Simplicial.interval simplicial in
-      let l =
-        List.mapi
-          (fun j p ->
-             let i = f' j in
-             if i = 0 || i = Simplicial.src simplicial + 1 then None
-             else
-          ) tgt
-      in
+      let f = Simplicial.ap simplicial in
+      let f' = Simplicial.ap @@ Simplicial.interval simplicial in
+      let j0 = f 0 in
+      List.iteri
+        (fun j q ->
+           (* TODO: a recursive function *)
+           if j >= j0 then
+             let p = List.nth (V.to_list src) (f' j - 1) in
+             let fj = List.nth maps (j - j0) in
+             assert (fj.src = p);
+             assert (fj.tgt = q)
+        ) (V.to_list src);
       { src; tgt; simplicial; maps }
 
     let rec to_string f =
@@ -218,10 +222,17 @@ module Theta : T = struct
 
   let tgt f = f.E.tgt
 
-  let comp = _
-  let id () = _
+  let rec id p = E.make p p (Simplicial.id @@ PS.width p) (List.map id @@ PS.to_list p)
+
+  let comp f g =
+    E.make
+      (src f)
+      (tgt g)
+      (Simplicial.comp f.simplicial g.simplicial)
+      (failwith "TODO")
 end
-*)
+
+module ThetaCategory : T = Theta
 
 (** Underlying graph of a category. *)
 module Graph (C : T) : Graph.T = struct
