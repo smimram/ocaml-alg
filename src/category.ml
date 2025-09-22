@@ -80,7 +80,7 @@ module Monoid (M : Monoid.T) : T = struct
   let id () = M.one
 end
 
-(** The (augmented) simplicial category. *)
+(** The simplicial category. *)
 module Simplicial = struct
   module V = Alphabet.Nat
   module E = struct
@@ -91,6 +91,7 @@ module Simplicial = struct
 
     let src (f:t) = List.fold_left (+) 0 f
 
+    (* IMPORTANT NOTE: we take the convention that we count the number of elements in the source or target! So off by one compared to traditional convention in topology. *)
     let tgt (f:t) = List.length f
 
     let eq f g =
@@ -110,8 +111,8 @@ module Simplicial = struct
   (** Create a morphism from a function. *)
   let from_fun m n f : E.t =
     let rec aux i j k =
-      assert (j <= n);
-      if i > n then k::[]
+      if i >= m then k::[]
+      else if j >= n then []
       else if f i = j then aux (i+1) j (k+1)
       else k::(aux i (j+1) 0)
     in
@@ -119,7 +120,7 @@ module Simplicial = struct
 
   (** Apply a morphism as a function. *)
   let ap f i =
-    assert (0 <= i && i <= src f);
+    assert (0 <= i && i < src f);
     let rec aux j from f i =
       match f with
       | k::f -> if i < from+k then j else aux (j+1) (from+k) f i
@@ -148,8 +149,15 @@ module Simplicial = struct
     assert (f = []);
     List.map (List.fold_left (+) 0) g
 
-  (* (\** Every simplicial morphism m → n induces an "interval" map n+1 → m+1. *\) *)
-  (* let interval (f:E.t) = *)
+  (** Every simplicial morphism m → n induces an "interval" map n+1 → m+1. *)
+  let interval (f:E.t) =
+    (* TODO: better implementation? *)
+    let rec aux j i =
+      if j = src f then j
+      else if ap f j >= i then j else aux (j+1) i
+    in
+    let g = aux 0 in
+    from_fun (tgt f + 1) (src f + 1) g
 end
 
 module SimplicialCategory : T = Simplicial

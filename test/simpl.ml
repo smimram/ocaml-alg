@@ -67,8 +67,21 @@ let () =
     )
   done;
   (* From fun. *)
+  let n = 3 in
+  let k = 1 in
   let f i = if i <= k then i else i-1 in
   let f = S.from_fun (n+2) (n+1) f in
+  (* Printf.printf "d%d/%d = %s\n%!" k n (S.E.to_string f); *)
   assert (S.src f = (n+2));
   assert (S.tgt f = (n+1));
-  assert (S.E.eq f (S.degeneracy n k))
+  assert (S.E.eq f (S.degeneracy n k));
+  (* Test interval map. *)
+  let f = function 0 | 1 -> 1 | 2 -> 3 | 3 -> 4 | _ -> assert false in
+  let f = S.from_fun 4 5 f in
+  Printf.printf "f = %s\n%!" (S.E.to_string f);
+  let g = S.interval f in
+  Printf.printf "g = %s\n%!" (S.E.to_string g);
+  let g' = S.from_fun 6 5 (function 0 | 1 -> 0 | 2 | 3 -> 2 | 4 -> 3 | 5 -> 4 | _ -> assert false) in
+  Printf.printf "g' = %s\n%!" (S.E.to_string g');
+  assert (S.E.eq g g');
+  
