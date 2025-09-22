@@ -55,14 +55,8 @@ module List = struct
   let replace_assoc k v l =
     List.map (fun (k',v') -> if k = k' then k, v else k', v') l
 
-  let rec sub l ofs len =
-    if ofs = 0 && len = 0 then []
-    else
-      match l with
-      | x::l ->
-        if ofs = 0 then x::(sub l ofs (len-1))
-        else sub l (ofs-1) len
-      | [] -> invalid_arg "List.sub"
+  let sub l ofs len =
+    take len @@ drop ofs l
 
   (** Product of a list of lists (returns the list of all combinations of elements). *)
   let rec products = function
