@@ -170,7 +170,9 @@ module Theta : T = struct
   module PS = struct
     type t = PS of t list
 
-    let width (PS l) = List.length l
+    let to_list (PS l) = l
+
+    let width p = List.length @@ to_list p
 
     let eq = (=)
 
@@ -192,7 +194,15 @@ module Theta : T = struct
     let make src tgt simplicial maps =
       assert (PS.width src = Simplicial.src simplicial);
       assert (PS.width tgt = Simplicial.tgt simplicial);
-      List.iteri (fun n p -> if );
+      let f' = Simplicial.to_fun @@ Simplicial.interval simplicial in
+      let l =
+        List.mapi
+          (fun j p ->
+             let i = f' j in
+             if i = 0 || i = Simplicial.src simplicial + 1 then None
+             else
+          ) tgt
+      in
       { src; tgt; simplicial; maps }
 
     let rec to_string f =
@@ -212,7 +222,7 @@ module Theta : T = struct
   let id () = _
 end
 *)
-  
+
 (** Underlying graph of a category. *)
 module Graph (C : T) : Graph.T = struct
   include C
