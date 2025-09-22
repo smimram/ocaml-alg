@@ -1,5 +1,7 @@
 (** Categories. *)
 
+open Extlib
+
 (** A category. *)
 module type T = sig
   include Graph.T

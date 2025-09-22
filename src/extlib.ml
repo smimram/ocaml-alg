@@ -20,6 +20,20 @@ end
 module List = struct
   include List
 
+  (* NOTE: backward compatibility with OCaml < 5.3 *)
+  let rec take n l =
+    if n = 0 then [] else
+      match l with
+      | x::l -> x::(take (n-1) l)
+      | [] -> assert false
+
+  (* NOTE: backward compatibility with OCaml < 5.3 *)
+  let rec drop n l =
+    if n = 0 then l else
+      match l with
+      | x::l -> drop (n-1) l
+      | [] -> assert false
+
   (** First index where a predicate is satisfied. *)
   let index p l =
     let rec aux n = function
