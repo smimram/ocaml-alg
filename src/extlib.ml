@@ -34,11 +34,11 @@ module List = struct
       | x::l -> drop (n-1) l
       | [] -> assert false
 
-  (** First index where a predicate is satisfied. *)
-  let index p l =
+  (* NOTE: backward compatibility with OCaml < 5.1 *)
+  let find_index p l =
     let rec aux n = function
-      | x::l -> if p x then n else aux (n+1) l
-      | [] -> raise Not_found
+      | x::l -> if p x then Some n else aux (n+1) l
+      | [] -> None
     in
     aux 0 l
 

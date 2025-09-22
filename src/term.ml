@@ -581,7 +581,7 @@ module RS = struct
     (** Arguments of a rule, sorted according to its variables. *)
     let args r s =
       let vars = vars r in
-      let args = List.sort (fun (x,t) (y,u) -> List.index (fun z -> Var.eq z x) vars - List.index (fun z -> Var.eq z y) vars) s in
+      let args = List.sort (fun (x,t) (y,u) -> Option.get (List.find_index (fun z -> Var.eq z x) vars) - Option.get (List.find_index (fun z -> Var.eq z y) vars)) s in
       List.map snd args
 
     (** Substitution from arguments. *)
@@ -1052,7 +1052,7 @@ module RS = struct
                 let t = app f a in
                 Id t
               else
-                let n = try List.index (fun p -> not (is_id p)) a with Not_found -> assert false in
+                let n = Option.get @@ List.find_index (fun p -> not (is_id p)) a in
                 let t = List.nth a n in
                 let a1, a2 = list_remove_nth n a in
                 let a1 = List.map unid a1 in
@@ -1217,7 +1217,7 @@ module RS = struct
              if n = 0 then p, p else
                try
                  (* Try to split forward / backward. *)
-                 let k = List.index Zigzag.is_inv l in
+                 let k = Option.get @@ List.find_index Zigzag.is_inv l in
                  if k = 0 then raise Exit;
                  let l1 = List.sub l 0 k in
                  let l2 = List.sub l k (n-k) in
