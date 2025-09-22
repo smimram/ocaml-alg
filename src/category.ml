@@ -93,15 +93,6 @@ module Simplicial = struct
 
     let tgt (f:t) = List.length f
 
-    let ap f i =
-      assert (0 <= i && i <= src f);
-      let rec aux j from f i =
-        match f with
-        | k::f -> if i < from+k then j else aux (j+1) (from+k) f i
-        | [] -> assert false
-      in
-      aux 0 0 f i
-
     let eq f g =
       assert (src f = src g);
       assert (tgt f = tgt g);
@@ -116,7 +107,18 @@ module Simplicial = struct
   end
 
   let src = E.src
+
   let tgt = E.tgt
+
+  (** Apply a morphism as a function. *)
+  let ap f i =
+    assert (0 <= i && i <= src f);
+    let rec aux j from f i =
+      match f with
+      | k::f -> if i < from+k then j else aux (j+1) (from+k) f i
+      | [] -> assert false
+    in
+    aux 0 0 f i
 
   let id n : E.t = List.init n (fun _ -> 1)
 
@@ -130,6 +132,7 @@ module Simplicial = struct
     assert (0 <= i && i <= n);
     id i @ [0] @ id (n-i)
 
+  (** Composition. *)
   let comp f g =
     assert (tgt f = src g);
     let f, g = List.fold_left_map (fun f n -> List.drop n f, List.take n f) f g in

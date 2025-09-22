@@ -6,13 +6,15 @@ module S = Category.Simplicial
 
 let () =
   let n = 8 in
-  let i = 5 in
+  let k = 5 in
+  (* Source and targets. *)
   assert (S.src (S.id n) = n);
   assert (S.tgt (S.id n) = n);
-  assert (S.src (S.degeneracy n i) = n + 2);
-  assert (S.tgt (S.degeneracy n i) = n + 1);
-  assert (S.src (S.face n i) = n);
-  assert (S.tgt (S.face n i) = n + 1);
+  assert (S.src (S.degeneracy n k) = n + 2);
+  assert (S.tgt (S.degeneracy n k) = n + 1);
+  assert (S.src (S.face n k) = n);
+  assert (S.tgt (S.face n k) = n + 1);
+  (* Simplicial relations. *)
   for i = 0 to n + 1 do
     for j = 0 to n do
       (* Printf.printf "testing s%d/s%d\n%!" i j; *)
@@ -56,10 +58,11 @@ let () =
       )
     done
   done;
-  let f = S.degeneracy n i in
-  for j = 0 to n do
+  (* Application. *)
+  let f = S.degeneracy n k in
+  for i = 0 to n do
     assert (
-      S.E.ap f j =
-      if j <= i then j else j-1
+      S.ap f i =
+      if i <= k then i else i-1
     )
   done
