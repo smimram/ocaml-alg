@@ -32,6 +32,16 @@ module Free (G : Graph.T) = struct
 end
 module FreeCategory (G : Graph.T) : T = Free(G)
 
+(** Opposite category. *)
+module Op (C : T) : T = struct
+  module V = C.V
+  module E = C.E
+  let src f = C.tgt f
+  let tgt f = C.src f
+  let comp f g = C.comp g f
+  let id x = C.id x
+end
+
 (** Presentation of a category. *)
 module Pres (V : Alphabet.T) (E : Alphabet.T) = struct
   module GP = Graph.Pres(V)(E)

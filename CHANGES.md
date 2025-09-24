@@ -1,18 +1,18 @@
 0.2.0 (unreleased)
 =====
 
-- abstract rewriting systems:
-  - added
+- abstract rewriting systems
 - monoids:
   - named rules
   - critical branchings
   - rewriting paths and zigzags
   - coherence cells
 - groups:
-  - add the quaternion group
+  - the quaternion group
 - categories:
-  - add the simplicial category
-  - add the Θ category
+  - opposite categories
+  - the simplicial category
+  - the Θ category
 - precubical sets
 
 0.1.0 (22-11-2023)
