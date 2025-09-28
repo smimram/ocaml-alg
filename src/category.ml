@@ -172,6 +172,54 @@ end
 
 module SimplicialCategory : T = Simplicial
 
+(** The precubical category. *)
+module Precubical = struct
+  module V = Alphabet.Nat
+
+  module E = struct
+    (* false / true means source / target *)
+    type d = bool option
+    type t = d list
+    let to_string (f:t) = String.concat "" @@ List.map (function Some false -> "-" | Some true -> "+" | None -> "*") f
+    let compare (f:t) (g:t) = compare f g
+    let eq (f:t) (g:t) = f = g
+  end
+
+  let src (f:E.t) = List.length @@ List.filter Option.is_none f
+
+  let tgt (f:E.t) = List.length f
+
+  let id n : E.t = List.init n (fun _ -> None)
+
+  (* ith face map *)
+  let face e n i =
+    assert (0 <= i);
+    assert (i < n);
+    List.init (n+1) (fun j -> if j = i then Some e else None)
+
+  let comp (f:E.t) (g:E.t) : E.t =
+    assert (tgt f = src g);
+    let rec aux f g =
+      match f with
+      | [] -> g
+      | d::f ->
+        let g', g =
+          (* Take the prefix until the first keep. *)
+          let rec aux = function
+            | None::g -> [], g
+            | d::g ->
+              let g', g = aux g in
+              d::g', g
+            | [] -> assert false
+          in
+          aux g
+        in
+        g'@[d]@(aux f g)
+    in
+    aux f g
+end
+module PrecubicalCategory : T = Precubical
+
 (** Joyal's theta category. *)
 module Theta = struct
 

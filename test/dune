@@ -274,3 +274,14 @@
  (alias runtest)
  (action (run ./simpl.exe))
 )
+
+(executable
+ (name cubical)
+ (modules cubical)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./cubical.exe))
+)

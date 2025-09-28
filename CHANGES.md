@@ -12,6 +12,7 @@
 - categories:
   - opposite categories
   - the simplicial category
+  - the precubical category
   - the Θ category
 - precubical sets
 
