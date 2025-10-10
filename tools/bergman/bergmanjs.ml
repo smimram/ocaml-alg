@@ -12,7 +12,7 @@ let button txt action =
   b
 
 let debug s =
-  Firebug.console##debug (Js.string s)
+  Console.console##debug (Js.string s)
 
 let jsget x = Js.Opt.get x (fun () -> assert false)
 

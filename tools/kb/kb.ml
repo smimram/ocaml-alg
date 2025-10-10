@@ -12,7 +12,7 @@ let button txt action =
   b##.onclick := Dom_html.handler (fun _ -> action (); Js._true);
   b
 
-let debug s = Firebug.console##debug (Js.string s)
+let debug s = Console.console##debug (Js.string s)
 
 let jsget x = Js.Opt.get x (fun () -> assert false)
 
