@@ -4,19 +4,10 @@ open Alg
 module Html = Dom_html
 
 let doc = Html.document
-let button txt action =
-  let button_type = Js.string "button" in
-  let b = Html.createInput ~_type:button_type doc in
-  b##.value := Js.string txt;
-  b##.onclick := Dom_html.handler (fun _ -> action (); Js._true);
-  b
 
-let debug s =
-  Console.console##debug (Js.string s)
+(* let debug s = Console.console##debug (Js.string s) *)
 
 let jsget x = Js.Opt.get x (fun () -> assert false)
-
-exception Parsing
   
 let parse_pol s =
   Parser.main Lexer.token (Lexing.from_string s)
@@ -28,8 +19,7 @@ let char_of_string s =
 module M = struct
   include Monoid.Free(Alphabet.Char)
 
-  let s s : t =
-    Array.init (String.length s) (fun i -> s.[i])
+  (* let s s : t = Array.init (String.length s) (fun i -> s.[i]) *)
 end
 module K = Field.Float
 module P = Algebra.Pres(K)(Alphabet.Char)

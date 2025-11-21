@@ -5,14 +5,8 @@ open Term
 module Html = Dom_html
 
 let doc = Html.document
-let button txt action =
-  let button_type = Js.string "button" in
-  let b = Html.createInput ~_type:button_type doc in
-  b##.value := Js.string txt;
-  b##.onclick := Dom_html.handler (fun _ -> action (); Js._true);
-  b
 
-let debug s = Console.console##debug (Js.string s)
+(* let debug s = Console.console##debug (Js.string s) *)
 
 let jsget x = Js.Opt.get x (fun () -> assert false)
 

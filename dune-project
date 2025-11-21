@@ -1,4 +1,4 @@
-(lang dune 2.8)
+(lang dune 3.14)
 (version 0.2.0)
 (name alg)
 (source (github smimram/ocaml-alg))

@@ -85,6 +85,7 @@
  (name squierMonoid)
  (modules squierMonoid)
  (libraries alg)
+ (flags (:standard -warn-error -32))
 )
 
 (rule
@@ -257,6 +258,7 @@
  (name ccc)
  (modules ccc)
  (libraries alg)
+ (flags (:standard -warn-error -32))
 )
 
 (rule

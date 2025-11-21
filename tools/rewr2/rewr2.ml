@@ -11,21 +11,6 @@ module Array = struct
     done;
     if !ans = -1 then None else Some !ans
 end
-module String = struct
-  include String
-
-  let split_on_first_char c s =
-    let i = String.index s c in
-    String.sub s 0 i,
-    String.sub s (i+1) (String.length s - (i+1))
-
-  (** Replace [c] by [t] in [s]. *)
-  let rec replace c t s =
-    try
-      let n = String.index s c in
-      replace c t (String.sub s 0 n ^ t ^ String.sub s (n+1) (String.length s-(n+1)))
-    with Not_found -> s
-end
 
 module Str = struct
   include Str
@@ -40,14 +25,8 @@ end
 module Html = Dom_html
 
 let doc = Html.document
-let button txt action =
-  let button_type = Js.string "button" in
-  let b = Html.createInput ~_type:button_type doc in
-  b##.value := Js.string txt;
-  b##.onclick := Dom_html.handler (fun _ -> action (); Js._true);
-  b
 
-let debug s = Console.console##debug (Js.string s)
+(* let debug s = Console.console##debug (Js.string s) *)
 
 let jsget x = Js.Opt.get x (fun () -> assert false)
 
