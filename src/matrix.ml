@@ -5,6 +5,7 @@ module Make (R:Ring.T) = struct
   (** A matrix. *)
   type t = R.t array array
 
+  (** A matrix. *)
   type matrix = t
 
   (** Zero matrix. *)
@@ -145,6 +146,7 @@ module Make (R:Ring.T) = struct
     (** Underlying (non-labeled) matrix. *)
     let matrix ((_,_,m):t) = m
 
+    (** Generate a matrix filled with zeroes. *)
     let zero rows cols : t =
       let m = zero (Array.length rows) (Array.length cols) in
       L.of_array rows, L.of_array cols, m
