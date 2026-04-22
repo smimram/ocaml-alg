@@ -7,4 +7,5 @@
  (modes js)
  (preprocess (pps js_of_ocaml-ppx))
  (libraries alg js_of_ocaml)
+ (preprocessor_deps index.html kb.css)
 )

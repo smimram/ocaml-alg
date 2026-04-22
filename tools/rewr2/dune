@@ -3,4 +3,5 @@
  (modes js)
  (preprocess (pps js_of_ocaml-ppx))
  (libraries alg str js_of_ocaml)
+ (preprocessor_deps index.html)
 )

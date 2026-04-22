@@ -15,6 +15,7 @@
  (preprocess (pps js_of_ocaml-ppx))
  (libraries bergmanlib js_of_ocaml)
  (modules bergmanjs)
+ (preprocessor_deps index.html bergman.css)
 )
 
 (executable
