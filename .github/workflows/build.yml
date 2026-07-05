@@ -15,7 +15,7 @@ jobs:
     - name: Build doc
       run: make -C docs && rm -f docs/.gitignore
     - name: Upload website artifact
-      uses: actions/upload-pages-artifact@v3
+      uses: actions/upload-pages-artifact@v5
       with:
         path: docs
   deploy:
