@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - name: Install required packages
       run: sudo apt-get -y install ocaml ocaml-dune ocaml-odoc js-of-ocaml pandoc
     - name: Build
