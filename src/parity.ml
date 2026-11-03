@@ -46,6 +46,9 @@ module Pres (G : Alphabet.T) = struct
     (** A cell (a homogeneous set of generators). *)
     type t = cell
 
+    (** Equality. *)
+    let eq = Set.equal
+
     (** Dimension of a cell. *)
     let dim s (c:t) = if Set.is_empty c then -1 else dim s (Set.choose c)
 
@@ -70,6 +73,22 @@ module Pres (G : Alphabet.T) = struct
 
     (** Target of a cell. *)
     let tgt s c = Set.diff (targets s c) (sources s c)
+
+    (** Iterated source. *)
+    let rec isrc s c k =
+      let n = dim s c in
+      if k >= n then c else isrc s (src s c) k
+
+    (** Iterated target. *)
+    let rec itgt s c k =
+      let n = dim s c in
+      if k >= n then c else itgt s (tgt s c) k
+
+    (** Compose two cells. *)
+    let comp s c d =
+      let k = min (dim s c) (dim s d) - 1 in
+      assert (eq (itgt s c k) (isrc s c k));
+      Set.union c d
   end
 
   (** Empty parity complex. *)
