@@ -71,35 +71,35 @@ module String = struct
   let subscript s =
     String.fold_left
       (fun s -> function
-         | '0' -> "₀"
-         | '1' -> "₁"
-         | '2' -> "₂"
-         | '3' -> "₃"
-         | '4' -> "₄"
-         | '5' -> "₅"
-         | '6' -> "₆"
-         | '7' -> "₇"
-         | '8' -> "₈"
-         | '9' -> "₉"
+         | '0' -> s ^ "₀"
+         | '1' -> s ^ "₁"
+         | '2' -> s ^ "₂"
+         | '3' -> s ^ "₃"
+         | '4' -> s ^ "₄"
+         | '5' -> s ^ "₅"
+         | '6' -> s ^ "₆"
+         | '7' -> s ^ "₇"
+         | '8' -> s ^ "₈"
+         | '9' -> s ^ "₉"
          | _ -> assert false
       ) "" s
 
   let superscript s =
     String.fold_left
       (fun s -> function
-         | '0' -> "⁰"
-         | '1' -> "¹"
-         | '2' -> "²"
-         | '3' -> "³"
-         | '4' -> "⁴"
-         | '5' -> "⁵"
-         | '6' -> "⁶"
-         | '7' -> "⁷"
-         | '8' -> "⁸"
-         | '9' -> "⁹"
+         | '0' -> s ^ "⁰"
+         | '1' -> s ^ "¹"
+         | '2' -> s ^ "²"
+         | '3' -> s ^ "³"
+         | '4' -> s ^ "⁴"
+         | '5' -> s ^ "⁵"
+         | '6' -> s ^ "⁶"
+         | '7' -> s ^ "⁷"
+         | '8' -> s ^ "⁸"
+         | '9' -> s ^ "⁹"
          | _ -> assert false
       ) "" s
-  
+
   (** Find the index of the first character matching a predicate. *)
   let find p s =
     let ans = ref (-1) in
