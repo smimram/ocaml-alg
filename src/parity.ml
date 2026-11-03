@@ -87,6 +87,7 @@ module Pres (G : Alphabet.T) = struct
     (** Compose two cells. *)
     let comp s c d =
       let k = min (dim s c) (dim s d) - 1 in
+      assert (k >= 0);
       assert (eq (itgt s c k) (isrc s d k));
       Set.union c d
   end
@@ -94,7 +95,7 @@ module Pres (G : Alphabet.T) = struct
   (** Empty parity complex. *)
   let empty : t = Map.empty
 
-  (** Add a cell. *)
+  (** Add a generator. *)
   let add (s:t) g (src, tgt) : t =
     let n = Cell.dim s src in
     assert (n = Cell.dim s tgt);
@@ -102,7 +103,7 @@ module Pres (G : Alphabet.T) = struct
 
   (** Add a point. *)
   let add_point s g : t =
-    add (s:t) g (Cell.empty, Cell.empty)
+    add s g (Cell.empty, Cell.empty)
 
   (** Source and target of a complex in each dimension, from the given one down to 0. *)
   let rec boundary (s:t) n =
@@ -274,9 +275,10 @@ module Cube = struct
 
   (** Create an n-dimensional cube. *)
   let make n =
-    let ans = ref point in
-    for _ = 0 to n - 1 do
-      ans := tensor !ans interval
-    done;
-    !ans
+    if n = 0 then point else
+      let ans = ref interval in
+      for _ = 0 to n - 2 do
+        ans := tensor !ans interval
+      done;
+      !ans
 end
