@@ -79,6 +79,18 @@ module Pres (G : Alphabet.T) = struct
 
     let targets s c = fold (fun g e -> Set.union (tgt s g) e) c Set.empty
 
+    (** Whether a chain is well-formed in dimension n: its generators are of dimension n and it is either a single generator (n = 0) or such that distinct generators have disjoint sources and disjoint targets (n > 0). The dimension has to be specified because the empty chain is well-formed exactly in positive dimension. *)
+    let well_formed s n (c:t) =
+      let disjoint f =
+        let rec aux seen = function
+          | g::l -> Set.disjoint (f s g) seen && aux (Set.union (f s g) seen) l
+          | [] -> true
+        in
+        aux Set.empty (Set.elements c)
+      in
+      Set.for_all (fun g -> _dim s g = n) c
+      && if n = 0 then Set.cardinal c = 1 else disjoint src && disjoint tgt
+
     (** Source of a chain. *)
     let src s c = Set.diff (sources s c) (targets s c)
 
@@ -208,6 +220,11 @@ module Pres (G : Alphabet.T) = struct
   let add (s:t) g (src, tgt) : t =
     let n = Chain.dim s src in
     assert (n = Chain.dim s tgt);
+    (* The iterated sources and targets of the generator should be well-formed, otherwise it does not have a cell as boundary. *)
+    let rec well_formed f n c = Chain.well_formed s n c && (n = 0 || well_formed f (n-1) (f s c)) in
+    if n >= 0 && not (well_formed Chain.src n src && well_formed Chain.tgt n tgt) then invalid_arg "Parity.add: source and target are not well-formed";
+    if not (Set.disjoint src tgt) then invalid_arg "Parity.add: source and target are not disjoint";
+    if not (Chain.eq (Chain.src s src) (Chain.src s tgt) && Chain.eq (Chain.tgt s src) (Chain.tgt s tgt)) then invalid_arg "Parity.add: source and target are not parallel";
     Map.add g (n+1,src,tgt) s
 
   (** Add a point. *)

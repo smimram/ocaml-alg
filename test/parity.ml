@@ -52,7 +52,32 @@ let () =
   assert (P.Cell.eq p (P.Cell.comp p (P.Cell.id g)));
   assert (P.Cell.eq p (P.Cell.comp (P.Cell.id f) p));
   (* Non-composable cells are rejected. *)
-  assert (match P.Cell.comp g3 p with _ -> false | exception Invalid_argument _ -> true)
+  assert (match P.Cell.comp g3 p with _ -> false | exception Invalid_argument _ -> true);
+  (* Ill-formed generators are rejected. *)
+  let rejected x y = match P.add s "r" (chain x, chain y) with _ -> false | exception Invalid_argument _ -> true in
+  assert (rejected ["f";"g3"] ["f";"h"]);
+  assert (rejected ["f"] ["g3"]);
+  assert (rejected ["g3"] ["f"]);
+  assert (not (rejected ["f"] ["g1";"g2"]));
+  (* Well-formed chains. *)
+  let well_formed n l = P.Chain.well_formed s n (chain l) in
+  assert (well_formed 0 ["A"]);
+  assert (not (well_formed 0 ["A";"B"]));
+  assert (not (well_formed 0 []));
+  assert (well_formed 1 []);
+  assert (well_formed 1 ["g1";"g2"]);
+  assert (well_formed 1 ["g1";"g3"]);
+  assert (not (well_formed 1 ["f";"g1"]));
+  assert (not (well_formed 1 ["g3";"h"]));
+  assert (not (well_formed 1 ["A";"f"]));
+  assert (well_formed 2 ["p";"q"]);
+  (* Faces which are not well-formed in some dimension are rejected. *)
+  assert (rejected ["A";"B"] ["C"]);
+  assert (rejected ["C"] ["A";"B"]);
+  assert (rejected ["g3";"h"] ["f"]);
+  (* The following faces are parallel, disjoint and well-formed in dimension 1, but they are not composable because their iterated source is not a point. *)
+  let s' = P.add s "a" (chain ["A"], chain ["B"]) in
+  assert (match P.add s' "r" (chain ["g1";"g3"], chain ["a";"h"]) with _ -> false | exception Invalid_argument _ -> true)
 
 let () =
   for n = 0 to 4 do
