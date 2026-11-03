@@ -47,8 +47,7 @@ module Pres (G : Alphabet.T) = struct
     type t = cell
 
     (** Dimension of a cell. *)
-    let dim s (c:t) =
-      if Set.is_empty c then -1 else dim s (Set.choose c)
+    let dim s (c:t) = if Set.is_empty c then -1 else dim s (Set.choose c)
 
     (** The empty cell. *)
     let empty = Set.empty
@@ -71,10 +70,6 @@ module Pres (G : Alphabet.T) = struct
 
     (** Target of a cell. *)
     let tgt s c = Set.diff (targets s c) (sources s c)
-
-    (* (\** Categorical decomposition corresponding to a cell. *\) *)
-    (* let to_cat (c:t) : Cat.t = *)
-      
   end
 
   (** Empty parity complex. *)
@@ -89,6 +84,114 @@ module Pres (G : Alphabet.T) = struct
   (** Add a point. *)
   let add_point s g : t =
     add (s:t) g (Cell.empty, Cell.empty)
+
+  (** Source and target of a complex in each dimension, from the given one down to 0. *)
+  let rec boundary (s:t) n =
+    if n < 0 then [] else
+      let c = generators ~dim:n s in
+      let d = generators ~dim:(n+1) s in
+      (Set.diff c (Cell.targets s d), Set.diff c (Cell.sources s d))::(boundary s (n-1))
+
+  (** Make sure that a complex is a valid pasting diagram. Raises [Invalid_argument] if this is not the case. *)
+  let check (s:t) =
+    let error m = invalid_arg ("Parity.check: " ^ m) in
+    (* Make sure that a cell, given with its source and target in each lower dimension, is well-formed: starting from the source, its generators can be applied one after the other in order to reach the target, and the same holds for all the intermediate cells. *)
+    let rec composite (c, b) =
+      match b with
+      | [] -> if Set.cardinal c <> 1 then error "expected exactly one 0-dimensional generator"
+      | (u, v)::b ->
+        composite (u, b);
+        let applicable u g = Set.subset (src s g) u && Set.disjoint (tgt s g) (Set.diff u (src s g)) in
+        let rec aux u c =
+          if Set.is_empty c then
+            (if not (Set.equal u v) then error "source and target do not match")
+          else
+            match List.find_opt (applicable u) (Set.elements c) with
+            | None -> error "no generator can be applied"
+            | Some g ->
+              let u = Set.union (Set.diff u (src s g)) (tgt s g) in
+              composite (u, b);
+              aux u (Set.remove g c)
+        in
+        aux u c
+    in
+    (* Each generator has a boundary of the expected dimension. *)
+    Map.iter
+      (fun g (n, f, h) ->
+         let name = G.to_string g in
+         if (n = 0) <> Set.is_empty f || (n = 0) <> Set.is_empty h then error ("invalid boundary for " ^ name);
+         Set.iter
+           (fun x -> if not (Map.mem x s) || dim s x <> n - 1 then error ("invalid boundary for " ^ name))
+           (Set.union f h);
+         if not (Set.disjoint f h) then error ("source and target intersect for " ^ name)
+      ) s;
+    (* The source and target of each generator are parallel well-formed cells. *)
+    Map.iter
+      (fun _ (n, f, h) ->
+         let rec bdry f h =
+           if Cell.dim s f <= 0 then [] else
+             let f = Cell.src s f in
+             let h = Cell.tgt s h in
+             (f, h)::(bdry f h)
+         in
+         if n > 0 then
+           let b = bdry f h in
+           composite (f, b);
+           composite (h, b)
+      ) s;
+    (* The whole complex is a well-formed cell. *)
+    let n = max_dim s in
+    if n < 0 then error "empty complex";
+    composite (generators ~dim:n s, boundary s (n-1))
+
+  (** Categorical composition of all the generators of a complex, which is expected to be a pasting diagram. *)
+  let to_cat (s:t) : Cat.t =
+    check s;
+    (* We manipulate a composite as a pair consisting of its top-dimensional generators and of the source and target of the composite in each lower dimension, from highest to lowest. *)
+    (* Apply the generators m to the cell c. *)
+    let act c m = Set.union (Set.diff c (Cell.src s m)) (Cell.tgt s m) in
+    (* Generators of c which have to occur before those of f. *)
+    let before c f =
+      let rec aux p =
+        let sources = Cell.sources s (Set.union f p) in
+        let p' = Set.filter (fun g -> not (Set.disjoint (tgt s g) sources)) (Set.diff c f) in
+        if Set.equal p p' then p else aux p'
+      in
+      aux Set.empty
+    in
+    let rec cell (c, b) =
+      match b with
+      | [] ->
+        if Set.cardinal c <> 1 then invalid_arg "Parity.to_cat: expected exactly one 0-dimensional generator";
+        let g = Set.choose c in
+        let rec x = Cat.C (Cat.G g, Cat.I x) in
+        x
+      | (u, v)::b ->
+        if Set.is_empty c then
+          if Set.equal u v then Cat.I (cell (u, b))
+          else invalid_arg "Parity.to_cat: source and target do not match"
+        else
+          match List.find_opt (fun g -> Set.subset (src s g) u) (Set.elements c) with
+          | None -> invalid_arg "Parity.to_cat: no generator can be applied"
+          | Some g ->
+            let w = whisker g (src s g) (tgt s g) (u, b) in
+            Cat.C (w, cell (Set.remove g c, (act u (Set.singleton g), v)::b))
+    (* Whisker the generator g, whose iterated source and target in the current dimension are f and h, in the context of the cell c. *)
+    and whisker g f h (c, b) =
+      match b with
+      | [] -> Cat.W (cell (f, []), Cat.G g, cell (h, []))
+      | (u, v)::b ->
+        if not (Set.subset f c) then invalid_arg "Parity.to_cat: generator cannot be whiskered";
+        let p = before c f in
+        let q = Set.diff (Set.diff c f) p in
+        let u' = act u p in
+        let u'' = act u' f in
+        let w = whisker g (Cell.src s f) (Cell.tgt s h) (u', b) in
+        Cat.W (cell (p, (u, u')::b), w, cell (q, (u'', v)::b))
+    in
+    let n = max_dim s in
+    if n < 0 then invalid_arg "Parity.to_cat: empty complex";
+    cell (generators ~dim:n s, boundary s (n-1))
 end
 
 (** Presentation on a monoid of generators. *)
@@ -117,7 +220,7 @@ module PresTens (G : Monoid.T) = struct
                     (Set.map (fun h -> G.mul g h) ((if dim s g mod 2 = 0 then tgt else _src) s' h))
                 in
                 ans := add !ans gh (src,tgt)
-              ) (generators ~dim:(j-i) s')
+              ) (generators ~dim:(i-j) s')
           ) (generators ~dim:j s);
       done
     done;
