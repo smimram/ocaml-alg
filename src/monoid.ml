@@ -131,9 +131,9 @@ module Free (X : Alphabet.T) = struct
   (** String representation of a word. *)
   let to_string (u:t) =
     if eq one u then "ε" else
-    let u = Array.to_list u in
-    let u = List.map X.to_string u in
-    String.concat "" u
+      Array.to_list u
+      |> List.map X.to_string
+      |> String.concat ""
 
   (** Maps from the free monoid to another monoid. *)
   module Map(M : T) = struct

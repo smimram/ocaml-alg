@@ -3,8 +3,7 @@
 (** Free precategories. *)
 module Make (X : Alphabet.T) = struct
   (** A cell. *)
-  (* Note: we suppose that generators are whiskered (by identities if necessary)
-  all the way down. *)
+  (* Note: we suppose that generators are whiskered (by identities if necessary) all the way down. *)
   type cell =
     | C of whisker * cell (** a composite *)
     | I of cell (** an identity *)
@@ -18,6 +17,22 @@ module Make (X : Alphabet.T) = struct
 
   (** String representation of a cell. *)
   let to_string c =
+    let rec list = function
+      | C (w,c) -> w::(list c)
+      | I _ -> []
+    in
+    let rec cell = function
+      | C (w, I _) -> whisker w
+      | C _ as c -> "(" ^ String.concat " * " (List.map whisker (list c)) ^ ")"
+      | I c -> cell c
+    and whisker = function
+      | G g -> X.to_string g
+      | W (c1,w,c2) -> "(" ^ cell c1 ^ " * " ^ whisker w ^ " * " ^ cell c2 ^ ")"
+    in
+    cell c
+
+  (** String representation of a cell. *)
+  let to_string_compact c =
     let rec list = function
       | C (w,c) -> w::(list c)
       | I _ -> []

@@ -15,6 +15,7 @@
   - the precubical category
   - the Θ category
 - precubical sets
+- parity complexes
 
 0.1.0 (22-11-2023)
 =====

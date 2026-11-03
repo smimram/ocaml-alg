@@ -37,6 +37,9 @@ gen:
 uatao2:
 	@dune exec ./uatao2.exe
 
+parity:
+	@dune exec ./parity.exe
+
 test:
 	@for p in $(PROG); do echo "\n\n##### Running $$p #####\n"; dune exec ./$$p.exe || exit 1; done
 
