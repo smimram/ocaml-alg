@@ -81,6 +81,7 @@ module String = struct
          | '7' -> s ^ "₇"
          | '8' -> s ^ "₈"
          | '9' -> s ^ "₉"
+         | '-' -> s ^ "₋"
          | _ -> assert false
       ) "" s
 
@@ -97,6 +98,7 @@ module String = struct
          | '7' -> s ^ "⁷"
          | '8' -> s ^ "⁸"
          | '9' -> s ^ "⁹"
+         | '-' -> s ^ "⁻"
          | _ -> assert false
       ) "" s
 

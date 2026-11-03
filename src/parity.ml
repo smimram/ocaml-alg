@@ -217,6 +217,34 @@ module PresTens (G : Monoid.T) = struct
     !ans
 end
 
+module Globe = struct
+  module A : Alphabet.T with type t = bool * int = struct
+    type t = bool * int
+    let eq = (=)
+    let compare = compare
+    let to_string (b,n) = Alphabet.Bool.to_string b ^ Extlib.String.subscript (string_of_int n)
+  end
+
+  include Pres(A)
+
+  (** The n-sphere. *)
+  let rec sphere n =
+    if n < 0 then empty
+    else
+      let s = sphere (n-1) in
+      let boundary b = if n = 0 then Cell.empty else Cell.generator (b,n-1) in
+      let s = add s (false,n) (boundary false, boundary true) in
+      let s = add s (true,n) (boundary false, boundary true) in
+      s
+
+  (** The n-globe. *)
+  let make n =
+    if n = 0 then add_point empty (true,0) else
+      let g = sphere (n-1) in
+      let g = add g (true,n) (Cell.generator (false,n-1), Cell.generator (true,n-1)) in
+      g
+end
+
 module Cube = struct
   module M = struct
     include Monoid.Free(Alphabet.Option(Alphabet.Bool))
