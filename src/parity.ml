@@ -21,7 +21,7 @@ module Pres (G : Alphabet.T) = struct
     let _, src, _ = Map.find g s in
     src
 
-  (** Target of a genertory. *)
+  (** Target of a generator. *)
   let tgt (s:t) g =
     let _, _, tgt = Map.find g s in
     tgt
@@ -87,7 +87,7 @@ module Pres (G : Alphabet.T) = struct
     (** Compose two cells. *)
     let comp s c d =
       let k = min (dim s c) (dim s d) - 1 in
-      assert (eq (itgt s c k) (isrc s c k));
+      assert (eq (itgt s c k) (isrc s d k));
       Set.union c d
   end
 
