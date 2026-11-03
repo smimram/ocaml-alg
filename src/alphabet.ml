@@ -75,6 +75,30 @@ module Unit : T with type t = unit = struct
   let to_string () = "*"
 end
 
+(** Booleans. *)
+module Bool : T with type t = bool = struct
+  type t = bool
+
+  let eq a b = (a:t) = (b:t)
+
+  let to_string b = if b then "⊤" else "⊥"
+
+  let compare a b = compare (a:t) (b:t)
+end
+
+(** Adding a point. *)
+module Option (A:T) : T with type t = A.t option = struct
+  type t = A.t option
+
+  let eq a b = (a:t) = (b:t)
+
+  let to_string = function
+    | Some a -> A.to_string a
+    | None -> "_"
+
+  let compare a b = compare (a:t) (b:t)
+end
+
 (** Product of alphabets. *)
 module Prod (A:T) (B:T) : (T with type t = A.t * B.t) = struct
   type t = A.t * B.t
