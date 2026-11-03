@@ -1,5 +1,7 @@
 (** Parity / augmented directed complexes. *)
 
+open Extlib
+
 (** Presentation of a parity complex. *)
 module Pres (G : Alphabet.T) = struct
   type generator = G.t
@@ -222,7 +224,7 @@ module Globe = struct
     type t = bool * int
     let eq = (=)
     let compare = compare
-    let to_string (b,n) = Alphabet.Bool.to_string b ^ Extlib.String.subscript (string_of_int n)
+    let to_string (b,n) = Alphabet.Bool.to_string b ^ String.subscript (string_of_int n)
   end
 
   include Pres(A)
@@ -256,7 +258,7 @@ module Cube = struct
     let bot = inj (Some false)
   end
 
-  include PresTens (M)
+  include PresTens(M)
 
   (** The point. *)
   let point = add_point empty M.zero
@@ -279,4 +281,37 @@ module Cube = struct
         ans := tensor !ans interval
       done;
       !ans
+end
+
+module Oriental = struct
+  module A = Alphabet.List(Alphabet.Int)
+  include Pres(A)
+
+  (** The n-oriental (oriented n-simplex). *)
+  let make n =
+    (* Strictly increasing lists of len integers between pos and n (both included). *)
+    let rec subsets pos len =
+      if len = 0 then [[]]
+      else if n + 1 - pos < len then []
+      else
+        List.init (n + 1 - pos) (fun i -> pos + i)
+        |> List.concat_map (fun x -> List.map (fun l -> x::l) (subsets (x+1) (len-1)))
+    in
+    (* The faces of a simplex obtained by removing an element whose position has the given parity. *)
+    let faces parity l =
+      List.mapi (fun i _ -> i) l
+      |> List.filter (fun i -> i mod 2 = parity)
+      |> List.map (fun i -> List.filteri (fun j _ -> j <> i) l)
+      |> Set.of_list
+    in
+    let s = ref empty in
+    for i = 0 to n do
+      List.iter
+        (fun l ->
+           s :=
+             if i = 0 then add_point !s l
+             else add !s l (faces 1 l, faces 0 l)
+        ) (subsets 0 (i+1))
+    done;
+    !s
 end
