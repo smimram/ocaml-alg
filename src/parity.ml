@@ -7,11 +7,11 @@ module Pres (G : Alphabet.T) = struct
   type generator = G.t
   module Map = Map.Make(G)
   module Set = Set.Make(G)
-  type cell = Set.t
   module Cat = Precategory.Make(G)
+  type chain = Set.t
 
   (** List of generators along with dimension, source and target. *)
-  type t = (int * cell * cell) Map.t
+  type t = (int * chain * chain) Map.t
 
   (** Dimension of a generator. *)
   let dim (s:t) g =
@@ -52,21 +52,21 @@ module Pres (G : Alphabet.T) = struct
     |> List.sort (fun (g,n) (g',n') -> let c = n - n' in if c = 0 then G.compare g g' else c)
     |> List.map fst
 
-  (** Operations on cells. *)
-  module Cell = struct
-    (** A cell (a homogeneous set of generators). *)
-    type t = cell
+  (** Operations on chains. *)
+  module Chain = struct
+    (** A chain: a homogeneous set of generators. *)
+    type t = chain
 
     (** Equality. *)
     let eq = Set.equal
 
-    (** Dimension of a cell. *)
+    (** Dimension of a chain, by convention -1 for the empty one. *)
     let dim s (c:t) = if Set.is_empty c then -1 else dim s (Set.choose c)
 
-    (** The empty cell. *)
+    (** The empty chain. *)
     let empty = Set.empty
 
-    (** Cell consisting of a generator. *)
+    (** Chain consisting of a generator. *)
     let generator g : t = Set.singleton g
 
     (** Iterate over generators. *)
@@ -79,49 +79,91 @@ module Pres (G : Alphabet.T) = struct
 
     let targets s c = fold (fun g e -> Set.union (tgt s g) e) c Set.empty
 
-    (** Source of a cell. *)
+    (** Source of a chain. *)
     let src s c = Set.diff (sources s c) (targets s c)
 
-    (** Target of a cell. *)
+    (** Target of a chain. *)
     let tgt s c = Set.diff (targets s c) (sources s c)
+  end
+
+  (** Operations on cells. *)
+  module Cell = struct
+    (** A cell: its top-dimensional generators, along with its source and target in each lower dimension, from highest to lowest. *)
+    type t = Chain.t * (Chain.t * Chain.t) list
+
+    (** Equality. *)
+    let eq ((c,b):t) ((c',b'):t) =
+      Chain.eq c c'
+      && List.compare_lengths b b' = 0
+      && List.for_all2 (fun (u,v) (u',v') -> Chain.eq u u' && Chain.eq v v') b b'
+
+    (** Dimension of a cell. *)
+    let dim ((_,b):t) = List.length b
+
+    (** The cell whose boundary is entirely determined by a non-empty chain, obtained by iterating sources and targets. *)
+    let of_chain s c : t =
+      if Set.is_empty c then invalid_arg "Parity.Cell.of_chain: empty chain";
+      let rec boundary n u v =
+        if n <= 0 then [] else
+          let u = Chain.src s u in
+          let v = Chain.tgt s v in
+          (u, v)::(boundary (n-1) u v)
+      in
+      c, boundary (Chain.dim s c) c c
+
+    (** Cell consisting of a generator. *)
+    let generator s g : t = of_chain s (Chain.generator g)
+
+    (** Source of a cell. *)
+    let src ((_,b):t) : t =
+      match b with
+      | (u,_)::b -> u, b
+      | [] -> invalid_arg "Parity.Cell.src: 0-dimensional cell"
+
+    (** Target of a cell. *)
+    let tgt ((_,b):t) : t =
+      match b with
+      | (_,v)::b -> v, b
+      | [] -> invalid_arg "Parity.Cell.tgt: 0-dimensional cell"
 
     (** Iterated source. *)
-    let rec isrc s c k =
-      let n = dim s c in
-      if k >= n then c else isrc s (src s c) k
+    let rec isrc c k = if k >= dim c then c else isrc (src c) k
 
     (** Iterated target. *)
-    let rec itgt s c k =
-      let n = dim s c in
-      if k >= n then c else itgt s (tgt s c) k
+    let rec itgt c k = if k >= dim c then c else itgt (tgt c) k
 
-    (** Compose two cells. *)
-    let comp s c d =
-      let k = min (dim s c) (dim s d) - 1 in
-      assert (k >= 0);
-      assert (eq (itgt s c k) (isrc s d k));
-      Set.union c d
+    (** Identity on a cell. *)
+    let id ((c,b):t) : t = Chain.empty, (c,c)::b
+
+    (** Compose two cells along their k-dimensional boundary, by default the highest possible one. *)
+    let comp ?k c d : t =
+      let k = match k with Some k -> k | None -> min (dim c) (dim d) - 1 in
+      if k < 0 || k >= min (dim c) (dim d) then invalid_arg "Parity.Cell.comp: invalid dimension";
+      if not (eq (itgt c k) (isrc d k)) then invalid_arg "Parity.Cell.comp: cells are not composable";
+      let n = max (dim c) (dim d) in
+      let rec lift c = if dim c < n then lift (id c) else c in
+      let c, b = lift c in
+      let d, b' = lift d in
+      let column i ((u,v),(u',v')) =
+        let j = n - 1 - i in
+        if j < k then u, v
+        else if j = k then u, v'
+        else Set.union u u', Set.union v v'
+      in
+      Set.union c d, List.mapi column (List.combine b b')
 
     (** Categorical decomposition of a cell. *)
-    let to_cat s c : Cat.t =
-      (* We manipulate a composite as a pair consisting of its top-dimensional generators and of the source and target of the composite in each lower dimension, from highest to lowest. *)
+    let to_cat s (c:t) : Cat.t =
       (* Apply the generators m to the cell c. *)
-      let act c m = Set.union (Set.diff c (src s m)) (tgt s m) in
+      let act c m = Set.union (Set.diff c (Chain.src s m)) (Chain.tgt s m) in
       (* Generators of c which have to occur before those of f. *)
       let before c f =
         let rec aux p =
-          let sources = sources s (Set.union f p) in
+          let sources = Chain.sources s (Set.union f p) in
           let p' = Set.filter (fun g -> not (Set.disjoint (_tgt s g) sources)) (Set.diff c f) in
           if Set.equal p p' then p else aux p'
         in
         aux Set.empty
-      in
-      (* Iterated sources and targets of the parallel cells u and v. *)
-      let rec boundary u v =
-        if dim s u <= 0 then [] else
-          let u = src s u in
-          let v = tgt s v in
-          (u, v)::(boundary u v)
       in
       let rec cell (c, b) =
         match b with
@@ -150,11 +192,10 @@ module Pres (G : Alphabet.T) = struct
           let q = Set.diff (Set.diff c f) p in
           let u' = act u p in
           let u'' = act u' f in
-          let w = whisker g (src s f) (tgt s h) (u', b) in
+          let w = whisker g (Chain.src s f) (Chain.tgt s h) (u', b) in
           Cat.W (cell (p, (u, u')::b), w, cell (q, (u'', v)::b))
       in
-      if Set.is_empty c then invalid_arg "Parity.to_cat: empty cell";
-      cell (c, boundary c c)
+      cell c
 
     (** String representation. *)
     let to_string s c = Cat.to_string @@ to_cat s c
@@ -165,24 +206,24 @@ module Pres (G : Alphabet.T) = struct
 
   (** Add a generator. *)
   let add (s:t) g (src, tgt) : t =
-    let n = Cell.dim s src in
-    assert (n = Cell.dim s tgt);
+    let n = Chain.dim s src in
+    assert (n = Chain.dim s tgt);
     Map.add g (n+1,src,tgt) s
 
   (** Add a point. *)
   let add_point s g : t =
-    add s g (Cell.empty, Cell.empty)
+    add s g (Chain.empty, Chain.empty)
 
   (** Source and target of a complex in each dimension, from the given one down to 0. *)
   let rec boundary (s:t) n =
     if n < 0 then [] else
       let c = generators ~dim:n s in
       let d = generators ~dim:(n+1) s in
-      (Set.diff c (Cell.targets s d), Set.diff c (Cell.sources s d))::(boundary s (n-1))
+      (Set.diff c (Chain.targets s d), Set.diff c (Chain.sources s d))::(boundary s (n-1))
 
   let to_string (s:t) =
     to_list s
-    |> List.map (fun g -> if dim s g = 0 then G.to_string g else Printf.sprintf "%s : %s -> %s" (G.to_string g) (Cell.to_string s (src s g)) (Cell.to_string s (tgt s g)))
+    |> List.map (fun g -> if dim s g = 0 then G.to_string g else Printf.sprintf "%s : %s -> %s" (G.to_string g) (Cell.to_string s (Cell.of_chain s (src s g))) (Cell.to_string s (Cell.of_chain s (tgt s g))))
     |> String.concat "\n"
 end
 
@@ -197,8 +238,8 @@ module PresTens (G : Monoid.T) = struct
     let ans = ref empty in
     for i = 0 to n + n' do
       for j = 0 to i do
-        Cell.iter (fun g ->
-            Cell.iter (fun h ->
+        Chain.iter (fun g ->
+            Chain.iter (fun h ->
                 let gh = G.mul g h in
                 let _src = src in
                 let src =
@@ -234,7 +275,7 @@ module Globe = struct
     if n < 0 then empty
     else
       let s = sphere (n-1) in
-      let boundary b = if n = 0 then Cell.empty else Cell.generator (b,n-1) in
+      let boundary b = if n = 0 then Chain.empty else Chain.generator (b,n-1) in
       let s = add s (false,n) (boundary false, boundary true) in
       let s = add s (true,n) (boundary false, boundary true) in
       s
@@ -243,7 +284,7 @@ module Globe = struct
   let make n =
     if n = 0 then add_point empty (true,0) else
       let g = sphere (n-1) in
-      let g = add g (true,n) (Cell.generator (false,n-1), Cell.generator (true,n-1)) in
+      let g = add g (true,n) (Chain.generator (false,n-1), Chain.generator (true,n-1)) in
       g
 end
 
@@ -270,7 +311,7 @@ module Cube = struct
     let i = empty in
     let i = add_point i src in
     let i = add_point i tgt in
-    let i = add i M.zero (Cell.generator src, Cell.generator tgt) in
+    let i = add i M.zero (Chain.generator src, Chain.generator tgt) in
     i
 
   (** Create an n-dimensional cube. *)
@@ -282,6 +323,12 @@ module Cube = struct
       done;
       !ans
 end
+
+(*
+(** Cubes with degeneracies and connections. *)
+module CubeDCon = struct
+end
+*)
 
 module Oriental = struct
   module A = Alphabet.List(Alphabet.Int)
