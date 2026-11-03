@@ -63,6 +63,9 @@ module List = struct
     | l::ll -> List.map (fun x -> List.map (fun l -> x::l) (products ll)) l |> List.flatten
     | [] -> [[]]
 
+  (** Map a function on pairs of elements of two lists. *)
+  let map_pairs f l1 l2 =
+    List.flatten @@ List.map (fun x -> List.map (fun y -> f x y) l2) l1
 end
 
 module String = struct
