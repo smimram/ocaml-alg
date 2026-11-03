@@ -6,6 +6,7 @@ module Pres (G : Alphabet.T) = struct
   module Map = Map.Make(G)
   module Set = Set.Make(G)
   type cell = Set.t
+  module Cat = Precategory.Make(G)
 
   (** List of generators along with dimension, source and target. *)
   type t = (int * cell * cell) Map.t
@@ -25,14 +26,17 @@ module Pres (G : Alphabet.T) = struct
     let _, _, tgt = Map.find g s in
     tgt
 
+  (** Fold a function over generators. *)
+  let fold f (s:t) = Map.fold (fun g _ d ->  f g d) s
+
   (** Maximal dimension of a generator. *)
-  let max_dim (s:t) = Map.fold (fun g _ d -> max d (dim s g)) s (-1)
+  let max_dim (s:t) = fold (fun g d -> max d (dim s g)) s (-1)
 
   let _dim = dim
 
   (** Set of generators of a complex. *)
   let generators ?dim (s:t) =
-    let ans = Map.fold (fun g _ set -> Set.add g set) s Set.empty in
+    let ans = fold Set.add s Set.empty in
     match dim with
     | Some n -> Set.filter (fun g -> _dim s g = n) ans
     | None -> ans
@@ -52,7 +56,25 @@ module Pres (G : Alphabet.T) = struct
     (** Cell consisting of a generator. *)
     let generator g : t = Set.singleton g
 
+    (** Iterate over generators. *)
     let iter = Set.iter
+
+    (** Fold over generators. *)
+    let fold = Set.fold
+
+    let sources s c = fold (fun g e -> Set.union (src s g) e) c Set.empty
+
+    let targets s c = fold (fun g e -> Set.union (tgt s g) e) c Set.empty
+
+    (** Source of a cell. *)
+    let src s c = Set.diff (sources s c) (targets s c)
+
+    (** Target of a cell. *)
+    let tgt s c = Set.diff (targets s c) (sources s c)
+
+    (* (\** Categorical decomposition corresponding to a cell. *\) *)
+    (* let to_cat (c:t) : Cat.t = *)
+      
   end
 
   (** Empty parity complex. *)
