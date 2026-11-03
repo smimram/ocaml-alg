@@ -22,6 +22,7 @@ module Make (X : Alphabet.T) = struct
       | I _ -> []
     in
     let rec cell = function
+      | C (w, I _) -> whisker w
       | C _ as c -> "(" ^ String.concat " * " (List.map whisker (list c)) ^ ")"
       | I c -> cell c
     and whisker = function
