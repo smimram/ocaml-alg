@@ -287,3 +287,14 @@
  (alias runtest)
  (action (run ./cubical.exe))
 )
+
+(executable
+ (name parity)
+ (modules parity)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./parity.exe))
+)
