@@ -17,25 +17,47 @@ end
 
 (** The free bounded distributive lattice on a set of generators. *)
 module FreeBoundedDistributiveLattice (X : Alphabet.T) = struct
+  module L = Alphabet.List(X)
+  module LL = Alphabet.List(L)
 
-  (* Elements are represented in disjunctive normal form (sorted, without repetitions). *)
-  module E = struct
-    module L = Alphabet.List(X)
-    module LL = Alphabet.List(L)
-    include LL
+  (** Elements are represented in disjunctive normal form: a sorted list of clauses, each of which is a sorted list of generators without repetitions, and no clause contains another one. This form is canonical, so that two elements are equal in the lattice exactly when they are equal as lists. *)
+  type t = LL.t
 
-    (** Create an element from a dnf. *)
-    let make (l : X.t list list) : t =
-      List.sort_uniq L.compare @@ List.map (List.sort_uniq X.compare) l
-  end
+  let eq = LL.eq
 
-  type t = E.t
+  let compare = LL.compare
 
-  let bot = E.make []
+  (** Create an element from a dnf. *)
+  let make (l : X.t list list) : t =
+    let l = List.sort_uniq L.compare @@ List.map (List.sort_uniq X.compare) l in
+    let included c d = List.for_all (fun x -> List.exists (X.eq x) d) c in
+    List.filter (fun c -> not (List.exists (fun d -> not (L.eq c d) && included d c) l)) l
 
-  let top = E.make [[]]
+  (** Smallest element. *)
+  let bot = make []
 
-  let sup x y = E.make (x@y)
+  (** Greatest element. *)
+  let top = make [[]]
 
-  let inf x y = E.make @@ List.map_pairs (fun x' y' -> x'@y') x y
+  (** The element corresponding to a generator. *)
+  let generator x = make [[x]]
+
+  (** Supremum. *)
+  let sup x y = make (x@y)
+
+  (** Infimum. *)
+  let inf x y = make @@ List.map_pairs (fun x' y' -> x'@y') x y
+
+  (** Unique morphism to the booleans extending the given function on generators. *)
+  let eval_bool f (x:t) = List.exists (List.for_all f) x
+
+  (** Unique endomorphism extending the given function on generators. *)
+  let subst (f:X.t->t) (x:t) =
+    List.fold_left (fun a c -> sup a (List.fold_left (fun b g -> inf b (f g)) top c)) bot x
+
+  (** String representation, where ∧ has priority over ∨. *)
+  let to_string ?(inf="") ?(sup="∨") (x:t) =
+    if eq x bot then "⊥"
+    else if eq x top then "⊤"
+    else String.concat sup @@ List.map (fun c -> String.concat inf @@ List.map X.to_string c) x
 end
