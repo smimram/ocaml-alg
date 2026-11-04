@@ -172,7 +172,7 @@ module List (A:T) = struct
     | [], _ -> -1
     | _, [] -> 1
 end
-module ListAlphabet (A:T) : T = List(A)
+module ListAlphabet (A:T) : (T with type t = A.t list) = List(A)
 
 (** Functions between alphabets. *)
 module Map (A:T) (B:T) = struct
