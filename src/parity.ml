@@ -442,22 +442,22 @@ module CubeDCon = struct
     let merge e = if e then D.sup else D.inf
 
     (** The top cell of the k-cube. *)
-    let id k : t = Array.init k D.generator
+    let id k : t = Array.init k D.inj
 
     (** Composite of a k-cell of the m-cube with an m-cell of the n-cube. *)
     let comp (f:t) (g:t) : t = Array.map (D.subst (fun i -> f.(i))) g
 
     (** Face of a cell in direction i. *)
     let face e i : t -> t =
-      Array.map (D.subst (fun j -> if j < i then D.generator j else if j = i then const e else D.generator (j-1)))
+      Array.map (D.subst (fun j -> if j < i then D.inj j else if j = i then const e else D.inj (j-1)))
 
     (** Degeneracy of a cell, with a new variable i. *)
     let deg i : t -> t =
-      Array.map (D.subst (fun j -> D.generator (if j < i then j else j+1)))
+      Array.map (D.subst (fun j -> D.inj (if j < i then j else j+1)))
 
     (** Connection of a cell, which replaces the variable i by the merge of the new variables i and i+1. *)
     let con e i : t -> t =
-      Array.map (D.subst (fun j -> if j < i then D.generator j else if j = i then merge e (D.generator i) (D.generator (i+1)) else D.generator (j+1)))
+      Array.map (D.subst (fun j -> if j < i then D.inj j else if j = i then merge e (D.inj i) (D.inj (i+1)) else D.inj (j+1)))
 
     (** The action of a cell on generators: a generator is sent to the face spanned by the image of its lowest and highest vertices, and collapses when this lowers its dimension. *)
     let map (w:t) (g:M.t) =
