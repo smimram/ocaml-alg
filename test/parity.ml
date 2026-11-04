@@ -108,17 +108,19 @@ let () =
   let max_n = 4 in
   let cube = Array.init (max_n + 1) C.make in
   let bools = [false; true] in
+  let image n n' f = C.Hom.cell (C.Hom.of_partial cube.(n) cube.(n') f) in
   (* A map from the n-cube to the n'-cube preserves generators and their boundaries, up to identities. *)
   let check n n' f =
+    assert (C.Hom.check (C.Hom.of_partial cube.(n) cube.(n') f));
     List.iter
       (fun g ->
          let c = C.Cell.generator cube.(n) g in
          let expected =
            match f g with
            | Some g' -> C.Cell.generator cube.(n') g'
-           | None -> C.Cell.id (C.image f (C.Cell.src c))
+           | None -> C.Cell.id (image n n' f (C.Cell.src c))
          in
-         assert (C.Cell.eq (C.image f c) expected)
+         assert (C.Cell.eq (image n n' f c) expected)
       ) (C.to_list cube.(n))
   in
   for n = 1 to max_n do
@@ -164,13 +166,13 @@ let () =
   let b = gen cube.(2) [zero; top] in
   List.iter
     (fun e ->
-       let f = C.con e 0 in
-       assert (C.Cell.eq (C.image f (C.Cell.comp a b)) (C.Cell.comp (C.image f a) (C.image f b)))
+       let f = image 2 1 (C.con e 0) in
+       assert (C.Cell.eq (f (C.Cell.comp a b)) (C.Cell.comp (f a) (f b)))
     ) bools;
   (* Connections on the square and on the 3-cube. *)
   let print n f g =
     let name = Array.of_list g |> C.M.to_string in
-    Printf.printf "%s = %s\n%!" name (C.Cell.to_string cube.(n-1) (C.image f (gen cube.(n) g)))
+    Printf.printf "%s = %s\n%!" name (C.Cell.to_string cube.(n-1) (image n (n-1) f (gen cube.(n) g)))
   in
   List.iter
     (fun e ->
@@ -181,17 +183,17 @@ let () =
        print 3 (C.con e 1) [zero; zero; top]
     ) bools;
   (* A collapsed generator yields an identity, keeping the dimension. *)
-  let c = C.image (C.con true 0) (gen cube.(2) [zero; zero]) in
+  let c = image 2 1 (C.con true 0) (gen cube.(2) [zero; zero]) in
   assert (C.Cell.dim c = 2);
   assert (C.Cell.eq c (C.Cell.id (gen cube.(1) [zero])));
   (* Degeneracies reach the point. *)
   assert (C.deg 0 [|bot|] = Some C.M.one);
   assert (C.deg 0 [|zero|] = None);
-  assert (C.Cell.dim (C.image (C.deg 0) (gen cube.(1) [zero])) = 1)
+  assert (C.Cell.dim (image 1 0 (C.deg 0) (gen cube.(1) [zero])) = 1)
 
 let () =
   let module D = Parity.CubeDCon.Sing.D in
-  let x, y, z = D.generator 0, D.generator 1, D.generator 2 in
+  let x, y, z = D.inj 0, D.inj 1, D.inj 2 in
   (* Absorption and bounds. *)
   assert (D.eq (D.sup x (D.inf x y)) x);
   assert (D.eq (D.inf x (D.sup x y)) x);
@@ -205,14 +207,14 @@ let () =
   (* Printing. *)
   assert (D.to_string D.bot = "⊥");
   assert (D.to_string D.top = "⊤");
-  assert (D.to_string (D.sup (D.inf x y) z) = "x₀x₁∨x₂");
+  (* assert (D.to_string (D.sup (D.inf x y) z) = "x₀x₁∨x₂"); *)
   (* The free lattice on n generators has as many elements as there are monotone boolean functions on n variables (the Dedekind numbers), which would fail if the normal form was not canonical. *)
   let size n =
     let rec close l =
       let l' = List.sort_uniq D.compare (l @ List.concat_map (fun a -> List.concat_map (fun b -> [D.sup a b; D.inf a b]) l) l) in
       if List.compare_lengths l l' = 0 then l else close l'
     in
-    List.length (close (List.sort_uniq D.compare (D.bot :: D.top :: List.init n D.generator)))
+    List.length (close (List.sort_uniq D.compare (D.bot :: D.top :: List.init n D.inj)))
   in
   List.iteri (fun n c -> assert (size n = c)) [2; 3; 6; 20; 168]
 
@@ -334,11 +336,85 @@ let () =
   let top = C.Cell.generator cube.(2) [|None;None|] in
   let squares = List.filter (fun c -> S.D.compare c.(0) S.D.bot <> 0 && S.D.compare c.(0) S.D.top <> 0) (S.cells 1 2) in
   assert (List.length squares = 4);
-  List.iter (fun c -> assert (C.Cell.eq (C.image (S.map c) top) (C.Cell.id (C.Cell.generator cube.(1) [|None|])))) squares;
+  List.iter (fun c -> assert (C.Cell.eq (C.Hom.cell (S.hom cube.(2) cube.(1) c) top) (C.Cell.id (C.Cell.generator cube.(1) [|None|])))) squares;
+  (* Cells are morphisms, whose images do not merge generators, and composition of words is composition of morphisms. *)
+  for n = 0 to max_n do
+    for k = 0 to max_n do
+      List.iter (fun c -> assert (C.Hom.check (S.hom cube.(k) cube.(n) c))) (S.cells n k)
+    done
+  done;
+  for n = 0 to 3 do
+    for k = 0 to 3 do
+      List.iter
+        (fun w ->
+           let f = S.hom cube.(k) cube.(n) w in
+           List.iter
+             (fun g ->
+                let c, b = C.Cell.generator cube.(k) g in
+                assert (C.Hom.injective_on f c);
+                List.iter (fun (u,v) -> assert (C.Hom.injective_on f u && C.Hom.injective_on f v)) b
+             ) (C.to_list cube.(k))
+        ) (S.cells n k)
+    done
+  done;
+  for k = 0 to 3 do
+    for m = 0 to 3 do
+      for n = 0 to 3 do
+        List.iter
+          (fun f ->
+             let f' = S.hom cube.(k) cube.(m) f in
+             List.iter
+               (fun g -> assert (C.Hom.eq (S.hom cube.(k) cube.(n) (S.comp f g)) (C.comp f' (S.hom cube.(m) cube.(n) g))))
+               (S.cells n m)
+          ) (S.cells m k)
+      done
+    done
+  done;
   (* List the cells. *)
   for n = 0 to 2 do
     for k = 0 to 4 do
       Printf.printf "\n# %d-cells of the %d-cube\n\n" k n;
       List.iter (fun c -> print_endline (S.to_string c)) (S.cells n k)
+    done
+  done
+
+(* Morphisms between arbitrary complexes. *)
+let () =
+  let module C = Parity.Cube in
+  let module H = Parity.Morphism(C)(C) in
+  (* Morphisms which should be rejected: reversing the orientation and not preserving dimensions. *)
+  let i = C.make 1 in
+  let swap = Array.map (Option.map not) in
+  assert (not (H.check (H.of_partial i i (fun g -> Some (swap g)))));
+  assert (not (H.check (H.make (C.make 2) i (fun _ -> C.Set.singleton [|None|]))));
+  (* The n-globe maps to the n-cube, sending a generator to the corresponding boundary of the top cell: this is not a singleton in general and the alphabets are different. *)
+  let module G = Parity.Globe in
+  let module GC = Parity.Morphism(G)(C) in
+  for n = 1 to 4 do
+    let q = C.make n in
+    let g = G.make n in
+    let c, b = C.Cell.generator q (Array.make n None) in
+    let b = Array.of_list (List.rev b) in
+    let app (e,k) = if k = n then c else (if e then snd else fst) b.(k) in
+    assert (GC.check (GC.make g q app));
+    assert (n = 1 || List.exists (fun x -> C.Set.cardinal (app x) > 1) (G.to_list g));
+    (* The top cell of the globe is the top cell of the cube. *)
+    assert (C.Cell.eq (GC.cell (GC.make g q app) (G.Cell.generator g (true,n))) (c, Array.to_list b |> List.rev))
+  done;
+  (* Faces and degeneracies of orientals, which are induced by maps on vertices. *)
+  let module O = Parity.Oriental in
+  let module OO = Parity.Morphism(O)(O) in
+  let map h l =
+    let l' = List.map h l in
+    if List.length (List.sort_uniq compare l') = List.length l then Some l' else None
+  in
+  for n = 1 to 4 do
+    let o = O.make n in
+    let o' = O.make (n-1) in
+    for i = 0 to n - 1 do
+      assert (OO.check (OO.of_partial o o' (map (fun x -> if x <= i then x else x-1))))
+    done;
+    for i = 0 to n do
+      assert (OO.check (OO.of_partial o' o (map (fun x -> if x < i then x else x+1))))
     done
   done

@@ -2,12 +2,28 @@
 
 open Extlib
 
+(** A parity complex. *)
 module type T = sig
+  (** A generator. *)
   type generator
 
+  (** Sets of generators, which are used to represent chains. *)
+  module Set : Set.S with type elt = generator
+
+  (** A complex. *)
   type t
 
+  (** Dimension of a generator. *)
   val dim : t -> generator -> int
+
+  (** Source of a generator. *)
+  val src : t -> generator -> Set.t
+
+  (** Target of a generator. *)
+  val tgt : t -> generator -> Set.t
+
+  (** Sorted list of generators. *)
+  val to_list : t -> generator list
 end
 
 (** Presentation of a parity complex. *)
@@ -384,12 +400,82 @@ module Oriental = struct
     !s
 end
 
+(** Morphisms between complexes, as maps of augmented directed complexes, which induce functors between the generated free categories. *)
 module Morphism (P:T) (Q:T) = struct
+  (** A morphism sends a generator to a chain of the same dimension, which is empty when the generator collapses to a lower dimension. *)
+  type t =
+    {
+      dom : P.t; (** domain *)
+      cod : Q.t; (** codomain *)
+      app : P.generator -> Q.Set.t; (** image of a generator *)
+    }
+
+  (** Create a morphism from its action on generators. *)
+  let make dom cod app = { dom; cod; app }
+
+  (** Create a morphism sending each generator to a generator, or collapsing it when the image is [None]. *)
+  let of_partial dom cod f =
+    make dom cod (fun g -> match f g with Some g' -> Q.Set.singleton g' | None -> Q.Set.empty)
+
+  (** Image of a chain. *)
+  let chain f c = P.Set.fold (fun g e -> Q.Set.union (f.app g) e) c Q.Set.empty
+
+  (** Image of a cell, given by its generators and its source and target in each lower dimension. The dimension of the cell is preserved, so that it might become an identity. *)
+  let cell f (c,b) = chain f c, List.map (fun (u,v) -> chain f u, chain f v) b
+
+  (** Whether two morphisms with the same domain coincide on generators. *)
+  let eq f g = List.for_all (fun x -> Q.Set.equal (f.app x) (g.app x)) (P.to_list f.dom)
+
+  (** Whether the images of the generators of a chain are disjoint. Otherwise, the image of the chain is not faithfully represented by a set. *)
+  let injective_on f c =
+    P.Set.fold (fun g n -> n + Q.Set.cardinal (f.app g)) c 0 = Q.Set.cardinal (chain f c)
+
+  (** Check that the action on generators defines a morphism: it preserves dimensions and augmentation and commutes with the boundary. *)
+  let check f =
+    let boundary c =
+      let union h = Q.Set.fold (fun g e -> Q.Set.union (h f.cod g) e) c Q.Set.empty in
+      union Q.src, union Q.tgt
+    in
+    List.for_all
+      (fun g ->
+         let n = P.dim f.dom g in
+         let c = f.app g in
+         Q.Set.for_all (fun g' -> Q.dim f.cod g' = n) c
+         &&
+         if n = 0 then Q.Set.cardinal c = 1
+         else
+           let s, t = P.src f.dom g, P.tgt f.dom g in
+           let s', t' = chain f s, chain f t in
+           let u, v = boundary c in
+           injective_on f s
+           && injective_on f t
+           && Q.Set.equal (Q.Set.diff s' t') (Q.Set.diff u v)
+           && Q.Set.equal (Q.Set.diff t' s') (Q.Set.diff v u)
+      ) (P.to_list f.dom)
 end
 
-(** Cubes with degeneracies and connections. These are not additional generators but maps between cubes, which are morphisms of augmented directed complexes and thus induce functors between the generated free categories. Such a map is described by its action on generators: it sends a generator to a generator of the same dimension, or to [None] when the generator collapses to a lower dimension. Coordinates are numbered from 0. *)
+(** Composition of morphisms. *)
+module MorphismComp (P:T) (Q:T) (R:T) = struct
+  module F = Morphism(P)(Q)
+  module G = Morphism(Q)(R)
+  module H = Morphism(P)(R)
+
+  (** Composite of two morphisms: the first one is applied first. *)
+  let comp (f:F.t) (g:G.t) : H.t =
+    H.make f.dom g.cod (fun x -> G.chain g (f.app x))
+end
+
+(** Cubes with degeneracies and connections. These are not additional generators but morphisms between cubes. Such a map is described by its action on words: it sends a generator to a generator of the same dimension, or to [None] when the generator collapses to a lower dimension. Use {!Hom.of_partial} to obtain the corresponding morphism. Coordinates are numbered from 0. *)
 module CubeDCon = struct
   include Cube
+
+  (** Morphisms between cubes. *)
+  module Hom = Morphism(Cube)(Cube)
+
+  (** Composite of morphisms between cubes. *)
+  let comp =
+    let module C = MorphismComp(Cube)(Cube)(Cube) in
+    C.comp
 
   (** The word obtained by replacing the coordinates from i to i+k-1 of x by the word v. *)
   let splice x i k v =
@@ -411,11 +497,6 @@ module CubeDCon = struct
       | Some a, Some b -> Some (Some (if e then a || b else a && b))
     in
     Option.map (fun v -> splice x i 2 [|v|]) merged
-
-  (** Image of a cell under a map. A collapsed generator disappears from the chains, so that the dimension of the cell is preserved and it might become an identity. *)
-  let image f ((c,b):Cell.t) : Cell.t =
-    let chain = Set.filter_map f in
-    chain c, List.map (fun (u,v) -> chain u, chain v) b
 
   (** Cells of the cubes in cubical sets with degeneracies and connections (for both maximum and minimum). A k-cell of the n-cube is a map from the k-cube to the n-cube, which is described by a word of length n over the free bounded distributive lattice on the variables x₀, ..., xₖ₋₁: the letter at position i gives the value of the coordinate i. Not all words are cells: for instance, the cells contain neither symmetries nor diagonals. Since a word does not determine k, the dimension has to be specified where it matters. *)
   module Sing = struct
@@ -470,6 +551,9 @@ module CubeDCon = struct
       let dim x = Array.fold_left (fun n a -> if a = None then n+1 else n) 0 x in
       if dim g' = dim g then Some g' else None
 
+    (** The morphism from the k-cube dom to the n-cube cod corresponding to a k-cell of the n-cube. *)
+    let hom dom cod (w:t) = Hom.of_partial dom cod (map w)
+
     (** All composites of degeneracies and connections from the k-cube, indexed by the dimension of their codomain. *)
     let collapses k =
       let ans = Array.make (k+1) [] in
@@ -501,6 +585,6 @@ module CubeDCon = struct
 
     (** String representation. *)
     let to_string (w:t) =
-      "(" ^ String.concat ", " (List.map D.to_string (Array.to_list w)) ^ ")"
+      "(" ^ String.concat " , " (List.map D.to_string (Array.to_list w)) ^ ")"
   end
 end
