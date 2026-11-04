@@ -101,3 +101,244 @@ let () =
     print_newline ();
     print_newline ()
   done
+
+let () =
+  let module C = Parity.CubeDCon in
+  print_string "# Degeneracies and connections\n\n";
+  let max_n = 4 in
+  let cube = Array.init (max_n + 1) C.make in
+  let bools = [false; true] in
+  (* A map from the n-cube to the n'-cube preserves generators and their boundaries, up to identities. *)
+  let check n n' f =
+    List.iter
+      (fun g ->
+         let c = C.Cell.generator cube.(n) g in
+         let expected =
+           match f g with
+           | Some g' -> C.Cell.generator cube.(n') g'
+           | None -> C.Cell.id (C.image f (C.Cell.src c))
+         in
+         assert (C.Cell.eq (C.image f c) expected)
+      ) (C.to_list cube.(n))
+  in
+  for n = 1 to max_n do
+    for i = 0 to n - 1 do
+      check n (n-1) (C.deg i);
+      List.iter (fun e -> check (n-1) n (C.face e i)) bools
+    done;
+    for i = 0 to n - 2 do
+      List.iter (fun e -> check n (n-1) (C.con e i)) bools
+    done
+  done;
+  (* Cubical identities, where f >> g means f followed by g. *)
+  let (>>) f g x = Option.bind (f x) g in
+  let same n f g = List.iter (fun x -> assert (f x = g x)) (C.to_list cube.(n)) in
+  let id x = Some x in
+  for n = 1 to max_n do
+    for i = 0 to n - 1 do
+      List.iter (fun e -> same (n-1) (C.face e i >> C.deg i) id) bools
+    done;
+    for i = 0 to n - 2 do
+      for j = i + 1 to n - 1 do
+        same n (C.deg j >> C.deg i) (C.deg i >> C.deg (j-1))
+      done;
+      List.iter
+        (fun e ->
+           same n (C.con e i >> C.deg i) (C.deg i >> C.deg i);
+           (* The value e is absorbing and the other one is neutral. *)
+           List.iter
+             (fun k ->
+                same (n-1) (C.face e k >> C.con e i) (C.deg i >> C.face e i);
+                same (n-1) (C.face (not e) k >> C.con e i) id
+             ) [i; i+1]
+        ) bools
+    done;
+    for i = 0 to n - 3 do
+      List.iter (fun e -> same n (C.con e (i+1) >> C.con e i) (C.con e i >> C.con e i)) bools
+    done
+  done;
+  (* Images are compatible with composition. *)
+  let gen s l = C.Cell.generator s (Array.of_list l) in
+  let bot, top, zero = Some false, Some true, None in
+  let a = gen cube.(2) [bot; zero] in
+  let b = gen cube.(2) [zero; top] in
+  List.iter
+    (fun e ->
+       let f = C.con e 0 in
+       assert (C.Cell.eq (C.image f (C.Cell.comp a b)) (C.Cell.comp (C.image f a) (C.image f b)))
+    ) bools;
+  (* Connections on the square and on the 3-cube. *)
+  let print n f g =
+    let name = Array.of_list g |> C.M.to_string in
+    Printf.printf "%s = %s\n%!" name (C.Cell.to_string cube.(n-1) (C.image f (gen cube.(n) g)))
+  in
+  List.iter
+    (fun e ->
+       Printf.printf "Connection %b:\n%!" e;
+       print 2 (C.con e 0) [zero; zero];
+       print 2 (C.con e 0) [zero; bot];
+       print 3 (C.con e 0) [zero; zero; zero];
+       print 3 (C.con e 1) [zero; zero; top]
+    ) bools;
+  (* A collapsed generator yields an identity, keeping the dimension. *)
+  let c = C.image (C.con true 0) (gen cube.(2) [zero; zero]) in
+  assert (C.Cell.dim c = 2);
+  assert (C.Cell.eq c (C.Cell.id (gen cube.(1) [zero])));
+  (* Degeneracies reach the point. *)
+  assert (C.deg 0 [|bot|] = Some C.M.one);
+  assert (C.deg 0 [|zero|] = None);
+  assert (C.Cell.dim (C.image (C.deg 0) (gen cube.(1) [zero])) = 1)
+
+let () =
+  let module D = Parity.CubeDCon.Sing.D in
+  let x, y, z = D.generator 0, D.generator 1, D.generator 2 in
+  (* Absorption and bounds. *)
+  assert (D.eq (D.sup x (D.inf x y)) x);
+  assert (D.eq (D.inf x (D.sup x y)) x);
+  assert (D.eq (D.sup x D.top) D.top);
+  assert (D.eq (D.inf x D.bot) D.bot);
+  assert (D.eq (D.sup x D.bot) x);
+  assert (D.eq (D.inf x D.top) x);
+  (* Distributivity, in both directions. *)
+  assert (D.eq (D.inf x (D.sup y z)) (D.sup (D.inf x y) (D.inf x z)));
+  assert (D.eq (D.sup x (D.inf y z)) (D.inf (D.sup x y) (D.sup x z)));
+  (* Printing. *)
+  assert (D.to_string D.bot = "⊥");
+  assert (D.to_string D.top = "⊤");
+  assert (D.to_string (D.sup (D.inf x y) z) = "x₀x₁∨x₂");
+  (* The free lattice on n generators has as many elements as there are monotone boolean functions on n variables (the Dedekind numbers), which would fail if the normal form was not canonical. *)
+  let size n =
+    let rec close l =
+      let l' = List.sort_uniq D.compare (l @ List.concat_map (fun a -> List.concat_map (fun b -> [D.sup a b; D.inf a b]) l) l) in
+      if List.compare_lengths l l' = 0 then l else close l'
+    in
+    List.length (close (List.sort_uniq D.compare (D.bot :: D.top :: List.init n D.generator)))
+  in
+  List.iteri (fun n c -> assert (size n = c)) [2; 3; 6; 20; 168]
+
+let () =
+  let module C = Parity.CubeDCon in
+  let module S = C.Sing in
+  let max_n = 4 in
+  let cube = Array.init (max_n + 1) C.make in
+  let bools = [false; true] in
+  (* The action of a map on the generators of its domain, which determines it. *)
+  let action k f = List.map f (C.to_list cube.(k)) in
+  print_string "\n# Number of k-cells (columns) of the n-cube (rows)\n\n";
+  let table =
+    [
+      [ 1;  1;   1;   1;    1];
+      [ 2;  3;   6;  17;   64];
+      [ 4;  8;  21;  71;  290];
+      [ 8; 20;  62; 231;  990];
+      [16; 48; 168; 672; 2993];
+    ]
+  in
+  List.iteri
+    (fun n l ->
+       List.iteri
+         (fun k c ->
+            let c' = List.length (S.cells n k) in
+            Printf.printf "%6d" c';
+            assert (c = c')
+         ) l;
+       print_newline ()
+    ) table;
+  (* Compare with the closure under all operations on generators, allowing intermediate dimensions up to the given bound: this checks that the normal form is complete and that words and actions agree. *)
+  let closure k bound =
+    let seen = Hashtbl.create 1000 in
+    let rec visit m a =
+      if not (Hashtbl.mem seen (m,a)) then
+        (
+          Hashtbl.add seen (m,a) ();
+          let apply f m' = visit m' (List.map (fun x -> Option.bind x f) a) in
+          for i = 0 to m - 1 do apply (C.deg i) (m-1) done;
+          for i = 0 to m - 2 do List.iter (fun e -> apply (C.con e i) (m-1)) bools done;
+          if m < bound then
+            for i = 0 to m do List.iter (fun e -> apply (C.face e i) (m+1)) bools done
+        )
+    in
+    visit k (action k Option.some);
+    seen
+  in
+  for k = 0 to 4 do
+    let seen = closure k 5 in
+    for n = 0 to 4 do
+      let l = S.cells n k in
+      let a = List.map (fun c -> action k (S.map c)) l in
+      (* Distinct cells are distinct maps. *)
+      assert (List.length (List.sort_uniq compare a) = List.length l);
+      List.iter (fun a -> assert (Hashtbl.mem seen (n,a))) a;
+      let closed = Hashtbl.fold (fun (m,_) () c -> if m = n then c + 1 else c) seen 0 in
+      assert (closed = List.length l)
+    done
+  done;
+  (* The structure maps of cells are in the listing and satisfy the cubical identities. *)
+  let cells = Hashtbl.create 1000 in
+  for n = 0 to max_n do
+    for k = 0 to 5 do
+      List.iter (fun c -> Hashtbl.replace cells (n,k,c) ()) (S.cells n k)
+    done
+  done;
+  let mem n k c = Hashtbl.mem cells (n,k,c) in
+  for n = 0 to max_n do
+    for k = 0 to max_n do
+      List.iter
+        (fun c ->
+           for i = 0 to k - 1 do
+             List.iter (fun e -> assert (mem n (k-1) (S.face e i c))) bools
+           done;
+           for i = 0 to k do
+             assert (mem n (k+1) (S.deg i c));
+             List.iter (fun e -> assert (S.eq (S.face e i (S.deg i c)) c)) bools
+           done;
+           for i = 0 to k - 1 do
+             List.iter
+               (fun e ->
+                  let d = S.con e i c in
+                  assert (mem n (k+1) d);
+                  assert (S.eq (S.con e i d) (S.con e (i+1) d));
+                  (* The value e is absorbing and the other one is neutral. *)
+                  List.iter
+                    (fun j ->
+                       assert (S.eq (S.face e j d) (S.deg i (S.face e i c)));
+                       assert (S.eq (S.face (not e) j d) c)
+                    ) [i; i+1]
+               ) bools
+           done
+        ) (S.cells n k)
+    done
+  done;
+  (* Composition is compatible with the action on generators and stays in the listing. *)
+  for k = 0 to 3 do
+    for m = 0 to 3 do
+      for n = 0 to 3 do
+        List.iter
+          (fun f ->
+             List.iter
+               (fun g ->
+                  let h = S.comp f g in
+                  assert (mem n k h);
+                  assert (action k (S.map h) = action k (fun x -> Option.bind (S.map f x) (S.map g)))
+               ) (S.cells n m)
+          ) (S.cells m k)
+      done
+    done
+  done;
+  (* The top cell of the k-cube is the identity. *)
+  for k = 0 to max_n do
+    assert (mem k k (S.id k));
+    assert (action k (S.map (S.id k)) = action k Option.some)
+  done;
+  (* The four degenerate squares on the interval have the same top cell, and only differ by their boundary. *)
+  let top = C.Cell.generator cube.(2) [|None;None|] in
+  let squares = List.filter (fun c -> S.D.compare c.(0) S.D.bot <> 0 && S.D.compare c.(0) S.D.top <> 0) (S.cells 1 2) in
+  assert (List.length squares = 4);
+  List.iter (fun c -> assert (C.Cell.eq (C.image (S.map c) top) (C.Cell.id (C.Cell.generator cube.(1) [|None|])))) squares;
+  (* List the cells. *)
+  for n = 0 to 2 do
+    for k = 0 to 4 do
+      Printf.printf "\n# %d-cells of the %d-cube\n\n" k n;
+      List.iter (fun c -> print_endline (S.to_string c)) (S.cells n k)
+    done
+  done

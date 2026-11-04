@@ -319,7 +319,7 @@ module Cube = struct
   include PresTens(M)
 
   (** The point. *)
-  let point = add_point empty M.zero
+  let point = add_point empty M.one
 
   (** The interval. *)
   let interval =
@@ -341,11 +341,123 @@ module Cube = struct
       !ans
 end
 
-(*
-(** Cubes with degeneracies and connections. *)
+(** Cubes with degeneracies and connections. These are not additional generators but maps between cubes, which are morphisms of augmented directed complexes and thus induce functors between the generated free categories. Such a map is described by its action on generators: it sends a generator to a generator of the same dimension, or to [None] when the generator collapses to a lower dimension. Coordinates are numbered from 0. *)
 module CubeDCon = struct
+  include Cube
+
+  (** The word obtained by replacing the coordinates from i to i+k-1 of x by the word v. *)
+  let splice x i k v =
+    Array.concat [Array.sub x 0 i; v; Array.sub x (i+k) (Array.length x - i - k)]
+
+  (** Face: insert a coordinate i, which is the target if e is true and the source otherwise. *)
+  let face e i x = Some (splice x i 0 (if e then M.top else M.bot))
+
+  (** Degeneracy: forget the coordinate i. *)
+  let deg i x =
+    if x.(i) = None then None else Some (splice x i 1 M.one)
+
+  (** Connection: merge the coordinates i and i+1, by taking their maximum if e is true and their minimum otherwise. *)
+  let con e i x =
+    let merged =
+      match x.(i), x.(i+1) with
+      | None, None -> None
+      | None, Some b | Some b, None -> if b = e then None else Some None
+      | Some a, Some b -> Some (Some (if e then a || b else a && b))
+    in
+    Option.map (fun v -> splice x i 2 [|v|]) merged
+
+  (** Image of a cell under a map. A collapsed generator disappears from the chains, so that the dimension of the cell is preserved and it might become an identity. *)
+  let image f ((c,b):Cell.t) : Cell.t =
+    let chain = Set.filter_map f in
+    chain c, List.map (fun (u,v) -> chain u, chain v) b
+
+  (** Cells of the cubes in cubical sets with degeneracies and connections (for both maximum and minimum). A k-cell of the n-cube is a map from the k-cube to the n-cube, which is described by a word of length n over the free bounded distributive lattice on the variables x₀, ..., xₖ₋₁: the letter at position i gives the value of the coordinate i. Not all words are cells: for instance, the cells contain neither symmetries nor diagonals. Since a word does not determine k, the dimension has to be specified where it matters. *)
+  module Sing = struct
+    (** Variables. *)
+    module Var = struct
+      include Alphabet.Int
+
+      let to_string i = "x" ^ String.subscript (string_of_int i)
+    end
+
+    (** Values of the coordinates. *)
+    module D = struct
+      include Lattice.FreeBoundedDistributiveLattice(Var)
+
+      let to_string x = to_string x
+    end
+
+    include Monoid.Free(D)
+
+    (** The value of a constant coordinate, which is the target if e is true and the source otherwise. *)
+    let const e = if e then D.top else D.bot
+
+    (** Maximum if e is true and minimum otherwise. *)
+    let merge e = if e then D.sup else D.inf
+
+    (** The top cell of the k-cube. *)
+    let id k : t = Array.init k D.generator
+
+    (** Composite of a k-cell of the m-cube with an m-cell of the n-cube. *)
+    let comp (f:t) (g:t) : t = Array.map (D.subst (fun i -> f.(i))) g
+
+    (** Face of a cell in direction i. *)
+    let face e i : t -> t =
+      Array.map (D.subst (fun j -> if j < i then D.generator j else if j = i then const e else D.generator (j-1)))
+
+    (** Degeneracy of a cell, with a new variable i. *)
+    let deg i : t -> t =
+      Array.map (D.subst (fun j -> D.generator (if j < i then j else j+1)))
+
+    (** Connection of a cell, which replaces the variable i by the merge of the new variables i and i+1. *)
+    let con e i : t -> t =
+      Array.map (D.subst (fun j -> if j < i then D.generator j else if j = i then merge e (D.generator i) (D.generator (i+1)) else D.generator (j+1)))
+
+    (** The action of a cell on generators: a generator is sent to the face spanned by the image of its lowest and highest vertices, and collapses when this lowers its dimension. *)
+    let map (w:t) (g:M.t) =
+      let vertex d i = match g.(i) with Some b -> b | None -> d in
+      let coordinate x =
+        let a = D.eval_bool (vertex false) x in
+        if a = D.eval_bool (vertex true) x then Some a else None
+      in
+      let g' = Array.map coordinate w in
+      let dim x = Array.fold_left (fun n a -> if a = None then n+1 else n) 0 x in
+      if dim g' = dim g then Some g' else None
+
+    (** All composites of degeneracies and connections from the k-cube, indexed by the dimension of their codomain. *)
+    let collapses k =
+      let ans = Array.make (k+1) [] in
+      ans.(k) <- [id k];
+      for m = k downto 1 do
+        let next w =
+          List.init m (fun i -> splice w i 1 [||])
+          @ List.concat_map (fun e -> List.init (m-1) (fun i -> splice w i 2 [|merge e w.(i) w.(i+1)|])) [false; true]
+        in
+        ans.(m-1) <- List.sort_uniq compare @@ List.concat_map next ans.(m)
+      done;
+      ans
+
+    (** The k-cells of the n-cube. Each one uniquely factors as a collapse followed by the inclusion of a face. *)
+    let cells n k : t list =
+      let inject g w =
+        let j = ref 0 in
+        Array.map (function None -> let a = w.(!j) in incr j; a | Some e -> const e) g
+      in
+      let collapses = collapses k in
+      let c = make n in
+      List.concat_map
+        (fun m ->
+           if m > k then [] else
+             List.concat_map
+               (fun g -> List.map (inject g) collapses.(m))
+               (Set.elements (generators ~dim:m c))
+        ) (List.init (n+1) Fun.id)
+
+    (** String representation. *)
+    let to_string (w:t) =
+      "(" ^ String.concat ", " (List.map D.to_string (Array.to_list w)) ^ ")"
+  end
 end
-*)
 
 module Oriental = struct
   module A = Alphabet.List(Alphabet.Int)
