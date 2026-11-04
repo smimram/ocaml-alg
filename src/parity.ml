@@ -2,6 +2,14 @@
 
 open Extlib
 
+module type T = sig
+  type generator
+
+  type t
+
+  val dim : t -> generator -> int
+end
+
 (** Presentation of a parity complex. *)
 module Pres (G : Alphabet.T) = struct
   type generator = G.t
@@ -244,6 +252,8 @@ module Pres (G : Alphabet.T) = struct
     |> String.concat "\n"
 end
 
+module PresT (G : Monoid.T) : T = Pres(G)
+
 (** Presentation on a monoid of generators. *)
 module PresTens (G : Monoid.T) = struct
   include Pres(G)
@@ -339,6 +349,42 @@ module Cube = struct
         ans := tensor !ans interval
       done;
       !ans
+end
+
+module Oriental = struct
+  module A = Alphabet.List(Alphabet.Int)
+  include Pres(A)
+
+  (** The n-oriental (oriented n-simplex). *)
+  let make n =
+    (* Strictly increasing lists of len integers between pos and n (both included). *)
+    let rec subsets pos len =
+      if len = 0 then [[]]
+      else if n + 1 - pos < len then []
+      else
+        List.init (n + 1 - pos) (fun i -> pos + i)
+        |> List.concat_map (fun x -> List.map (fun l -> x::l) (subsets (x+1) (len-1)))
+    in
+    (* The faces of a simplex obtained by removing an element whose position has the given parity. *)
+    let faces parity l =
+      List.mapi (fun i _ -> i) l
+      |> List.filter (fun i -> i mod 2 = parity)
+      |> List.map (fun i -> List.filteri (fun j _ -> j <> i) l)
+      |> Set.of_list
+    in
+    let s = ref empty in
+    for i = 0 to n do
+      List.iter
+        (fun l ->
+           s :=
+             if i = 0 then add_point !s l
+             else add !s l (faces 1 l, faces 0 l)
+        ) (subsets 0 (i+1))
+    done;
+    !s
+end
+
+module Morphism (P:T) (Q:T) = struct
 end
 
 (** Cubes with degeneracies and connections. These are not additional generators but maps between cubes, which are morphisms of augmented directed complexes and thus induce functors between the generated free categories. Such a map is described by its action on generators: it sends a generator to a generator of the same dimension, or to [None] when the generator collapses to a lower dimension. Coordinates are numbered from 0. *)
@@ -457,37 +503,4 @@ module CubeDCon = struct
     let to_string (w:t) =
       "(" ^ String.concat ", " (List.map D.to_string (Array.to_list w)) ^ ")"
   end
-end
-
-module Oriental = struct
-  module A = Alphabet.List(Alphabet.Int)
-  include Pres(A)
-
-  (** The n-oriental (oriented n-simplex). *)
-  let make n =
-    (* Strictly increasing lists of len integers between pos and n (both included). *)
-    let rec subsets pos len =
-      if len = 0 then [[]]
-      else if n + 1 - pos < len then []
-      else
-        List.init (n + 1 - pos) (fun i -> pos + i)
-        |> List.concat_map (fun x -> List.map (fun l -> x::l) (subsets (x+1) (len-1)))
-    in
-    (* The faces of a simplex obtained by removing an element whose position has the given parity. *)
-    let faces parity l =
-      List.mapi (fun i _ -> i) l
-      |> List.filter (fun i -> i mod 2 = parity)
-      |> List.map (fun i -> List.filteri (fun j _ -> j <> i) l)
-      |> Set.of_list
-    in
-    let s = ref empty in
-    for i = 0 to n do
-      List.iter
-        (fun l ->
-           s :=
-             if i = 0 then add_point !s l
-             else add !s l (faces 1 l, faces 0 l)
-        ) (subsets 0 (i+1))
-    done;
-    !s
 end
