@@ -438,7 +438,8 @@ module Globe = struct
 end
 
 module Cube = struct
-  module M = struct
+  (** Our alphabet. *)
+  module A = struct
     include Monoid.Free(Alphabet.Option(Alphabet.Bool))
 
     let zero = inj None
@@ -448,19 +449,19 @@ module Cube = struct
     let bot = inj (Some false)
   end
 
-  include PresTens(M)
+  include PresTens(A)
 
   (** The point. *)
-  let point = add_point empty M.one
+  let point = add_point empty A.one
 
   (** The interval. *)
   let interval =
-    let src = M.bot in
-    let tgt = M.top in
+    let src = A.bot in
+    let tgt = A.top in
     let i = empty in
     let i = add_point i src in
     let i = add_point i tgt in
-    let i = add i M.zero (Chain.generator src, Chain.generator tgt) in
+    let i = add i A.zero (Chain.generator src, Chain.generator tgt) in
     i
 
   (** Create an n-dimensional cube. *)
@@ -640,11 +641,11 @@ module CubeDCon = struct
     Array.concat [Array.sub x 0 i; v; Array.sub x (i+k) (Array.length x - i - k)]
 
   (** Face: insert a coordinate i, which is the target if e is true and the source otherwise. *)
-  let face e i x = Some (splice x i 0 (if e then M.top else M.bot))
+  let face e i x = Some (splice x i 0 (if e then A.top else A.bot))
 
   (** Degeneracy: forget the coordinate i. *)
   let deg i x =
-    if x.(i) = None then None else Some (splice x i 1 M.one)
+    if x.(i) = None then None else Some (splice x i 1 A.one)
 
   (** Connection: merge the coordinates i and i+1, by taking their maximum if e is true and their minimum otherwise. *)
   let con e i x =
@@ -699,7 +700,7 @@ module CubeDCon = struct
       Array.map (D.subst (fun j -> if j < i then D.inj j else if j = i then merge e (D.inj i) (D.inj (i+1)) else D.inj (j+1)))
 
     (** The action of a cell on generators: a generator is sent to the face spanned by the image of its lowest and highest vertices, and collapses when this lowers its dimension. *)
-    let map (w:t) (g:M.t) =
+    let map (w:t) (g:A.t) =
       let vertex d i = match g.(i) with Some b -> b | None -> d in
       let coordinate x =
         let a = D.eval_bool (vertex false) x in
