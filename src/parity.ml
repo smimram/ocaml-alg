@@ -7,6 +7,12 @@ module type T = sig
   (** A generator. *)
   type generator
 
+  (** String representation of a generator. *)
+  val generator_to_string : generator -> string
+
+  (** Maps from generators. *)
+  module Map : Map.S with type key = generator
+
   (** A complex. *)
   type t
 
@@ -19,6 +25,12 @@ module type T = sig
 
     (** Equality. *)
     val eq : t -> t -> bool
+
+    (** Comparison. *)
+    val compare : t -> t -> int
+
+    (** String representation. *)
+    val to_string : t -> string
 
     (** The empty chain. *)
     val empty : t
@@ -79,6 +91,9 @@ module type T = sig
     (** Equality. *)
     val eq : t -> t -> bool
 
+    (** Comparison. *)
+    val compare : t -> t -> int
+
     (** Dimension of a cell. *)
     val dim : t -> int
 
@@ -109,11 +124,15 @@ module type T = sig
     (** String representation. *)
     val to_string : complex -> t -> string
   end
+
+  (** All the cells of the generated free category in each dimension, up to the given one. *)
+  val cells : t -> int -> Cell.t list array
 end
 
 (** Presentation of a parity complex. *)
 module Pres (G : Alphabet.T) = struct
   type generator = G.t
+  let generator_to_string = G.to_string
   module Map = Map.Make(G)
   module Set = Set.Make(G)
   module Cat = Precategory.Make(G)
@@ -168,6 +187,13 @@ module Pres (G : Alphabet.T) = struct
 
     (** Equality. *)
     let eq = Set.equal
+
+    (** Comparison. *)
+    let compare = Set.compare
+
+    (** String representation. *)
+    let to_string c =
+      "{" ^ String.concat ", " (List.map G.to_string (Set.elements c)) ^ "}"
 
     (** Dimension of a chain, by convention -1 for the empty one. *)
     let dim s (c:t) = if Set.is_empty c then -1 else dim s (Set.choose c)
@@ -238,6 +264,15 @@ module Pres (G : Alphabet.T) = struct
       Chain.eq c c'
       && List.compare_lengths b b' = 0
       && List.for_all2 (fun (u,v) (u',v') -> Chain.eq u u' && Chain.eq v v') b b'
+
+    (** Comparison. *)
+    let compare ((c,b):t) ((c',b'):t) =
+      let pair (u,v) (u',v') =
+        let n = Chain.compare u u' in
+        if n <> 0 then n else Chain.compare v v'
+      in
+      let n = Chain.compare c c' in
+      if n <> 0 then n else List.compare pair b b'
 
     (** Dimension of a cell. *)
     let dim ((_,b):t) = List.length b
@@ -342,6 +377,38 @@ module Pres (G : Alphabet.T) = struct
     (** String representation. *)
     let to_string s c = Cat.to_string @@ to_cat s c
   end
+
+  (** All the cells of the generated free category in each dimension, up to the given one: in dimension m, these are obtained from the generators and the identities on cells of dimension m-1 by closing under composition. *)
+  let cells (s:t) d =
+    let module C = Stdlib.Set.Make(Cell) in
+    let module M = Stdlib.Map.Make(Cell) in
+    let ans = Array.make (d+1) [] in
+    for m = 0 to d do
+      let seen = ref C.empty in
+      (* The cells known so far, by iterated source and target in each dimension. *)
+      let by_src = Array.make m M.empty in
+      let by_tgt = Array.make m M.empty in
+      let find t k c = Option.value ~default:[] (M.find_opt c t.(k)) in
+      let add t k c x = t.(k) <- M.add c (x :: find t k c) t.(k) in
+      let rec visit x =
+        if not (C.mem x !seen) then
+          (
+            seen := C.add x !seen;
+            for k = 0 to m - 1 do
+              add by_src k (Cell.isrc x k) x;
+              add by_tgt k (Cell.itgt x k) x
+            done;
+            for k = 0 to m - 1 do
+              List.iter (fun y -> visit (Cell.comp ~k x y)) (find by_src k (Cell.itgt x k));
+              List.iter (fun y -> visit (Cell.comp ~k y x)) (find by_tgt k (Cell.isrc x k))
+            done
+          )
+      in
+      List.iter (fun g -> visit (Cell.generator s g)) (Set.elements (generators ~dim:m s));
+      if m > 0 then List.iter (fun c -> visit (Cell.id c)) ans.(m-1);
+      ans.(m) <- C.elements !seen
+    done;
+    ans
 
   (** Empty parity complex. *)
   let empty : t = Map.empty
@@ -594,8 +661,19 @@ module Morphism (P:T) (Q:T) = struct
   let injective_on f c =
     P.Chain.fold (fun g n -> n + Q.Chain.cardinal (f.app g)) c 0 = Q.Chain.cardinal (chain f c)
 
-  (** Check that the action on generators defines a morphism: it preserves dimensions and augmentation and commutes with the boundary. *)
+  (** Check that the action on generators defines a morphism: it preserves dimensions and augmentation and commutes with the boundary. The boundary has to be computed with integer coefficients since, contrarily to what happens for well-formed chains, generators of an arbitrary chain can share a source or a target, and sets would forget this. *)
   let check f =
+    (* Add a chain, with given coefficient, to a linear combination of generators. *)
+    let add n c m =
+      Q.Chain.fold
+        (fun g m ->
+           let n = n + Option.value ~default:0 (Q.Map.find_opt g m) in
+           if n = 0 then Q.Map.remove g m else Q.Map.add g n m
+        ) c m
+    in
+    let boundary c =
+      Q.Chain.fold (fun g m -> add 1 (Q.tgt f.cod g) (add (-1) (Q.src f.cod g) m)) c Q.Map.empty
+    in
     List.for_all
       (fun g ->
          let n = P.dim f.dom g in
@@ -608,9 +686,48 @@ module Morphism (P:T) (Q:T) = struct
            let s', t' = chain f s, chain f t in
            injective_on f s
            && injective_on f t
-           && Q.Chain.eq (Q.Chain.diff s' t') (Q.Chain.src f.cod c)
-           && Q.Chain.eq (Q.Chain.diff t' s') (Q.Chain.tgt f.cod c)
+           && Q.Map.equal (=) (add 1 t' (add (-1) s' Q.Map.empty)) (boundary c)
       ) (P.to_list f.dom)
+
+  (** All the morphisms between two complexes, which are the functors between the generated free categories. Since the domain is free, such a functor amounts to choosing, for each generator by increasing dimension, a cell whose boundary is the image of the boundary of the generator. *)
+  let all dom cod =
+    let module B =
+      Map.Make(struct
+        type t = (Q.Chain.t * Q.Chain.t) list
+        let compare =
+          List.compare
+            (fun (u,v) (u',v') ->
+               let n = Q.Chain.compare u u' in
+               if n <> 0 then n else Q.Chain.compare v v')
+      end)
+    in
+    let generators = List.map (fun g -> g, P.dim dom g, P.Cell.boundary (P.Cell.generator dom g)) (P.to_list dom) in
+    let d = List.fold_left (fun d (_,n,_) -> max d n) 0 generators in
+    (* The chains of the cells in each dimension, by boundary. *)
+    let index =
+      Array.map
+        (List.fold_left
+           (fun i c ->
+              let b = Q.Cell.boundary c in
+              B.add b (Q.Cell.chain c :: Option.value ~default:[] (B.find_opt b i)) i
+           ) B.empty)
+        (Q.cells cod d)
+    in
+    let rec aux m = function
+      | [] -> [m]
+      | (g,n,b)::generators ->
+        let image c = P.Chain.fold (fun x e -> Q.Chain.union (P.Map.find x m) e) c Q.Chain.empty in
+        let b = List.map (fun (u,v) -> image u, image v) b in
+        Option.value ~default:[] (B.find_opt b index.(n))
+        |> List.concat_map (fun c -> aux (P.Map.add g c m) generators)
+    in
+    List.map (fun m -> make dom cod (fun g -> P.Map.find g m)) (aux P.Map.empty generators)
+
+  (** String representation, as the image of each generator. *)
+  let to_string f =
+    P.to_list f.dom
+    |> List.map (fun g -> P.generator_to_string g ^ " ↦ " ^ Q.Chain.to_string (f.app g))
+    |> String.concat "\n"
 end
 
 (** Composition of morphisms. *)
@@ -624,8 +741,8 @@ module MorphismComp (P:T) (Q:T) (R:T) = struct
     H.make f.dom g.cod (fun x -> G.chain g (f.app x))
 end
 
-(** Cubes with degeneracies and connections. These are not additional generators but morphisms between cubes. Such a map is described by its action on words: it sends a generator to a generator of the same dimension, or to [None] when the generator collapses to a lower dimension. Use {!Hom.of_partial} to obtain the corresponding morphism. Coordinates are numbered from 0. *)
-module CubeDCon = struct
+(** Morphisms between cubes, which come in two flavors: the ones of the box category ({!Box}), and the functors between the generated free categories ({!Omega}), the former being particular cases of the latter. The operations on words below describe a map by its action on generators: it sends a generator to a generator of the same dimension, or to [None] when the generator collapses to a lower dimension. Use {!Hom.of_partial} to obtain the corresponding morphism. Coordinates are numbered from 0. *)
+module CubeMorphism = struct
   include Cube
 
   (** Morphisms between cubes. *)
@@ -657,8 +774,8 @@ module CubeDCon = struct
     in
     Option.map (fun v -> splice x i 2 [|v|]) merged
 
-  (** Cells of the cubes in cubical sets with degeneracies and connections (for both maximum and minimum). A k-cell of the n-cube is a map from the k-cube to the n-cube, which is described by a word of length n over the free bounded distributive lattice on the variables x₀, ..., xₖ₋₁: the letter at position i gives the value of the coordinate i. Not all words are cells: for instance, the cells contain neither symmetries nor diagonals. Since a word does not determine k, the dimension has to be specified where it matters. *)
-  module Sing = struct
+  (** The box category with connections: the maps generated by faces, degeneracies and connections (for both maximum and minimum). These are the cells of the cubes in cubical sets with connections: a k-cell of the n-cube is a map from the k-cube to the n-cube, which is described by a word of length n over the free bounded distributive lattice on the variables x₀, ..., xₖ₋₁: the letter at position i gives the value of the coordinate i. Not all words are cells: for instance, the cells contain neither symmetries nor diagonals. Since a word does not determine k, the dimension has to be specified where it matters. *)
+  module Box = struct
     (** Variables. *)
     module Var = struct
       include Alphabet.Int
@@ -745,5 +862,14 @@ module CubeDCon = struct
     (** String representation. *)
     let to_string (w:t) =
       "(" ^ String.concat " , " (List.map D.to_string (Array.to_list w)) ^ ")"
+  end
+
+  (** Functors between the free categories generated by cubes. These are the cells of the cubical nerve of the free category on a cube. They strictly contain the maps of {!Box}: a generator can be sent to a composite, for instance an edge to a path around a square, and the images of vertices are arbitrary monotone maps. *)
+  module Omega = struct
+    (** The k-cells of the n-cube: the functors from the k-cube to the n-cube. *)
+    let cells n k = Hom.all (make k) (make n)
+
+    (** String representation. *)
+    let to_string = Hom.to_string
   end
 end
