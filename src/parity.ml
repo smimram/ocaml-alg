@@ -10,6 +10,7 @@ module type T = sig
   (** A complex. *)
   type t
 
+  (** Operations on chains. *)
   module Chain : sig
     type complex := t
 
@@ -58,6 +59,56 @@ module type T = sig
 
   (** Sorted list of generators. *)
   val to_list : t -> generator list
+
+  (** Operations on cells. *)
+  module Cell : sig
+    type complex := t
+
+    (** A cell. *)
+    type t
+
+    (** Create a cell from its top-dimensional generators, along with its source and target in each lower dimension, from highest to lowest. *)
+    val make : Chain.t -> (Chain.t * Chain.t) list -> t
+
+    (** The top-dimensional generators of a cell. *)
+    val chain : t -> Chain.t
+
+    (** The source and target of a cell in each lower dimension, from highest to lowest. *)
+    val boundary : t -> (Chain.t * Chain.t) list
+
+    (** Equality. *)
+    val eq : t -> t -> bool
+
+    (** Dimension of a cell. *)
+    val dim : t -> int
+
+    (** The cell whose boundary is entirely determined by a non-empty chain, obtained by iterating sources and targets. *)
+    val of_chain : complex -> Chain.t -> t
+
+    (** Cell consisting of a generator. *)
+    val generator : complex -> generator -> t
+
+    (** Source of a cell. *)
+    val src : t -> t
+
+    (** Target of a cell. *)
+    val tgt : t -> t
+
+    (** Iterated source. *)
+    val isrc : t -> int -> t
+
+    (** Iterated target. *)
+    val itgt : t -> int -> t
+
+    (** Identity on a cell. *)
+    val id : t -> t
+
+    (** Compose two cells along their k-dimensional boundary, by default the highest possible one. *)
+    val comp : ?k:int -> t -> t -> t
+
+    (** String representation. *)
+    val to_string : complex -> t -> string
+  end
 end
 
 (** Presentation of a parity complex. *)
@@ -172,6 +223,15 @@ module Pres (G : Alphabet.T) = struct
   module Cell = struct
     (** A cell: its top-dimensional generators, along with its source and target in each lower dimension, from highest to lowest. *)
     type t = Chain.t * (Chain.t * Chain.t) list
+
+    (** Create a cell from its top-dimensional generators, along with its source and target in each lower dimension, from highest to lowest. *)
+    let make c b : t = c, b
+
+    (** The top-dimensional generators of a cell. *)
+    let chain ((c,_):t) = c
+
+    (** The source and target of a cell in each lower dimension, from highest to lowest. *)
+    let boundary ((_,b):t) = b
 
     (** Equality. *)
     let eq ((c,b):t) ((c',b'):t) =
@@ -523,7 +583,8 @@ module Morphism (P:T) (Q:T) = struct
   let chain f c = P.Chain.fold (fun g e -> Q.Chain.union (f.app g) e) c Q.Chain.empty
 
   (** Image of a cell, given by its generators and its source and target in each lower dimension. The dimension of the cell is preserved, so that it might become an identity. *)
-  let cell f (c,b) = chain f c, List.map (fun (u,v) -> chain f u, chain f v) b
+  let cell f (c:P.Cell.t) : Q.Cell.t =
+    Q.Cell.make (chain f (P.Cell.chain c)) (List.map (fun (u,v) -> chain f u, chain f v) (P.Cell.boundary c))
 
   (** Whether two morphisms with the same domain coincide on generators. *)
   let eq f g = List.for_all (fun x -> Q.Chain.eq (f.app x) (g.app x)) (P.to_list f.dom)
