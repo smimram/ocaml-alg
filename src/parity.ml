@@ -400,6 +400,62 @@ module Oriental = struct
     !s
 end
 
+(** Pasting schemes. *)
+module PastingScheme = struct
+  (** A generator is a dimension along with a number. *)
+  module A : Alphabet.T with type t = int * int = struct
+    type t = int * int
+    let eq = (=)
+    let compare = compare
+    let to_string (n,i) = string_of_int i ^ String.subscript (string_of_int n)
+  end
+
+  include Pres(A)
+
+  (** The point. *)
+  let point = add_point empty (0,0)
+
+  (** Suspension of a complex: every generator goes up by one dimension, and the former points now go between two new points. *)
+  let susp s =
+    let bot, top = (0,0), (0,1) in
+    let shift (n,i) = n+1, i in
+    let bnd g =
+      if dim s g = 0 then Chain.generator bot, Chain.generator top
+      else Set.map shift (src s g), Set.map shift (tgt s g)
+    in
+    List.fold_left
+      (fun r g -> add r (shift g) (bnd g))
+      (add_point (add_point empty bot) top)
+      (to_list s)
+
+  (** Wedge of two complexes: the last point of the first one, which has to be its target, is identified with the point 0 of the second one, which has to be its source. Generators of the second complex are numbered after those of the first. *)
+  let wedge s s' =
+    (* The offset for the numbers of the generators of s' in each dimension. *)
+    let offset =
+      Array.init (1 + max 0 (max (max_dim s) (max_dim s')))
+        (fun n ->
+           let k = Set.cardinal (generators ~dim:n s) in
+           if n = 0 then k - 1 else k)
+    in
+    let endpoints s = List.hd (boundary s 0) in
+    if not (Set.equal (snd (endpoints s)) (Chain.generator (0,offset.(0))) && Set.equal (fst (endpoints s')) (Chain.generator (0,0))) then
+      invalid_arg "Parity.PastingScheme.wedge: endpoints do not match";
+    let shift (n,i) = n, i + offset.(n) in
+    List.fold_left
+      (fun r g -> add r (shift g) (Set.map shift (src s' g), Set.map shift (tgt s' g)))
+      s
+      (to_list s')
+
+  (** The parity complex associated to a pasting scheme. *)
+  let rec make p =
+    List.fold_left (fun s p -> wedge s (susp (make p))) point (PastingScheme.to_list p)
+
+  (** The cell consisting of a whole pasting scheme. *)
+  let cell s : Cell.t =
+    let n = max_dim s in
+    generators ~dim:n s, boundary s (n-1)
+end
+
 (** Morphisms between complexes, as maps of augmented directed complexes, which induce functors between the generated free categories. *)
 module Morphism (P:T) (Q:T) = struct
   (** A morphism sends a generator to a chain of the same dimension, which is empty when the generator collapses to a lower dimension. *)

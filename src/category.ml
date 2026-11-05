@@ -222,23 +222,7 @@ module PrecubicalCategory : T = Precubical
 
 (** Joyal's theta category. *)
 module Theta = struct
-
-  (** Pasting schemes. *)
-  module PS = struct
-    type t = PS of t list
-
-    let to_list (PS l) = l
-
-    let point = PS []
-
-    let width p = List.length @@ to_list p
-
-    let eq = (=)
-
-    let compare = compare
-
-    let rec to_string (PS l) = "[" ^ (String.concat "," @@ List.map to_string l) ^ "]"
-  end
+  module PS = PastingScheme
   module V = PS
 
   module E = struct
@@ -250,22 +234,25 @@ module Theta = struct
         maps : t list;
       }
 
+    (* A pasting scheme of width m is [m](p_1,...,p_m): the p_i sit between the m+1 elements of the ordinal [m], which is what Simplicial counts. A morphism [m](p_1,...,p_m) → [n](q_1,...,q_n) consists of a simplicial morphism f : [m] → [n] together with, for each j such that f(0) < j ≤ f(m), a morphism f_j : p_i → q_j where i is the least index such that j ≤ f(i). The list maps contains those f_j, by increasing j. *)
     let make src tgt simplicial maps =
-      assert (PS.width src = Simplicial.src simplicial);
-      assert (PS.width tgt = Simplicial.tgt simplicial);
+      assert (PS.width src + 1 = Simplicial.src simplicial);
+      assert (PS.width tgt + 1 = Simplicial.tgt simplicial);
       let f = Simplicial.ap simplicial in
       let f' = Simplicial.ap @@ Simplicial.interval simplicial in
       let j0 = f 0 in
+      assert (List.length maps = f (PS.width src) - j0);
       List.iteri
-        (fun j q ->
-           (* TODO: a recursive function *)
-           if j >= j0 then
-             let p = List.nth (V.to_list src) (f' j - 1) in
-             let fj = List.nth maps (j - j0) in
-             assert (fj.src = p);
-             assert (fj.tgt = q)
-        ) (V.to_list src);
+        (fun j fj ->
+           let j = j0 + j + 1 in
+           assert (fj.src = List.nth (PS.to_list src) (f' j - 1));
+           assert (fj.tgt = List.nth (PS.to_list tgt) (j - 1))
+        ) maps;
       { src; tgt; simplicial; maps }
+
+    (** The morphism f_j to the j-th component of the target (numbered from 1), for f(0) < j ≤ f(m). *)
+    let map f j =
+      List.nth f.maps (j - Simplicial.ap f.simplicial 0 - 1)
 
     let rec to_string f =
       "[" ^ Simplicial.E.to_string f.simplicial ^ "]:[" ^ (String.concat "|" @@ List.map to_string f.maps) ^ "]"
@@ -280,14 +267,23 @@ module Theta = struct
 
   let tgt f = f.E.tgt
 
-  let rec id p = E.make p p (Simplicial.id @@ PS.width p) (List.map id @@ PS.to_list p)
+  let rec id p = E.make p p (Simplicial.id @@ PS.width p + 1) (List.map id @@ PS.to_list p)
 
-  let comp f g =
-    E.make
-      (src f)
-      (tgt g)
-      (Simplicial.comp f.simplicial g.simplicial)
-      (failwith "TODO")
+  (** Composition: the component of the composite at k is obtained by composing the component of g at k with the component of f at the unique j such that g(j-1) < k ≤ g(j). *)
+  let rec comp (f:E.t) (g:E.t) : E.t =
+    assert (PS.eq (tgt f) (src g));
+    let simplicial = Simplicial.comp f.simplicial g.simplicial in
+    let h = Simplicial.ap simplicial in
+    let g' = Simplicial.ap @@ Simplicial.interval g.simplicial in
+    let k0 = h 0 in
+    let maps =
+      List.init
+        (h (PS.width (src f)) - k0)
+        (fun k ->
+           let k = k0 + k + 1 in
+           comp (E.map f (g' k)) (E.map g k))
+    in
+    E.make (src f) (tgt g) simplicial maps
 end
 
 module ThetaCategory : T = Theta
