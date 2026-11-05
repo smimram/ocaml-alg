@@ -144,6 +144,44 @@ let () =
   let swapped = P.add_point (P.add_point P.empty (0,0)) (0,1) in
   assert (match P.wedge swapped a with _ -> false | exception Invalid_argument _ -> true)
 
+(* Well-formedness of complexes. *)
+let () =
+  for n = 0 to 4 do
+    assert (Parity.Globe.check (Parity.Globe.make n));
+    assert (Parity.Cube.check (Parity.Cube.make n));
+    assert (Parity.Oriental.check (Parity.Oriental.make n))
+  done;
+  let module PS = PastingScheme in
+  let pt = PS.point in
+  let ps l = PS.PS l in
+  List.iter
+    (fun p -> assert (Parity.PastingScheme.(check (make p))))
+    [pt; ps [pt; pt]; ps [ps [pt]; ps [pt]]; ps [ps [pt; pt]; pt; ps [ps [pt]; pt]]];
+  let module P = Parity.Pres(Alphabet.String) in
+  let chain l = P.Set.of_list l in
+  let complex points l =
+    List.fold_left
+      (fun s (g,x,y) -> P.add s g (chain x, chain y))
+      (List.fold_left P.add_point P.empty points)
+      l
+  in
+  assert (P.check P.empty);
+  let edges = ["f",["A"],["B"]; "g",["A"],["B"]; "h",["A"],["B"]] in
+  assert (P.check (complex ["A";"B"] edges));
+  (* A loop is accepted by add but is not well-formed. *)
+  assert (not (P.check (complex ["A";"B"] ["f",["A"],["B"]; "g",["B"],["A"]])));
+  (* Here x ◁ y' even though x is in the source of z and y' in its target. *)
+  let squares = ["x",["f"],["g"]; "x'",["g"],["h"]; "y",["f"],["g"]; "y'",["g"],["h"]] in
+  assert (P.check (complex ["A";"B"] (edges @ squares)));
+  assert (not (P.check (complex ["A";"B"] (edges @ squares @ ["z",["x";"x'"],["y";"y'"]]))));
+  (* Complexes which are not built using add. *)
+  let s = complex ["A";"B"] edges in
+  assert (not (P.check (P.Map.add "r" (1, chain ["C"], chain ["B"]) s)));
+  assert (not (P.check (P.Map.add "r" (1, chain ["A"], chain ["A"]) s)));
+  assert (not (P.check (P.Map.add "r" (1, chain [], chain []) s)));
+  assert (not (P.check (P.Map.add "r" (0, chain ["A"], chain ["B"]) s)));
+  assert (not (P.check (P.Map.add "r" (2, chain ["A"], chain ["B"]) s)))
+
 let () =
   let module C = Parity.CubeMorphism in
   print_string "# Degeneracies and connections\n\n";

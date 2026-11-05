@@ -72,6 +72,9 @@ module type T = sig
   (** Sorted list of generators. *)
   val to_list : t -> generator list
 
+  (** Check that a complex is well-formed. *)
+  val check : t -> bool
+
   (** Operations on cells. *)
   module Cell : sig
     type complex := t
@@ -243,6 +246,14 @@ module Pres (G : Alphabet.T) = struct
 
     (** Target of a chain. *)
     let tgt s c = Set.diff (targets s c) (sources s c)
+
+    (** Whether a chain and its iterated images under f (either {!src} or {!tgt}) are well-formed, down to dimension 0. *)
+    let rec iterated_well_formed f s n c =
+      well_formed s n c && (n = 0 || iterated_well_formed f s (n-1) (f s c))
+
+    (** Whether two chains have the same source and the same target. *)
+    let parallel s u v =
+      eq (src s u) (src s v) && eq (tgt s u) (tgt s v)
   end
 
   (** Operations on cells. *)
@@ -418,15 +429,40 @@ module Pres (G : Alphabet.T) = struct
     let n = Chain.dim s src in
     assert (n = Chain.dim s tgt);
     (* The iterated sources and targets of the generator should be well-formed, otherwise it does not have a cell as boundary. *)
-    let rec well_formed f n c = Chain.well_formed s n c && (n = 0 || well_formed f (n-1) (f s c)) in
-    if n >= 0 && not (well_formed Chain.src n src && well_formed Chain.tgt n tgt) then invalid_arg "Parity.add: source and target are not well-formed";
+    if n >= 0 && not (Chain.iterated_well_formed Chain.src s n src && Chain.iterated_well_formed Chain.tgt s n tgt) then invalid_arg "Parity.add: source and target are not well-formed";
     if not (Set.disjoint src tgt) then invalid_arg "Parity.add: source and target are not disjoint";
-    if not (Chain.eq (Chain.src s src) (Chain.src s tgt) && Chain.eq (Chain.tgt s src) (Chain.tgt s tgt)) then invalid_arg "Parity.add: source and target are not parallel";
+    if not (Chain.parallel s src tgt) then invalid_arg "Parity.add: source and target are not parallel";
     Map.add g (n+1,src,tgt) s
 
   (** Add a point. *)
   let add_point s g : t =
     add s g (Chain.empty, Chain.empty)
+
+  (** Check that a complex is well-formed, i.e. that it satisfies the axioms of parity complexes. Namely, the source and target of each generator only consist of generators of the complex, they are empty in dimension 0, and otherwise non-empty, parallel and iteratively well-formed (this is what {!add} ensures for each generator). Moreover, writing x ◁ y for the reflexive and transitive closure of the relation "the target of x meets the source of y", we should have that x ◁ y ◁ x implies x = y, and x ◁ y implies that x and y do not occur one in the source and the other in the target of a generator (in particular, sources and targets are disjoint). *)
+  let check (s:t) =
+    let gens = generators s in
+    let closed = Map.for_all (fun _ (_,u,v) -> Set.subset u gens && Set.subset v gens) s in
+    let boundary (n,u,v) =
+      if n = 0 then Set.is_empty u && Set.is_empty v
+      else
+        n > 0
+        && not (Set.is_empty u || Set.is_empty v)
+        && Chain.iterated_well_formed Chain.src s (n-1) u
+        && Chain.iterated_well_formed Chain.tgt s (n-1) v
+        && Chain.parallel s u v
+    in
+    (* The generators y such that x ◁ y, for each generator x. *)
+    let after =
+      let next = Map.mapi (fun x _ -> Set.filter (fun y -> not (Set.disjoint (tgt s x) (src s y))) gens) s in
+      let rec visit x seen = if Set.mem x seen then seen else Set.fold visit (Map.find x next) (Set.add x seen) in
+      Map.mapi (fun x _ -> visit x Set.empty) next
+    in
+    let antisymmetric x r = Set.for_all (fun y -> G.eq x y || not (Set.mem x (Map.find y after))) r in
+    let separated u v = Set.for_all (fun x -> Set.disjoint (Map.find x after) v) u in
+    closed
+    && Map.for_all (fun _ b -> boundary b) s
+    && Map.for_all antisymmetric after
+    && Map.for_all (fun _ (_,u,v) -> separated u v && separated v u) s
 
   (** Source and target of a complex in each dimension, from the given one down to 0. *)
   let rec boundary (s:t) n =
