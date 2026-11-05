@@ -101,3 +101,45 @@ let () =
     print_newline ();
     print_newline ()
   done
+
+let () =
+  let module P = Parity.PastingScheme in
+  let module PS = PastingScheme in
+  let pt = PS.point in
+  let ps l = PS.PS l in
+  print_string "# Pasting schemes\n\n";
+  List.iter
+    (fun p ->
+       let s = P.make p in
+       Printf.printf "## %s\n\n%s\n\n%s\n\n%!" (PS.to_string p) (P.to_string s) (P.Cell.to_string s (P.cell s));
+       assert (P.max_dim s = PS.dim p);
+       (* There is one generator for each sector of each node of the tree. *)
+       let rec sectors (PS.PS l) = List.fold_left (fun n p -> n + sectors p) (1 + List.length l) l in
+       assert (List.length (P.to_list s) = sectors p)
+    )
+    [
+      pt;
+      ps [pt];
+      ps [pt; pt];
+      ps [ps [pt]];
+      ps [ps [pt; pt]];
+      ps [ps [pt]; ps [pt]];
+      ps [pt; ps [pt]];
+      ps [ps [ps [pt]]];
+      ps [ps [pt; pt]; pt; ps [ps [pt]; pt]];
+    ];
+  (* The whole cell keeps track of whiskers. *)
+  let s = P.make (ps [pt; ps [pt]]) in
+  let u, v = P.Cell.src (P.cell s), P.Cell.tgt (P.cell s) in
+  assert (P.Cell.eq u (P.Set.of_list [1,0; 1,1], [P.Set.of_list [0,0], P.Set.of_list [0,2]]));
+  assert (P.Cell.eq v (P.Set.of_list [1,0; 1,2], [P.Set.of_list [0,0], P.Set.of_list [0,2]]));
+  (* The point is a unit for wedge. *)
+  let eq = P.Map.equal (fun (n,u,v) (n',u',v') -> n = n' && P.Set.equal u u' && P.Set.equal v v') in
+  assert (eq (P.wedge P.point s) s);
+  assert (eq (P.wedge s P.point) s);
+  (* Wedge is associative. *)
+  let a, b, c = P.make (ps [pt]), P.make (ps [ps [pt]]), P.make (ps [pt; ps [pt; pt]]) in
+  assert (eq (P.wedge (P.wedge a b) c) (P.wedge a (P.wedge b c)));
+  (* Only endpoints can be identified. *)
+  let swapped = P.add_point (P.add_point P.empty (0,0)) (0,1) in
+  assert (match P.wedge swapped a with _ -> false | exception Invalid_argument _ -> true)
