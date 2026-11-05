@@ -7,20 +7,54 @@ module type T = sig
   (** A generator. *)
   type generator
 
-  (** Sets of generators, which are used to represent chains. *)
-  module Set : Set.S with type elt = generator
-
   (** A complex. *)
   type t
+
+  module Chain : sig
+    type complex := t
+
+    (** A chain is a list of generators of the same dimension. *)
+    type t
+
+    (** Equality. *)
+    val eq : t -> t -> bool
+
+    (** The empty chain. *)
+    val empty : t
+
+    (** A chain consisting of a single generator. *)
+    val generator : generator -> t
+
+    (** Number of generators. *)
+    val cardinal : t -> int
+
+    (** Fold over generators. *)
+    val fold : (generator -> 'a -> 'a) -> t -> 'a -> 'a
+
+    (** Whether all generators satisfy a predicate. *)
+    val for_all : (generator -> bool) -> t -> bool
+
+    (** Generators occurring in either chain. *)
+    val union : t -> t -> t
+
+    (** Generators of the first chain which do not occur in the second one. *)
+    val diff : t -> t -> t
+
+    (** Source of a chain. *)
+    val src : complex -> t -> t
+
+    (** Target of a chain. *)
+    val tgt : complex -> t -> t
+  end
 
   (** Dimension of a generator. *)
   val dim : t -> generator -> int
 
   (** Source of a generator. *)
-  val src : t -> generator -> Set.t
+  val src : t -> generator -> Chain.t
 
   (** Target of a generator. *)
-  val tgt : t -> generator -> Set.t
+  val tgt : t -> generator -> Chain.t
 
   (** Sorted list of generators. *)
   val to_list : t -> generator list
@@ -93,11 +127,23 @@ module Pres (G : Alphabet.T) = struct
     (** Chain consisting of a generator. *)
     let generator g : t = Set.singleton g
 
+    (** Number of generators. *)
+    let cardinal = Set.cardinal
+
     (** Iterate over generators. *)
     let iter = Set.iter
 
     (** Fold over generators. *)
     let fold = Set.fold
+
+    (** Whether all generators satisfy a predicate. *)
+    let for_all = Set.for_all
+
+    (** Generators occurring in either chain. *)
+    let union = Set.union
+
+    (** Generators of the first chain which do not occur in the second one. *)
+    let diff = Set.diff
 
     let sources s c = fold (fun g e -> Set.union (src s g) e) c Set.empty
 
@@ -463,7 +509,7 @@ module Morphism (P:T) (Q:T) = struct
     {
       dom : P.t; (** domain *)
       cod : Q.t; (** codomain *)
-      app : P.generator -> Q.Set.t; (** image of a generator *)
+      app : P.generator -> Q.Chain.t; (** image of a generator *)
     }
 
   (** Create a morphism from its action on generators. *)
@@ -471,42 +517,37 @@ module Morphism (P:T) (Q:T) = struct
 
   (** Create a morphism sending each generator to a generator, or collapsing it when the image is [None]. *)
   let of_partial dom cod f =
-    make dom cod (fun g -> match f g with Some g' -> Q.Set.singleton g' | None -> Q.Set.empty)
+    make dom cod (fun g -> match f g with Some g' -> Q.Chain.generator g' | None -> Q.Chain.empty)
 
   (** Image of a chain. *)
-  let chain f c = P.Set.fold (fun g e -> Q.Set.union (f.app g) e) c Q.Set.empty
+  let chain f c = P.Chain.fold (fun g e -> Q.Chain.union (f.app g) e) c Q.Chain.empty
 
   (** Image of a cell, given by its generators and its source and target in each lower dimension. The dimension of the cell is preserved, so that it might become an identity. *)
   let cell f (c,b) = chain f c, List.map (fun (u,v) -> chain f u, chain f v) b
 
   (** Whether two morphisms with the same domain coincide on generators. *)
-  let eq f g = List.for_all (fun x -> Q.Set.equal (f.app x) (g.app x)) (P.to_list f.dom)
+  let eq f g = List.for_all (fun x -> Q.Chain.eq (f.app x) (g.app x)) (P.to_list f.dom)
 
   (** Whether the images of the generators of a chain are disjoint. Otherwise, the image of the chain is not faithfully represented by a set. *)
   let injective_on f c =
-    P.Set.fold (fun g n -> n + Q.Set.cardinal (f.app g)) c 0 = Q.Set.cardinal (chain f c)
+    P.Chain.fold (fun g n -> n + Q.Chain.cardinal (f.app g)) c 0 = Q.Chain.cardinal (chain f c)
 
   (** Check that the action on generators defines a morphism: it preserves dimensions and augmentation and commutes with the boundary. *)
   let check f =
-    let boundary c =
-      let union h = Q.Set.fold (fun g e -> Q.Set.union (h f.cod g) e) c Q.Set.empty in
-      union Q.src, union Q.tgt
-    in
     List.for_all
       (fun g ->
          let n = P.dim f.dom g in
          let c = f.app g in
-         Q.Set.for_all (fun g' -> Q.dim f.cod g' = n) c
+         Q.Chain.for_all (fun g' -> Q.dim f.cod g' = n) c
          &&
-         if n = 0 then Q.Set.cardinal c = 1
+         if n = 0 then Q.Chain.cardinal c = 1
          else
            let s, t = P.src f.dom g, P.tgt f.dom g in
            let s', t' = chain f s, chain f t in
-           let u, v = boundary c in
            injective_on f s
            && injective_on f t
-           && Q.Set.equal (Q.Set.diff s' t') (Q.Set.diff u v)
-           && Q.Set.equal (Q.Set.diff t' s') (Q.Set.diff v u)
+           && Q.Chain.eq (Q.Chain.diff s' t') (Q.Chain.src f.cod c)
+           && Q.Chain.eq (Q.Chain.diff t' s') (Q.Chain.tgt f.cod c)
       ) (P.to_list f.dom)
 end
 
