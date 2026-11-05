@@ -37,7 +37,7 @@ let () =
        Printf.printf "%02d: %s\n    %s\n\n%!" n s1 s2
     ) coherence
 
-let cpres =
+let _cpres =
   let coherence = List.map (fun (p1,p2) -> RS.Loop.of_cell (RS.Zigzag.of_path p1) (RS.Zigzag.of_path p2)) coherence in
 let coherence = List.mapi (fun i p -> RS.Coherence.make ("C"^string_of_int (i+1)) p) coherence in
   RS.Coherent.make monoid coherence

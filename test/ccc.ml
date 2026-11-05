@@ -1,5 +1,6 @@
 (* Knuth-Bendix completion of categorical combinators. *)
 
+(*
 open Alg
 open Term
 
@@ -20,7 +21,6 @@ let pa x y = Term.app pa [x;y]
 let fst = Term.app fst []
 let snd = Term.app snd []
 
-(*
 let monoids =
   RS.make [mm; ee]
     [
