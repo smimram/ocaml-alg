@@ -647,13 +647,13 @@ module CubeDCon = struct
   let deg i x =
     if x.(i) = None then None else Some (splice x i 1 A.one)
 
-  (** Connection: merge the coordinates i and i+1, by taking their maximum if e is true and their minimum otherwise. *)
-  let con e i x =
+  (** Connection: merge the coordinates i and i+1, by taking their maximum if first argument is true and their minimum otherwise. *)
+  let con up i x =
     let merged =
       match x.(i), x.(i+1) with
       | None, None -> None
-      | None, Some b | Some b, None -> if b = e then None else Some None
-      | Some a, Some b -> Some (Some (if e then a || b else a && b))
+      | None, Some b | Some b, None -> if b = up then None else Some None
+      | Some a, Some b -> Some (Some (if up then a || b else a && b))
     in
     Option.map (fun v -> splice x i 2 [|v|]) merged
 
