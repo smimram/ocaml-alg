@@ -795,6 +795,9 @@ module CubeMorphism = struct
     (** Representation of a morphism. *)
     type t = M.t
 
+    (** Equality. *)
+    let eq = M.eq
+
     (** The value of a constant coordinate, which is the target if e is true and the source otherwise. *)
     let const e = if e then D.top else D.bot
 
