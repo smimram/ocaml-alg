@@ -222,23 +222,7 @@ module PrecubicalCategory : T = Precubical
 
 (** Joyal's theta category. *)
 module Theta = struct
-
-  (** Pasting schemes. *)
-  module PS = struct
-    type t = PS of t list
-
-    let to_list (PS l) = l
-
-    let point = PS []
-
-    let width p = List.length @@ to_list p
-
-    let eq = (=)
-
-    let compare = compare
-
-    let rec to_string (PS l) = "[" ^ (String.concat "," @@ List.map to_string l) ^ "]"
-  end
+  module PS = PastingScheme
   module V = PS
 
   module E = struct
