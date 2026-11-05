@@ -298,3 +298,14 @@
  (alias runtest)
  (action (run ./parity.exe))
 )
+
+(executable
+ (name theta)
+ (modules theta)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./theta.exe))
+)
