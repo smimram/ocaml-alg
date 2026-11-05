@@ -145,7 +145,7 @@ let () =
   assert (match P.wedge swapped a with _ -> false | exception Invalid_argument _ -> true)
 
 let () =
-  let module C = Parity.CubeDCon in
+  let module C = Parity.CubeMorphism in
   print_string "# Degeneracies and connections\n\n";
   let max_n = 4 in
   let cube = Array.init (max_n + 1) C.make in
@@ -213,7 +213,7 @@ let () =
     ) bools;
   (* Connections on the square and on the 3-cube. *)
   let print n f g =
-    let name = Array.of_list g |> C.M.to_string in
+    let name = Array.of_list g |> C.A.to_string in
     Printf.printf "%s = %s\n%!" name (C.Cell.to_string cube.(n-1) (image n (n-1) f (gen cube.(n) g)))
   in
   List.iter
@@ -229,12 +229,12 @@ let () =
   assert (C.Cell.dim c = 2);
   assert (C.Cell.eq c (C.Cell.id (gen cube.(1) [zero])));
   (* Degeneracies reach the point. *)
-  assert (C.deg 0 [|bot|] = Some C.M.one);
+  assert (C.deg 0 [|bot|] = Some C.A.one);
   assert (C.deg 0 [|zero|] = None);
   assert (C.Cell.dim (image 1 0 (C.deg 0) (gen cube.(1) [zero])) = 1)
 
 let () =
-  let module D = Parity.CubeDCon.Sing.D in
+  let module D = Parity.CubeMorphism.Box.D in
   let x, y, z = D.inj 0, D.inj 1, D.inj 2 in
   (* Absorption and bounds. *)
   assert (D.eq (D.sup x (D.inf x y)) x);
@@ -261,8 +261,8 @@ let () =
   List.iteri (fun n c -> assert (size n = c)) [2; 3; 6; 20; 168]
 
 let () =
-  let module C = Parity.CubeDCon in
-  let module S = C.Sing in
+  let module C = Parity.CubeMorphism in
+  let module B = C.Box in
   let max_n = 4 in
   let cube = Array.init (max_n + 1) C.make in
   let bools = [false; true] in
@@ -282,7 +282,7 @@ let () =
     (fun n l ->
        List.iteri
          (fun k c ->
-            let c' = List.length (S.cells n k) in
+            let c' = List.length (B.cells n k) in
             Printf.printf "%6d" c';
             assert (c = c')
          ) l;
@@ -308,8 +308,8 @@ let () =
   for k = 0 to 4 do
     let seen = closure k 5 in
     for n = 0 to 4 do
-      let l = S.cells n k in
-      let a = List.map (fun c -> action k (S.map c)) l in
+      let l = B.cells n k in
+      let a = List.map (fun c -> action k (B.map c)) l in
       (* Distinct cells are distinct maps. *)
       assert (List.length (List.sort_uniq compare a) = List.length l);
       List.iter (fun a -> assert (Hashtbl.mem seen (n,a))) a;
@@ -321,7 +321,7 @@ let () =
   let cells = Hashtbl.create 1000 in
   for n = 0 to max_n do
     for k = 0 to 5 do
-      List.iter (fun c -> Hashtbl.replace cells (n,k,c) ()) (S.cells n k)
+      List.iter (fun c -> Hashtbl.replace cells (n,k,c) ()) (B.cells n k)
     done
   done;
   let mem n k c = Hashtbl.mem cells (n,k,c) in
@@ -330,27 +330,27 @@ let () =
       List.iter
         (fun c ->
            for i = 0 to k - 1 do
-             List.iter (fun e -> assert (mem n (k-1) (S.face e i c))) bools
+             List.iter (fun e -> assert (mem n (k-1) (B.face e i c))) bools
            done;
            for i = 0 to k do
-             assert (mem n (k+1) (S.deg i c));
-             List.iter (fun e -> assert (S.eq (S.face e i (S.deg i c)) c)) bools
+             assert (mem n (k+1) (B.deg i c));
+             List.iter (fun e -> assert (B.eq (B.face e i (B.deg i c)) c)) bools
            done;
            for i = 0 to k - 1 do
              List.iter
                (fun e ->
-                  let d = S.con e i c in
+                  let d = B.con e i c in
                   assert (mem n (k+1) d);
-                  assert (S.eq (S.con e i d) (S.con e (i+1) d));
+                  assert (B.eq (B.con e i d) (B.con e (i+1) d));
                   (* The value e is absorbing and the other one is neutral. *)
                   List.iter
                     (fun j ->
-                       assert (S.eq (S.face e j d) (S.deg i (S.face e i c)));
-                       assert (S.eq (S.face (not e) j d) c)
+                       assert (B.eq (B.face e j d) (B.deg i (B.face e i c)));
+                       assert (B.eq (B.face (not e) j d) c)
                     ) [i; i+1]
                ) bools
            done
-        ) (S.cells n k)
+        ) (B.cells n k)
     done
   done;
   (* Composition is compatible with the action on generators and stays in the listing. *)
@@ -361,42 +361,42 @@ let () =
           (fun f ->
              List.iter
                (fun g ->
-                  let h = S.comp f g in
+                  let h = B.comp f g in
                   assert (mem n k h);
-                  assert (action k (S.map h) = action k (fun x -> Option.bind (S.map f x) (S.map g)))
-               ) (S.cells n m)
-          ) (S.cells m k)
+                  assert (action k (B.map h) = action k (fun x -> Option.bind (B.map f x) (B.map g)))
+               ) (B.cells n m)
+          ) (B.cells m k)
       done
     done
   done;
   (* The top cell of the k-cube is the identity. *)
   for k = 0 to max_n do
-    assert (mem k k (S.id k));
-    assert (action k (S.map (S.id k)) = action k Option.some)
+    assert (mem k k (B.id k));
+    assert (action k (B.map (B.id k)) = action k Option.some)
   done;
   (* The four degenerate squares on the interval have the same top cell, and only differ by their boundary. *)
   let top = C.Cell.generator cube.(2) [|None;None|] in
-  let squares = List.filter (fun c -> S.D.compare c.(0) S.D.bot <> 0 && S.D.compare c.(0) S.D.top <> 0) (S.cells 1 2) in
+  let squares = List.filter (fun c -> B.D.compare c.(0) B.D.bot <> 0 && B.D.compare c.(0) B.D.top <> 0) (B.cells 1 2) in
   assert (List.length squares = 4);
-  List.iter (fun c -> assert (C.Cell.eq (C.Hom.cell (S.hom cube.(2) cube.(1) c) top) (C.Cell.id (C.Cell.generator cube.(1) [|None|])))) squares;
+  List.iter (fun c -> assert (C.Cell.eq (C.Hom.cell (B.hom cube.(2) cube.(1) c) top) (C.Cell.id (C.Cell.generator cube.(1) [|None|])))) squares;
   (* Cells are morphisms, whose images do not merge generators, and composition of words is composition of morphisms. *)
   for n = 0 to max_n do
     for k = 0 to max_n do
-      List.iter (fun c -> assert (C.Hom.check (S.hom cube.(k) cube.(n) c))) (S.cells n k)
+      List.iter (fun c -> assert (C.Hom.check (B.hom cube.(k) cube.(n) c))) (B.cells n k)
     done
   done;
   for n = 0 to 3 do
     for k = 0 to 3 do
       List.iter
         (fun w ->
-           let f = S.hom cube.(k) cube.(n) w in
+           let f = B.hom cube.(k) cube.(n) w in
            List.iter
              (fun g ->
                 let c, b = C.Cell.generator cube.(k) g in
                 assert (C.Hom.injective_on f c);
                 List.iter (fun (u,v) -> assert (C.Hom.injective_on f u && C.Hom.injective_on f v)) b
              ) (C.to_list cube.(k))
-        ) (S.cells n k)
+        ) (B.cells n k)
     done
   done;
   for k = 0 to 3 do
@@ -404,11 +404,11 @@ let () =
       for n = 0 to 3 do
         List.iter
           (fun f ->
-             let f' = S.hom cube.(k) cube.(m) f in
+             let f' = B.hom cube.(k) cube.(m) f in
              List.iter
-               (fun g -> assert (C.Hom.eq (S.hom cube.(k) cube.(n) (S.comp f g)) (C.comp f' (S.hom cube.(m) cube.(n) g))))
-               (S.cells n m)
-          ) (S.cells m k)
+               (fun g -> assert (C.Hom.eq (B.hom cube.(k) cube.(n) (B.comp f g)) (C.comp f' (B.hom cube.(m) cube.(n) g))))
+               (B.cells n m)
+          ) (B.cells m k)
       done
     done
   done;
@@ -416,7 +416,7 @@ let () =
   for n = 0 to 2 do
     for k = 0 to 4 do
       Printf.printf "\n# %d-cells of the %d-cube\n\n" k n;
-      List.iter (fun c -> print_endline (S.to_string c)) (S.cells n k)
+      List.iter (fun c -> print_endline (B.to_string c)) (B.cells n k)
     done
   done
 
@@ -429,6 +429,11 @@ let () =
   let swap = Array.map (Option.map not) in
   assert (not (H.check (H.of_partial i i (fun g -> Some (swap g)))));
   assert (not (H.check (H.make (C.make 2) i (fun _ -> C.Set.singleton [|None|]))));
+  (* An edge sent to the whole boundary of a square: as sets its source and target are fine, but as a chain its boundary is twice what is expected. *)
+  let vertex b = C.Set.singleton [|Some b; Some b|] in
+  let sides = C.Set.of_list [[|Some false; None|]; [|Some true; None|]; [|None; Some false|]; [|None; Some true|]] in
+  let around = H.make i (C.make 2) (function [|Some b|] -> vertex b | _ -> sides) in
+  assert (not (H.check around));
   (* The n-globe maps to the n-cube, sending a generator to the corresponding boundary of the top cell: this is not a singleton in general and the alphabets are different. *)
   let module G = Parity.Globe in
   let module GC = Parity.Morphism(G)(C) in
@@ -460,3 +465,125 @@ let () =
       assert (OO.check (OO.of_partial o' o (map (fun x -> if x < i then x else x+1))))
     done
   done
+
+(* Functors between free categories on cubes. *)
+let () =
+  let module C = Parity.CubeMorphism in
+  let module H = C.Hom in
+  let module O = C.Omega in
+  let cube = Array.init 5 C.make in
+  (* Number of functors, where the row of the interval consists of the Dedekind numbers (monotone boolean functions) and the column of k = 1 counts the directed paths in a cube along with its vertices. *)
+  print_string "\n# Number of functors from the k-cube (columns) to the n-cube (rows)\n\n";
+  List.iter
+    (fun (n,l) ->
+       List.iteri
+         (fun k c ->
+            let c' = List.length (O.cells n k) in
+            Printf.printf "%6d" c';
+            assert (c = c')
+         ) l;
+       print_newline ()
+    ) [
+    0, [ 1;   1;    1;   1;   1];
+    1, [ 2;   3;    6;  20; 168];
+    2, [ 4;  10;   47; 672];
+    3, [ 8;  38;  506];
+    4, [16; 168; 7846];
+  ];
+  (* The cells of the free categories, by dimension. *)
+  let cells n d = Array.to_list (Array.map List.length (C.cells cube.(n) d)) in
+  assert (cells 1 2 = [2; 3; 3]);
+  assert (cells 2 3 = [4; 10; 11; 11]);
+  assert (cells 3 3 = [8; 38; 56; 57]);
+  (* All the functors are morphisms and they are distinct. *)
+  let small = [0,0; 0,1; 0,2; 0,3; 1,0; 1,1; 1,2; 1,3; 2,0; 2,1; 2,2; 2,3; 3,0; 3,1; 3,2] in
+  List.iter
+    (fun (n,k) ->
+       let l = O.cells n k in
+       List.iter (fun f -> assert (H.check f)) l;
+       let action f = List.map (fun g -> C.Set.elements (f.H.app g)) (C.to_list cube.(k)) in
+       assert (List.length (List.sort_uniq compare (List.map action l)) = List.length l)
+    ) small;
+  (* The maps of the box category are functors. *)
+  List.iter
+    (fun (n,k) ->
+       let l = O.cells n k in
+       List.iter
+         (fun w ->
+            let f = C.Box.hom cube.(k) cube.(n) w in
+            assert (List.exists (H.eq f) l)
+         ) (C.Box.cells n k)
+    ) small;
+  (* Compare with the enumeration of positive chain maps: the theorem of Steiner states that these are the functors, and this does not use cells at all. Coefficients are integers since a chain of the cube which is not a cell can have generators with the same source. *)
+  let chain_maps n k =
+    let dom = cube.(k) in
+    let cod = cube.(n) in
+    let add a c m =
+      C.Set.fold
+        (fun g m ->
+           let a = a + Option.value ~default:0 (C.Map.find_opt g m) in
+           if a = 0 then C.Map.remove g m else C.Map.add g a m
+        ) c m
+    in
+    let boundary c =
+      C.Map.bindings (C.Set.fold (fun g m -> add 1 (C.tgt cod g) (add (-1) (C.src cod g) m)) c C.Map.empty)
+    in
+    let subsets l = List.fold_left (fun a x -> a @ List.map (C.Set.add x) a) [C.Set.empty] l in
+    (* The chains in each dimension by boundary. *)
+    let chains =
+      Array.init (k+1)
+        (fun d ->
+           let t = Hashtbl.create 1000 in
+           List.iter (fun c -> Hashtbl.add t (boundary c) c) (subsets (C.Set.elements (C.generators ~dim:d cod)));
+           t)
+    in
+    let vertices = List.map C.Set.singleton (C.Set.elements (C.generators ~dim:0 cod)) in
+    let rec aux m = function
+      | [] -> 1
+      | g::gens ->
+        let d = C.dim dom g in
+        let extend l = List.fold_left (fun total c -> total + aux (C.Map.add g c m) gens) 0 l in
+        if d = 0 then extend vertices else
+          let image c = C.Set.fold (fun x e -> C.Set.union (C.Map.find x m) e) c C.Set.empty in
+          let injective c = C.Set.fold (fun x n -> n + C.Set.cardinal (C.Map.find x m)) c 0 = C.Set.cardinal (image c) in
+          let s, t = C.src dom g, C.tgt dom g in
+          if not (injective s && injective t) then 0 else
+            let b = C.Map.bindings (add 1 (image t) (add (-1) (image s) C.Map.empty)) in
+            extend (Hashtbl.find_all chains.(d) b)
+    in
+    aux C.Map.empty (C.to_list dom)
+  in
+  List.iter
+    (fun (n,k) -> assert (chain_maps n k = List.length (O.cells n k)))
+    [1,3; 2,1; 2,2; 2,3; 3,1; 3,2];
+  (* The functors which are not in the box category: the two paths around a square... *)
+  let is_box n k f = List.exists (fun w -> H.eq (C.Box.hom cube.(k) cube.(n) w) f) (C.Box.cells n k) in
+  let paths = List.filter (fun f -> not (is_box 2 1 f)) (O.cells 2 1) in
+  assert (List.length paths = 2);
+  let edge = [|None|] in
+  List.iter (fun f -> assert (C.Set.cardinal (f.H.app edge) = 2)) paths;
+  (* ...and, for functions to the interval, those which are not read-once such as the majority. *)
+  let vertex l = Array.of_list (List.map Option.some l) in
+  let majority f =
+    List.for_all
+      (fun (a,b,c) ->
+         let v = (a && b) || (a && c) || (b && c) in
+         C.Set.equal (f.H.app (vertex [a;b;c])) (C.Set.singleton (vertex [v])))
+      (List.concat_map (fun a -> List.concat_map (fun b -> List.map (fun c -> a,b,c) [false;true]) [false;true]) [false;true])
+  in
+  let majorities = List.filter majority (O.cells 1 3) in
+  assert (List.length majorities = 1);
+  assert (not (is_box 1 3 (List.hd majorities)));
+  (* Functors compose. *)
+  List.iter
+    (fun f ->
+       List.iter
+         (fun g ->
+            let h = C.comp f g in
+            assert (H.check h);
+            assert (List.exists (H.eq h) (O.cells 1 1))
+         ) (O.cells 1 2)
+    ) (O.cells 2 1);
+  (* List the 1-cells of the square. *)
+  print_string "\n# Functors from the interval to the square\n";
+  List.iter (fun f -> print_newline (); print_endline (O.to_string f)) (O.cells 2 1)

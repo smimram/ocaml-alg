@@ -741,7 +741,7 @@ module MorphismComp (P:T) (Q:T) (R:T) = struct
     H.make f.dom g.cod (fun x -> G.chain g (f.app x))
 end
 
-(** Morphisms between cubes, which come in two flavors: the ones of the box category ({!Box}), and the functors between the generated free categories ({!Omega}), the former being particular cases of the latter. The operations on words below describe a map by its action on generators: it sends a generator to a generator of the same dimension, or to [None] when the generator collapses to a lower dimension. Use {!Hom.of_partial} to obtain the corresponding morphism. Coordinates are numbered from 0. *)
+(** Morphisms between cubes. *)
 module CubeMorphism = struct
   include Cube
 
@@ -790,7 +790,10 @@ module CubeMorphism = struct
       let to_string x = to_string x
     end
 
-    include Monoid.Free(D)
+    module M = Monoid.Free(D)
+
+    (** Representation of a morphism. *)
+    type t = M.t
 
     (** The value of a constant coordinate, which is the target if e is true and the source otherwise. *)
     let const e = if e then D.top else D.bot
