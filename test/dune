@@ -309,3 +309,14 @@
  (alias runtest)
  (action (run ./theta.exe))
 )
+
+(executable
+ (name count)
+ (modules count)
+ (libraries alg)
+)
+
+(rule
+ (alias runtest)
+ (action (run ./count.exe))
+)

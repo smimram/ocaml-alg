@@ -171,3 +171,45 @@ module String = struct
     | ')' -> find_opening '(' ')'
     | _ -> assert false
 end
+
+(** Sets of integers below some given bound, represented as arrays of words so that the bound can be arbitrary (and, contrarily to sets of the standard library, equal sets have equal representations). *)
+module Bitset = struct
+  (** Number of elements stored in each word. *)
+  let bits = Sys.word_size - 2
+
+  (** The empty set of elements below n. *)
+  let empty n = Array.make (max 1 ((n + bits - 1) / bits)) 0
+
+  (** The set with one element. *)
+  let singleton n i =
+    let s = empty n in
+    s.(i / bits) <- 1 lsl (i mod bits);
+    s
+
+  (** The set of all the elements below n. *)
+  let full n =
+    let s = empty n in
+    for i = 0 to n - 1 do
+      s.(i / bits) <- s.(i / bits) lor (1 lsl (i mod bits))
+    done;
+    s
+
+  (** Whether an element belongs to the bitset. *)
+  let mem s i = s.(i / bits) land (1 lsl (i mod bits)) <> 0
+
+  (** Union of bitsets. *)
+  let union = Array.map2 (lor)
+
+  (** Intersection of bitsets. *)
+  let diff = Array.map2 (fun a b -> a land lnot b)
+
+  (** Whether a bitset is empty. *)
+  let is_empty = Array.for_all (fun a -> a = 0)
+
+  (** Smallest element of a non-empty set. *)
+  let min_elt s =
+    let rec word i = if s.(i) <> 0 then i else word (i+1) in
+    let i = word 0 in
+    let rec bit j = if s.(i) land (1 lsl j) <> 0 then j else bit (j+1) in
+    i * bits + bit 0
+end

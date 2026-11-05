@@ -16,6 +16,7 @@
   - the Θ category
 - precubical sets
 - parity complexes
+- count module
 
 0.1.0 (22-11-2023)
 =====
