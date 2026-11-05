@@ -39,10 +39,10 @@ module Pres (G : Alphabet.T) = struct
   let _tgt = tgt
 
   (** Set of generators of a complex. *)
-  let generators ?dim (s:t) =
+  let generators ?dim:d (s:t) =
     let ans = fold Set.add s Set.empty in
-    match dim with
-    | Some n -> Set.filter (fun g -> _dim s g = n) ans
+    match d with
+    | Some n -> Set.filter (fun g -> dim s g = n) ans
     | None -> ans
 
   (** Sorted list of generators. *)
