@@ -40,7 +40,7 @@ module FreeBoundedDistributiveLattice (X : Alphabet.T) = struct
   let top = make [[]]
 
   (** The element corresponding to a generator. *)
-  let generator x = make [[x]]
+  let inj x = make [[x]]
 
   (** Supremum. *)
   let sup x y = make (x@y)

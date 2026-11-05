@@ -2,9 +2,137 @@
 
 open Extlib
 
+(** A parity complex. *)
+module type T = sig
+  (** A generator. *)
+  type generator
+
+  (** String representation of a generator. *)
+  val generator_to_string : generator -> string
+
+  (** Maps from generators. *)
+  module Map : Map.S with type key = generator
+
+  (** A complex. *)
+  type t
+
+  (** Operations on chains. *)
+  module Chain : sig
+    type complex := t
+
+    (** A chain is a list of generators of the same dimension. *)
+    type t
+
+    (** Equality. *)
+    val eq : t -> t -> bool
+
+    (** Comparison. *)
+    val compare : t -> t -> int
+
+    (** String representation. *)
+    val to_string : t -> string
+
+    (** The empty chain. *)
+    val empty : t
+
+    (** A chain consisting of a single generator. *)
+    val generator : generator -> t
+
+    (** Number of generators. *)
+    val cardinal : t -> int
+
+    (** Fold over generators. *)
+    val fold : (generator -> 'a -> 'a) -> t -> 'a -> 'a
+
+    (** Whether all generators satisfy a predicate. *)
+    val for_all : (generator -> bool) -> t -> bool
+
+    (** Generators occurring in either chain. *)
+    val union : t -> t -> t
+
+    (** Generators of the first chain which do not occur in the second one. *)
+    val diff : t -> t -> t
+
+    (** Source of a chain. *)
+    val src : complex -> t -> t
+
+    (** Target of a chain. *)
+    val tgt : complex -> t -> t
+  end
+
+  (** Dimension of a generator. *)
+  val dim : t -> generator -> int
+
+  (** Source of a generator. *)
+  val src : t -> generator -> Chain.t
+
+  (** Target of a generator. *)
+  val tgt : t -> generator -> Chain.t
+
+  (** Sorted list of generators. *)
+  val to_list : t -> generator list
+
+  (** Operations on cells. *)
+  module Cell : sig
+    type complex := t
+
+    (** A cell. *)
+    type t
+
+    (** Create a cell from its top-dimensional generators, along with its source and target in each lower dimension, from highest to lowest. *)
+    val make : Chain.t -> (Chain.t * Chain.t) list -> t
+
+    (** The top-dimensional generators of a cell. *)
+    val chain : t -> Chain.t
+
+    (** The source and target of a cell in each lower dimension, from highest to lowest. *)
+    val boundary : t -> (Chain.t * Chain.t) list
+
+    (** Equality. *)
+    val eq : t -> t -> bool
+
+    (** Comparison. *)
+    val compare : t -> t -> int
+
+    (** Dimension of a cell. *)
+    val dim : t -> int
+
+    (** The cell whose boundary is entirely determined by a non-empty chain, obtained by iterating sources and targets. *)
+    val of_chain : complex -> Chain.t -> t
+
+    (** Cell consisting of a generator. *)
+    val generator : complex -> generator -> t
+
+    (** Source of a cell. *)
+    val src : t -> t
+
+    (** Target of a cell. *)
+    val tgt : t -> t
+
+    (** Iterated source. *)
+    val isrc : t -> int -> t
+
+    (** Iterated target. *)
+    val itgt : t -> int -> t
+
+    (** Identity on a cell. *)
+    val id : t -> t
+
+    (** Compose two cells along their k-dimensional boundary, by default the highest possible one. *)
+    val comp : ?k:int -> t -> t -> t
+
+    (** String representation. *)
+    val to_string : complex -> t -> string
+  end
+
+  (** All the cells of the generated free category in each dimension, up to the given one. *)
+  val cells : t -> int -> Cell.t list array
+end
+
 (** Presentation of a parity complex. *)
 module Pres (G : Alphabet.T) = struct
   type generator = G.t
+  let generator_to_string = G.to_string
   module Map = Map.Make(G)
   module Set = Set.Make(G)
   module Cat = Precategory.Make(G)
@@ -60,6 +188,13 @@ module Pres (G : Alphabet.T) = struct
     (** Equality. *)
     let eq = Set.equal
 
+    (** Comparison. *)
+    let compare = Set.compare
+
+    (** String representation. *)
+    let to_string c =
+      "{" ^ String.concat ", " (List.map G.to_string (Set.elements c)) ^ "}"
+
     (** Dimension of a chain, by convention -1 for the empty one. *)
     let dim s (c:t) = if Set.is_empty c then -1 else dim s (Set.choose c)
 
@@ -69,11 +204,23 @@ module Pres (G : Alphabet.T) = struct
     (** Chain consisting of a generator. *)
     let generator g : t = Set.singleton g
 
+    (** Number of generators. *)
+    let cardinal = Set.cardinal
+
     (** Iterate over generators. *)
     let iter = Set.iter
 
     (** Fold over generators. *)
     let fold = Set.fold
+
+    (** Whether all generators satisfy a predicate. *)
+    let for_all = Set.for_all
+
+    (** Generators occurring in either chain. *)
+    let union = Set.union
+
+    (** Generators of the first chain which do not occur in the second one. *)
+    let diff = Set.diff
 
     let sources s c = fold (fun g e -> Set.union (src s g) e) c Set.empty
 
@@ -103,11 +250,29 @@ module Pres (G : Alphabet.T) = struct
     (** A cell: its top-dimensional generators, along with its source and target in each lower dimension, from highest to lowest. *)
     type t = Chain.t * (Chain.t * Chain.t) list
 
+    (** Create a cell from its top-dimensional generators, along with its source and target in each lower dimension, from highest to lowest. *)
+    let make c b : t = c, b
+
+    (** The top-dimensional generators of a cell. *)
+    let chain ((c,_):t) = c
+
+    (** The source and target of a cell in each lower dimension, from highest to lowest. *)
+    let boundary ((_,b):t) = b
+
     (** Equality. *)
     let eq ((c,b):t) ((c',b'):t) =
       Chain.eq c c'
       && List.compare_lengths b b' = 0
       && List.for_all2 (fun (u,v) (u',v') -> Chain.eq u u' && Chain.eq v v') b b'
+
+    (** Comparison. *)
+    let compare ((c,b):t) ((c',b'):t) =
+      let pair (u,v) (u',v') =
+        let n = Chain.compare u u' in
+        if n <> 0 then n else Chain.compare v v'
+      in
+      let n = Chain.compare c c' in
+      if n <> 0 then n else List.compare pair b b'
 
     (** Dimension of a cell. *)
     let dim ((_,b):t) = List.length b
@@ -213,6 +378,38 @@ module Pres (G : Alphabet.T) = struct
     let to_string s c = Cat.to_string @@ to_cat s c
   end
 
+  (** All the cells of the generated free category in each dimension, up to the given one: in dimension m, these are obtained from the generators and the identities on cells of dimension m-1 by closing under composition. *)
+  let cells (s:t) d =
+    let module C = Stdlib.Set.Make(Cell) in
+    let module M = Stdlib.Map.Make(Cell) in
+    let ans = Array.make (d+1) [] in
+    for m = 0 to d do
+      let seen = ref C.empty in
+      (* The cells known so far, by iterated source and target in each dimension. *)
+      let by_src = Array.make m M.empty in
+      let by_tgt = Array.make m M.empty in
+      let find t k c = Option.value ~default:[] (M.find_opt c t.(k)) in
+      let add t k c x = t.(k) <- M.add c (x :: find t k c) t.(k) in
+      let rec visit x =
+        if not (C.mem x !seen) then
+          (
+            seen := C.add x !seen;
+            for k = 0 to m - 1 do
+              add by_src k (Cell.isrc x k) x;
+              add by_tgt k (Cell.itgt x k) x
+            done;
+            for k = 0 to m - 1 do
+              List.iter (fun y -> visit (Cell.comp ~k x y)) (find by_src k (Cell.itgt x k));
+              List.iter (fun y -> visit (Cell.comp ~k y x)) (find by_tgt k (Cell.isrc x k))
+            done
+          )
+      in
+      List.iter (fun g -> visit (Cell.generator s g)) (Set.elements (generators ~dim:m s));
+      if m > 0 then List.iter (fun c -> visit (Cell.id c)) ans.(m-1);
+      ans.(m) <- C.elements !seen
+    done;
+    ans
+
   (** Empty parity complex. *)
   let empty : t = Map.empty
 
@@ -243,6 +440,8 @@ module Pres (G : Alphabet.T) = struct
     |> List.map (fun g -> if dim s g = 0 then G.to_string g else Printf.sprintf "%s : %s -> %s" (G.to_string g) (Cell.to_string s (Cell.of_chain s (src s g))) (Cell.to_string s (Cell.of_chain s (tgt s g))))
     |> String.concat "\n"
 end
+
+module PresT (G : Monoid.T) : T = Pres(G)
 
 (** Presentation on a monoid of generators. *)
 module PresTens (G : Monoid.T) = struct
@@ -306,7 +505,8 @@ module Globe = struct
 end
 
 module Cube = struct
-  module M = struct
+  (** Our alphabet. *)
+  module A = struct
     include Monoid.Free(Alphabet.Option(Alphabet.Bool))
 
     let zero = inj None
@@ -316,19 +516,19 @@ module Cube = struct
     let bot = inj (Some false)
   end
 
-  include PresTens(M)
+  include PresTens(A)
 
   (** The point. *)
-  let point = add_point empty M.zero
+  let point = add_point empty A.one
 
   (** The interval. *)
   let interval =
-    let src = M.bot in
-    let tgt = M.top in
+    let src = A.bot in
+    let tgt = A.top in
     let i = empty in
     let i = add_point i src in
     let i = add_point i tgt in
-    let i = add i M.zero (Chain.generator src, Chain.generator tgt) in
+    let i = add i A.zero (Chain.generator src, Chain.generator tgt) in
     i
 
   (** Create an n-dimensional cube. *)
@@ -340,12 +540,6 @@ module Cube = struct
       done;
       !ans
 end
-
-(*
-(** Cubes with degeneracies and connections. *)
-module CubeDCon = struct
-end
-*)
 
 module Oriental = struct
   module A = Alphabet.List(Alphabet.Int)
@@ -434,4 +628,254 @@ module PastingScheme = struct
   let cell s : Cell.t =
     let n = max_dim s in
     generators ~dim:n s, boundary s (n-1)
+end
+
+(** Morphisms between complexes, as maps of augmented directed complexes, which induce functors between the generated free categories. *)
+module Morphism (P:T) (Q:T) = struct
+  (** A morphism sends a generator to a chain of the same dimension, which is empty when the generator collapses to a lower dimension. *)
+  type t =
+    {
+      dom : P.t; (** domain *)
+      cod : Q.t; (** codomain *)
+      app : P.generator -> Q.Chain.t; (** image of a generator *)
+    }
+
+  (** Create a morphism from its action on generators. *)
+  let make dom cod app = { dom; cod; app }
+
+  (** Create a morphism sending each generator to a generator, or collapsing it when the image is [None]. *)
+  let of_partial dom cod f =
+    make dom cod (fun g -> match f g with Some g' -> Q.Chain.generator g' | None -> Q.Chain.empty)
+
+  (** Image of a chain. *)
+  let chain f c = P.Chain.fold (fun g e -> Q.Chain.union (f.app g) e) c Q.Chain.empty
+
+  (** Image of a cell, given by its generators and its source and target in each lower dimension. The dimension of the cell is preserved, so that it might become an identity. *)
+  let cell f (c:P.Cell.t) : Q.Cell.t =
+    Q.Cell.make (chain f (P.Cell.chain c)) (List.map (fun (u,v) -> chain f u, chain f v) (P.Cell.boundary c))
+
+  (** Whether two morphisms with the same domain coincide on generators. *)
+  let eq f g = List.for_all (fun x -> Q.Chain.eq (f.app x) (g.app x)) (P.to_list f.dom)
+
+  (** Whether the images of the generators of a chain are disjoint. Otherwise, the image of the chain is not faithfully represented by a set. *)
+  let injective_on f c =
+    P.Chain.fold (fun g n -> n + Q.Chain.cardinal (f.app g)) c 0 = Q.Chain.cardinal (chain f c)
+
+  (** Check that the action on generators defines a morphism: it preserves dimensions and augmentation and commutes with the boundary. The boundary has to be computed with integer coefficients since, contrarily to what happens for well-formed chains, generators of an arbitrary chain can share a source or a target, and sets would forget this. *)
+  let check f =
+    (* Add a chain, with given coefficient, to a linear combination of generators. *)
+    let add n c m =
+      Q.Chain.fold
+        (fun g m ->
+           let n = n + Option.value ~default:0 (Q.Map.find_opt g m) in
+           if n = 0 then Q.Map.remove g m else Q.Map.add g n m
+        ) c m
+    in
+    let boundary c =
+      Q.Chain.fold (fun g m -> add 1 (Q.tgt f.cod g) (add (-1) (Q.src f.cod g) m)) c Q.Map.empty
+    in
+    List.for_all
+      (fun g ->
+         let n = P.dim f.dom g in
+         let c = f.app g in
+         Q.Chain.for_all (fun g' -> Q.dim f.cod g' = n) c
+         &&
+         if n = 0 then Q.Chain.cardinal c = 1
+         else
+           let s, t = P.src f.dom g, P.tgt f.dom g in
+           let s', t' = chain f s, chain f t in
+           injective_on f s
+           && injective_on f t
+           && Q.Map.equal (=) (add 1 t' (add (-1) s' Q.Map.empty)) (boundary c)
+      ) (P.to_list f.dom)
+
+  (** All the morphisms between two complexes, which are the functors between the generated free categories. Since the domain is free, such a functor amounts to choosing, for each generator by increasing dimension, a cell whose boundary is the image of the boundary of the generator. *)
+  let all dom cod =
+    let module B =
+      Map.Make(struct
+        type t = (Q.Chain.t * Q.Chain.t) list
+        let compare =
+          List.compare
+            (fun (u,v) (u',v') ->
+               let n = Q.Chain.compare u u' in
+               if n <> 0 then n else Q.Chain.compare v v')
+      end)
+    in
+    let generators = List.map (fun g -> g, P.dim dom g, P.Cell.boundary (P.Cell.generator dom g)) (P.to_list dom) in
+    let d = List.fold_left (fun d (_,n,_) -> max d n) 0 generators in
+    (* The chains of the cells in each dimension, by boundary. *)
+    let index =
+      Array.map
+        (List.fold_left
+           (fun i c ->
+              let b = Q.Cell.boundary c in
+              B.add b (Q.Cell.chain c :: Option.value ~default:[] (B.find_opt b i)) i
+           ) B.empty)
+        (Q.cells cod d)
+    in
+    let rec aux m = function
+      | [] -> [m]
+      | (g,n,b)::generators ->
+        let image c = P.Chain.fold (fun x e -> Q.Chain.union (P.Map.find x m) e) c Q.Chain.empty in
+        let b = List.map (fun (u,v) -> image u, image v) b in
+        Option.value ~default:[] (B.find_opt b index.(n))
+        |> List.concat_map (fun c -> aux (P.Map.add g c m) generators)
+    in
+    List.map (fun m -> make dom cod (fun g -> P.Map.find g m)) (aux P.Map.empty generators)
+
+  (** String representation, as the image of each generator. *)
+  let to_string f =
+    P.to_list f.dom
+    |> List.map (fun g -> P.generator_to_string g ^ " ↦ " ^ Q.Chain.to_string (f.app g))
+    |> String.concat "\n"
+end
+
+(** Composition of morphisms. *)
+module MorphismComp (P:T) (Q:T) (R:T) = struct
+  module F = Morphism(P)(Q)
+  module G = Morphism(Q)(R)
+  module H = Morphism(P)(R)
+
+  (** Composite of two morphisms: the first one is applied first. *)
+  let comp (f:F.t) (g:G.t) : H.t =
+    H.make f.dom g.cod (fun x -> G.chain g (f.app x))
+end
+
+(** Morphisms between cubes. *)
+module CubeMorphism = struct
+  include Cube
+
+  (** Morphisms between cubes. *)
+  module Hom = Morphism(Cube)(Cube)
+
+  (** Composite of morphisms between cubes. *)
+  let comp =
+    let module C = MorphismComp(Cube)(Cube)(Cube) in
+    C.comp
+
+  (** The word obtained by replacing the coordinates from i to i+k-1 of x by the word v. *)
+  let splice x i k v =
+    Array.concat [Array.sub x 0 i; v; Array.sub x (i+k) (Array.length x - i - k)]
+
+  (** Face: insert a coordinate i, which is the target if e is true and the source otherwise. *)
+  let face e i x = Some (splice x i 0 (if e then A.top else A.bot))
+
+  (** Degeneracy: forget the coordinate i. *)
+  let deg i x =
+    if x.(i) = None then None else Some (splice x i 1 A.one)
+
+  (** Connection: merge the coordinates i and i+1, by taking their maximum if first argument is true and their minimum otherwise. *)
+  let con up i x =
+    let merged =
+      match x.(i), x.(i+1) with
+      | None, None -> None
+      | None, Some b | Some b, None -> if b = up then None else Some None
+      | Some a, Some b -> Some (Some (if up then a || b else a && b))
+    in
+    Option.map (fun v -> splice x i 2 [|v|]) merged
+
+  (** The box category with connections: the maps generated by faces, degeneracies and connections (for both maximum and minimum). These are the cells of the cubes in cubical sets with connections: a k-cell of the n-cube is a map from the k-cube to the n-cube, which is described by a word of length n over the free bounded distributive lattice on the variables x₀, ..., xₖ₋₁: the letter at position i gives the value of the coordinate i. Not all words are cells: for instance, the cells contain neither symmetries nor diagonals. Since a word does not determine k, the dimension has to be specified where it matters. *)
+  module Box = struct
+    (** Variables. *)
+    module Var = struct
+      include Alphabet.Int
+
+      let to_string i = "x" ^ String.subscript (string_of_int i)
+    end
+
+    (** Values of the coordinates. *)
+    module D = struct
+      include Lattice.FreeBoundedDistributiveLattice(Var)
+
+      let to_string x = to_string x
+    end
+
+    module M = Monoid.Free(D)
+
+    (** Representation of a morphism. *)
+    type t = M.t
+
+    (** Equality. *)
+    let eq = M.eq
+
+    (** The value of a constant coordinate, which is the target if e is true and the source otherwise. *)
+    let const e = if e then D.top else D.bot
+
+    (** Maximum if e is true and minimum otherwise. *)
+    let merge e = if e then D.sup else D.inf
+
+    (** The top cell of the k-cube. *)
+    let id k : t = Array.init k D.inj
+
+    (** Composite of a k-cell of the m-cube with an m-cell of the n-cube. *)
+    let comp (f:t) (g:t) : t = Array.map (D.subst (fun i -> f.(i))) g
+
+    (** Face of a cell in direction i. *)
+    let face e i : t -> t =
+      Array.map (D.subst (fun j -> if j < i then D.inj j else if j = i then const e else D.inj (j-1)))
+
+    (** Degeneracy of a cell, with a new variable i. *)
+    let deg i : t -> t =
+      Array.map (D.subst (fun j -> D.inj (if j < i then j else j+1)))
+
+    (** Connection of a cell, which replaces the variable i by the merge of the new variables i and i+1. *)
+    let con e i : t -> t =
+      Array.map (D.subst (fun j -> if j < i then D.inj j else if j = i then merge e (D.inj i) (D.inj (i+1)) else D.inj (j+1)))
+
+    (** The action of a cell on generators: a generator is sent to the face spanned by the image of its lowest and highest vertices, and collapses when this lowers its dimension. *)
+    let map (w:t) (g:A.t) =
+      let vertex d i = match g.(i) with Some b -> b | None -> d in
+      let coordinate x =
+        let a = D.eval_bool (vertex false) x in
+        if a = D.eval_bool (vertex true) x then Some a else None
+      in
+      let g' = Array.map coordinate w in
+      let dim x = Array.fold_left (fun n a -> if a = None then n+1 else n) 0 x in
+      if dim g' = dim g then Some g' else None
+
+    (** The morphism from the k-cube dom to the n-cube cod corresponding to a k-cell of the n-cube. *)
+    let hom dom cod (w:t) = Hom.of_partial dom cod (map w)
+
+    (** All composites of degeneracies and connections from the k-cube, indexed by the dimension of their codomain. *)
+    let collapses k =
+      let ans = Array.make (k+1) [] in
+      ans.(k) <- [id k];
+      for m = k downto 1 do
+        let next w =
+          List.init m (fun i -> splice w i 1 [||])
+          @ List.concat_map (fun e -> List.init (m-1) (fun i -> splice w i 2 [|merge e w.(i) w.(i+1)|])) [false; true]
+        in
+        ans.(m-1) <- List.sort_uniq compare @@ List.concat_map next ans.(m)
+      done;
+      ans
+
+    (** The k-cells of the n-cube. Each one uniquely factors as a collapse followed by the inclusion of a face. *)
+    let cells n k : t list =
+      let inject g w =
+        let j = ref 0 in
+        Array.map (function None -> let a = w.(!j) in incr j; a | Some e -> const e) g
+      in
+      let collapses = collapses k in
+      let c = make n in
+      List.concat_map
+        (fun m ->
+           if m > k then [] else
+             List.concat_map
+               (fun g -> List.map (inject g) collapses.(m))
+               (Set.elements (generators ~dim:m c))
+        ) (List.init (n+1) Fun.id)
+
+    (** String representation. *)
+    let to_string (w:t) =
+      "(" ^ String.concat " , " (List.map D.to_string (Array.to_list w)) ^ ")"
+  end
+
+  (** Functors between the free categories generated by cubes. These are the cells of the cubical nerve of the free category on a cube. They strictly contain the maps of {!Box}: a generator can be sent to a composite, for instance an edge to a path around a square, and the images of vertices are arbitrary monotone maps. *)
+  module Omega = struct
+    (** The k-cells of the n-cube: the functors from the k-cube to the n-cube. *)
+    let cells n k = Hom.all (make k) (make n)
+
+    (** String representation. *)
+    let to_string = Hom.to_string
+  end
 end
