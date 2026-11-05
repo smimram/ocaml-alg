@@ -10,13 +10,12 @@ let point = PS []
 
 (** Dimension. *)
 let rec dim (PS l) = 1 + List.fold_left (fun d p -> max d (dim p)) (-1) l
-let _dim = dim
 
 let width (PS l) = List.length l
 
-let eq = (=)
+let eq (p:t) (q:t) = p = q
 
-let compare = compare
+let compare (p:t) (q:t) = compare p q
 
 (** String representation. *)
 let rec to_string (PS l) = "[" ^ (String.concat "," @@ List.map to_string l) ^ "]"
@@ -24,8 +23,8 @@ let rec to_string (PS l) = "[" ^ (String.concat "," @@ List.map to_string l) ^ "
 (** Suspension. *)
 let susp p = PS [p]
 
-let bnd ?dim p =
-  let dim = match dim with Some dim -> dim | None -> _dim p - 1 in
+let bnd ?dim:d p =
+  let dim = match d with Some d -> d | None -> dim p - 1 in
   assert (dim >= 0);
   let rec aux d (PS l) =
     if d = 0 then point
