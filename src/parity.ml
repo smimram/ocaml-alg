@@ -673,6 +673,7 @@ module Morphism (P:T) (Q:T) = struct
     {
       dom : P.t; (** domain *)
       cod : Q.t; (** codomain *)
+      (* The image of a generator is a chain rather than a cell: since a morphism commutes with the boundary, the iterated source and target of the image of a generator are the images of those of the generator (see {!cell}), so that only the top-dimensional generators of the image carry information. This also matches the additive nature of morphisms (they are extended to chains by union, which makes no sense for cells), allows collapsed generators to be sent to the empty chain, whose boundary is not determined by itself, and keeps composition simple. *)
       app : P.generator -> Q.Chain.t; (** image of a generator *)
     }
 
