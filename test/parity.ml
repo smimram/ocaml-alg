@@ -625,3 +625,35 @@ let () =
   (* List the 1-cells of the square. *)
   print_string "\n# Functors from the interval to the square\n";
   List.iter (fun f -> print_newline (); print_endline (O.to_string f)) (O.cells 2 1)
+
+let () =
+  print_string "\n# Chain complexes\n";
+  let module G = Parity.Globe in
+  let module C = Parity.Cube in
+  let module O = Parity.Oriental in
+  (* The differential of the interval is the target minus the source. *)
+  let c = C.to_chain_complex C.interval in
+  let d = (C.ZMod.Pres.Complex.maps c).(0) in
+  assert (C.ZMod.eq (C.ZMod.Pres.Map.app d (C.ZMod.inj C.A.zero)) (C.ZMod.sub (C.ZMod.inj C.A.top) (C.ZMod.inj C.A.bot)));
+  (* The empty complex has no differential. *)
+  assert (G.ZMod.Pres.Complex.length (G.to_chain_complex G.empty) = 0);
+  (* d²=0 and the homology is the expected one, including in the top dimension. *)
+  let trivial n = Array.init (n+1) (fun i -> if i = 0 then 1 else 0) in
+  let sphere n = Array.mapi (fun i b -> if i = n then b + 1 else b) (trivial n) in
+  for n = 0 to 4 do
+    let c = G.to_chain_complex (G.make n) in
+    assert (G.ZMod.Pres.Complex.valid c);
+    assert (G.ZMod.Pres.Complex.length c = n + 1);
+    assert (G.ZMod.Pres.Complex.betti c = trivial n);
+    let c = G.to_chain_complex (G.sphere n) in
+    assert (G.ZMod.Pres.Complex.valid c);
+    assert (G.ZMod.Pres.Complex.betti c = sphere n);
+    let c = C.to_chain_complex (C.make n) in
+    assert (C.ZMod.Pres.Complex.valid c);
+    assert (C.ZMod.Pres.Complex.betti c = trivial n);
+    let c = O.to_chain_complex (O.make n) in
+    assert (O.ZMod.Pres.Complex.valid c);
+    assert (O.ZMod.Pres.Complex.betti c = trivial n)
+  done;
+  print_newline ();
+  print_string (O.ZMod.Pres.Complex.to_string (O.to_chain_complex (O.make 2)))
